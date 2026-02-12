@@ -1,553 +1,485 @@
+"""
+Phase-Marginalized Heterodyned Nested Sampling for GW170817
+============================================================
+
+Performs Bayesian inference on the binary neutron star event GW170817 using:
+  - Waveform: IMRPhenomD_NRTidalv2 (aligned-spin + NR tidal corrections)
+  - Likelihood: Heterodyned (relative binning) with analytic phase marginalization
+  - Sampler: Blackjax nested slice sampling with periodic boundary wrapping
+
+Phase marginalization reduces dimensionality by 1 (removes phase_c) via the
+identity: marginalizing a uniform phase_c in [0,2pi] converts the real
+match-filter SNR into log I_0(|<d|h>|), where I_0 is the modified Bessel
+function of order 0. This is exact for aligned-spin (non-precessing) waveforms.
+
+The Hubble constant H_0 is jointly inferred using the peculiar velocity model
+from Abbott et al. 2017 (arXiv:1710.05832), treating GW170817's host galaxy
+NGC 4993 as a standard siren.
+
+Performance notes:
+  - All JIT-compiled functions use flat arrays and static indices (no dicts)
+  - Detector coefficients are stacked as (n_det, n_bins) arrays
+  - Heterodyned computation is vectorized over detectors (no Python loop)
+  - Prior computation is fully vectorized (no list comprehension)
+  - Dict creation for jimgw API calls happens at trace time (zero runtime cost)
+"""
+
+# ============================================================================
+# 1. IMPORTS & JAX CONFIGURATION
+# ============================================================================
 import os
 os.environ['XLA_PYTHON_CLIENT_PREALLOCATE'] = 'false'
+
 import jax
 jax.config.update('jax_enable_x64', True)
-import blackjax
-import blackjax.ns.adaptive
-import matplotlib.pyplot as pltw
-import time 
-import jax.scipy.stats as stats
+
 import jax.numpy as jnp
+import jax.scipy.stats as stats
 import numpy as np
-import pandas as pd
+import blackjax
+import h5py
+import time
 import tqdm
-import anesthetic
-from anesthetic import NestedSamples
 from astropy.time import Time
-from jimgw.single_event.detector import Detector, H1, L1, V1
-from jimgw.single_event.likelihood import original_relative_binning_likelihood as relative_binning_likelihood_function
-from jimgw.single_event.waveform import RippleIMRPhenomD_NRTidalv2
-import optax
-from jaxtyping import Array, Float
-import numpy.typing as npt
 from scipy.interpolate import interp1d
+from anesthetic import NestedSamples
+from blackjax.ns.utils import finalise
+
+from jimgw.single_event.detector import Detector, H1, L1, V1
+from jimgw.single_event.waveform import RippleIMRPhenomD_NRTidalv2
+
+# Numerically stable log I_0 for phase marginalization:
+# log(I_0(x)) = log(i0e(x)) + x, where i0e(x) = exp(-|x|) * I_0(x)
+from jax.scipy.special import i0e
+
+@jax.jit
+def log_i0(x):
+    return jnp.log(i0e(x)) + x
 
 
-# Minimal in-file Adam optimizer to replace external `flowMC` optimizer.
-# This follows the API used in this repo: `.optimize(key, loss_fn, initial_position)`
-class optimization_Adam:
-    """FlowMC-like population Adam optimizer wrapper using optax.
+# ============================================================================
+# 2. PARAMETER CONFIGURATION (static arrays, no dicts in hot path)
+# ============================================================================
+# 14 parameters — phase_c is analytically marginalized, not sampled.
+# All configuration is expressed as static JAX arrays for JIT-friendly access.
 
-    Implements a minimal `.optimize(key, loss_fn, initial_position)` API compatible
-    with the rest of the codebase while using the same optax chain as flowMC's
-    `Optimizer` (clip_by_global_norm + adamw).
+# Parameter names (used only at boundaries: init, output, jimgw API calls)
+PARAM_NAMES = [
+    "M_c", "q", "s1_z", "s2_z", "iota", "d_L", "t_c",
+    "psi", "ra", "dec", "lambda_1", "lambda_2", "H_0", "v_p",
+]
+PARAM_LABELS = [
+    r"$M_c$", r"$q$", r"$s_{1z}$", r"$s_{2z}$", r"$\iota$", r"$d_L$", r"$t_c$",
+    r"$\psi$", r"$\alpha$", r"$\delta$", r"$\Lambda_1$", r"$\Lambda_2$", r"$H_0$", r"$v_p$",
+]
+NUM_DIMS = len(PARAM_NAMES)
+
+# Static parameter indices (compile-time constants for array access)
+I_MC, I_Q, I_S1Z, I_S2Z, I_IOTA, I_DL, I_TC = 0, 1, 2, 3, 4, 5, 6
+I_PSI, I_RA, I_DEC, I_L1, I_L2, I_H0, I_VP = 7, 8, 9, 10, 11, 12, 13
+
+# Prior bounds as static arrays
+PRIOR_LO = jnp.array([
+    1.184, 0.125, -0.05, -0.05,             # M_c, q, s1_z, s2_z
+    0.0, 10.0, -0.1,                         # iota, d_L, t_c
+    0.0, 3.44, -0.41,                          # psi, ra, dec
+    0.0, 0.0, 20.0, -1000.0,                 # lambda_1, lambda_2, H_0, v_p
+])
+PRIOR_HI = jnp.array([
+    2.168, 1.00, 0.05, 0.05,                 # M_c, q, s1_z, s2_z
+    jnp.pi, 75.0, 0.1,                       # iota, d_L, t_c
+    jnp.pi, 3.45, -0.40,                      # psi, ra, dec
+    5000.0, 5000.0, 140.0, 1000.0,           # lambda_1, lambda_2, H_0, v_p
+])
+
+# Prior type encoding: 0=uniform, 1=sin(iota), 2=cos(dec), 3=beta(d_L), 4=log-uniform(H_0)
+# dec is uniform (EM-constrained to NGC 4993), not cosine
+PRIOR_TYPE = jnp.array([0, 0, 0, 0, 1, 3, 0, 0, 0, 0, 0, 0, 4, 0])
+
+# Pre-computed prior constants (avoid recomputation in JIT)
+_PRIOR_RANGE = PRIOR_HI - PRIOR_LO
+_PRIOR_LOG_RANGE = jnp.log(_PRIOR_RANGE)
+_PRIOR_LOG_LOG_RATIO = jnp.log(jnp.log(PRIOR_HI / PRIOR_LO))
+_BETA_LN = jax.scipy.special.betaln(3.0, 1.0)
+
+
+# ============================================================================
+# 3. VECTORIZED LOG-PRIOR (no Python loops, fully JIT-traced)
+# ============================================================================
+
+@jax.jit
+def logprior_fn(x):
+    """Evaluate total log-prior for a flat parameter vector.
+
+    Computes all prior types vectorially and selects via jnp.where.
+    No Python loops, list comprehensions, or dict access.
     """
+    in_bounds = (x >= PRIOR_LO) & (x <= PRIOR_HI)
 
-    def __init__(self, n_steps: int = 1000, learning_rate: float = 1e-3, noise_level: float = 0.0, momentum: float = 0.9, clip_norm: float = 1.0):
-        self.n_steps = int(n_steps)
-        self.learning_rate = float(learning_rate)
-        self.noise_level = float(noise_level)
-        self.momentum = float(momentum)
-        self.clip_norm = float(clip_norm)
-        # Build the same chain as flowMC's Optimizer
-        self._optim = optax.chain(
-            optax.clip_by_global_norm(self.clip_norm),
-            optax.adamw(learning_rate=self.learning_rate, b1=self.momentum),
-        )
+    # Uniform: log(1/(hi-lo)) = -log(hi-lo)
+    lp_uniform = jnp.where(in_bounds, -_PRIOR_LOG_RANGE, -jnp.inf)
 
-    def optimize(self, key, loss_fn, initial_position):
-        """Optimize a population of parameter vectors.
+    # Sin prior (iota): log(sin(x)/2) on [0, pi]
+    lp_sin = jnp.where(in_bounds, jnp.log(jnp.abs(jnp.sin(x)) + 1e-300) - jnp.log(2.0), -jnp.inf)
 
-        Args:
-            key: JAX PRNGKey
-            loss_fn: callable(params_vector) -> scalar loss (to minimize)
-            initial_position: array shape (popsize, n_dims)
+    # Cos prior (dec): log(cos(x)/2) on [-pi/2, pi/2]
+    lp_cos = jnp.where(in_bounds, jnp.log(jnp.abs(jnp.cos(x)) + 1e-300) - jnp.log(2.0), -jnp.inf)
 
-        Returns:
-            (key, optimized_positions, summary)
-        """
-        popsize = int(initial_position.shape[0])
-        params = initial_position.copy()
+    # Beta(3,1) prior (d_L): log(3*u^2 / range) where u = (x-lo)/(hi-lo)
+    u = (x - PRIOR_LO) / _PRIOR_RANGE
+    lp_beta = jnp.where(in_bounds, 2.0 * jnp.log(jnp.abs(u) + 1e-300) - _PRIOR_LOG_RANGE - _BETA_LN, -jnp.inf)
 
-        # init per-particle opt state
-        opt_states = [self._optim.init(params[i]) for i in range(popsize)]
+    # Log-uniform (Jeffreys) prior (H_0): -log(log(hi/lo)) - log(x)
+    lp_log = jnp.where(in_bounds, -_PRIOR_LOG_LOG_RATIO - jnp.log(jnp.abs(x) + 1e-300), -jnp.inf)
 
-        for step in range(self.n_steps):
-            losses, grads = jax.vmap(jax.value_and_grad(loss_fn))(params)
+    # Select per-parameter prior using type index
+    lp = jnp.where(PRIOR_TYPE == 0, lp_uniform,
+         jnp.where(PRIOR_TYPE == 1, lp_sin,
+         jnp.where(PRIOR_TYPE == 2, lp_cos,
+         jnp.where(PRIOR_TYPE == 3, lp_beta,
+                    lp_log))))
 
-            # apply updates per particle
-            for i in range(popsize):
-                updates, opt_states[i] = self._optim.update(grads[i], opt_states[i], params[i])
-                params = params.at[i].set(optax.apply_updates(params[i], updates))
-
-            if self.noise_level > 0.0:
-                key, subk = jax.random.split(key)
-                params = params + self.noise_level * jax.random.normal(subk, params.shape)
-
-        final_losses = jax.vmap(loss_fn)(params)
-        summary = {"final_log_prob": final_losses}
-        return key, params, summary
+    return jnp.sum(lp)
 
 
-label = 'Results/Test_Heterodyned'
+# ============================================================================
+# 4. EVENT CONFIGURATION & DETECTOR DATA
+# ============================================================================
 
-# Define the parameters class
-class ParameterPrior:
-    def __init__(self, name: str, label: str, prior_fn: callable, *args):
-        self.name = name
-        self.label = label
-        self.prior_fn = prior_fn
-        self.args = args
-
-    def logprob(self, value: float) -> float:
-        return self.prior_fn(value, *self.args)
-
-# Define the prior functions
-@jax.jit
-def UniformPrior(x: float, min: float, max: float) -> float:    
-    return stats.uniform.logpdf(x, min, max-min)
-
-@jax.jit
-def SinPrior(x):
-    return jnp.where((x < 0.0) | (x > jnp.pi), -jnp.inf, jnp.log(jnp.sin(x) / 2.0))
-
-@jax.jit
-def CosPrior(x):
-    return jnp.where((x < -jnp.pi / 2.0) | (x > jnp.pi / 2.0), -jnp.inf, jnp.log(jnp.cos(x) / 2.0))
-
-@jax.jit
-def BetaPrior(x, min, max):
-    return stats.beta.logpdf(x, 3.0, 1.0, min, max-min)
-
-@jax.jit
-def FlatInLogPrior(x: float, min: float, max: float) -> float:
-    return jnp.where((x < min) | (x > max), -jnp.inf, (-jnp.log(jnp.log(max / min)) - jnp.log(x)))
-
-# Define LIGO event data, detectors, and waveform model
-gps = 1187008882.43 # GW170817 event time
+gps = 1187008882.43
 fmin = 23.0
 fmax = 2048.0
 duration = 128
 post_trigger_duration = 2
-end_time = gps + post_trigger_duration
-start_time = end_time - duration
 roll_off = 0.4
 tukey_alpha = 2 * roll_off / duration
 psd_pad = 16
 psd_duration = 1024
 
+label = 'Results/PhaseMarg_Heterodyned'
+
 detectors = [H1, L1, V1]
+N_DET = len(detectors)
 
 for det in detectors:
     det.load_data(
-        gps, 
+        gps,
         duration - post_trigger_duration,
         post_trigger_duration,
-        fmin,
-        fmax,
+        fmin, fmax,
         psd_pad=psd_pad,
         psd_duration=psd_duration,
         tukey_alpha=tukey_alpha,
-        gwpy_kwargs={"cache": True, "version": 2}
-        )
-
-waveform = RippleIMRPhenomD_NRTidalv2(
-    f_ref=fmin,
-    use_lambda_tildes=False,
-    no_taper=False
+        gwpy_kwargs={"cache": True, "version": 2},
     )
+
+waveform = RippleIMRPhenomD_NRTidalv2(f_ref=fmin, use_lambda_tildes=False, no_taper=False)
 
 frequencies = H1.frequencies
 epoch = duration - post_trigger_duration
 gmst = Time(gps, format="gps").sidereal_time("apparent", "greenwich").rad
 
-# Define the priors
-# GW170817 defined as per https://arxiv.org/pdf/1805.11579
-parameters = [
-    ParameterPrior("M_c", r"$M_c$", UniformPrior, 1.184, 2.168),
-    ParameterPrior("q", r"$q$", UniformPrior, 0.125, 1.00),  
-    ParameterPrior("s1_z", r"$s_{1z}$", UniformPrior, -0.05, 0.05),
-    ParameterPrior("s2_z", r"$s_{2z}$", UniformPrior, -0.05, 0.05),
-    ParameterPrior("iota", r"$\iota$", SinPrior),
-    ParameterPrior("d_L", r"$d_L$", BetaPrior, 10.0, 75.0),
-    ParameterPrior("t_c", r"$t_c$", UniformPrior, -0.1, 0.1),
-    ParameterPrior("phase_c", r"$\phi_c$", UniformPrior, 0.0, 2 * jnp.pi),
-    ParameterPrior("psi", r"$\psi$", UniformPrior, 0.0, jnp.pi),
-    ParameterPrior("ra", r"$\alpha$", UniformPrior, 3.44, 3.45),
-    ParameterPrior("dec", r"$\delta$", UniformPrior, -0.41, -0.40),
-    ParameterPrior("lambda_1", r"$\Lambda_1$", UniformPrior, 0.0, 5000.0),
-    ParameterPrior("lambda_2", r"$\Lambda_2$", UniformPrior, 0.0, 5000.0),
-    ParameterPrior("H_0", r"$H_0$", FlatInLogPrior, 20.0, 140.0),
-    ParameterPrior("v_p", r"$v_p$", UniformPrior, -1000.0, 1000.0)
-]
 
-parameter_names = [param.name for param in parameters]
-labels = [param.label for param in parameters]
+# ============================================================================
+# 5. REFERENCE PARAMETERS (from GWTC-1 posteriors)
+# ============================================================================
 
-# Define the log prior function
-@jax.jit
-def logprior_fn(params_array):
-    # Convert array to dictionary
-    params_dict = dict(zip(parameter_names, params_array))
-    return jnp.sum(jnp.array([param.logprob(params_dict[param.name]) for param in parameters]))
+def load_reference_params(hdf5_path, dataset='IMRPhenomPv2NRT_lowSpin_posterior'):
+    """Load GWTC-1 posterior samples and compute median reference parameters.
 
-# Heterodyning implementation
-def max_phase_diff(
-    f: npt.NDArray[np.floating],
-    f_low: float,
-    f_high: float,
-    chi: Float = 1.0,
-    ):
+    Converts detector-frame masses and spin magnitudes/tilts to the ripple
+    parametrization (M_c, q, eta, s1_z, s2_z, ...).
+    """
+    with h5py.File(hdf5_path, 'r') as f:
+        data = f[dataset][:]
 
+    m1 = np.median(data['m1_detector_frame_Msun'])
+    m2 = np.median(data['m2_detector_frame_Msun'])
+    M = m1 + m2
+    eta_val = m1 * m2 / M**2
+    Mc = M * eta_val**(3.0 / 5)
+    q_val = m2 / m1
+
+    s1_z = np.median(data['spin1'] * data['costilt1'])
+    s2_z = np.median(data['spin2'] * data['costilt2'])
+
+    ref = {
+        'M_c': float(Mc), 'q': float(q_val), 'eta': float(eta_val),
+        's1_z': float(s1_z), 's2_z': float(s2_z),
+        'd_L': float(np.median(data['luminosity_distance_Mpc'])),
+        'iota': float(np.median(np.arccos(data['costheta_jn']))),
+        'ra': float(np.median(data['right_ascension'])),
+        'dec': float(np.median(data['declination'])),
+        'lambda_1': float(np.median(data['lambda1'])),
+        'lambda_2': float(np.median(data['lambda2'])),
+        't_c': 0.0, 'phase_c': 0.0, 'psi': 0.0,
+        'gmst': float(gmst),
+    }
+    if np.isclose(ref['eta'], 0.25):
+        ref['eta'] = 0.249995
+    return ref
+
+print("Loading reference parameters from GWTC-1...")
+ref_params = load_reference_params('GW170817/Scripts/GW170817_GWTC-1.hdf5')
+print(f"Reference: M_c={ref_params['M_c']:.4f}, q={ref_params['q']:.4f}, d_L={ref_params['d_L']:.1f}")
+
+
+# ============================================================================
+# 6. HETERODYNING SETUP (pre-compute stacked arrays)
+# ============================================================================
+
+N_BINS = 100
+
+def max_phase_diff(f, f_low, f_high, chi=1.0):
+    """Maximum accumulated phase across PN orders. Eq.(7) of arXiv:2302.05333."""
     gamma = np.arange(-5, 6, 1) / 3.0
-    f = np.repeat(f[:, None], len(gamma), axis=1)
+    f_2d = np.repeat(f[:, None], len(gamma), axis=1)
     f_star = np.repeat(f_low, len(gamma))
     f_star[gamma >= 0] = f_high
-    return 2 * np.pi * chi * np.sum((f / f_star) ** gamma * np.sign(gamma), axis=1)
+    return 2 * np.pi * chi * np.sum((f_2d / f_star) ** gamma * np.sign(gamma), axis=1)
+
+def make_binning_scheme(freqs, n_bins, chi=1):
+    phase_diff_array = max_phase_diff(freqs, freqs[0], freqs[-1], chi=chi)
+    bin_f = interp1d(phase_diff_array, freqs)
+    f_bins = np.array([bin_f(i) for i in np.linspace(
+        phase_diff_array[0], phase_diff_array[-1], n_bins + 1)])
+    f_bins_center = (f_bins[:-1] + f_bins[1:]) / 2
+    return jnp.array(f_bins), jnp.array(f_bins_center)
 
 def compute_coefficients(data, h_ref, psd, freqs, f_bins, f_bins_center):
-    A0_array = []
-    A1_array = []
-    B0_array = []
-    B1_array = []
-
+    """Pre-compute heterodyning coefficients A0, A1, B0, B1 per bin."""
     df = freqs[1] - freqs[0]
     data_prod = np.array(data * h_ref.conj())
     self_prod = np.array(h_ref * h_ref.conj())
+    A0, A1, B0, B1 = [], [], [], []
     for i in range(len(f_bins) - 1):
-        f_index = np.where((freqs >= f_bins[i]) & (freqs < f_bins[i + 1]))[0]
-        A0_array.append(4 * np.sum(data_prod[f_index] / psd[f_index]) * df)
-        A1_array.append(
-            4
-            * np.sum(
-                data_prod[f_index]
-                / psd[f_index]
-                * (freqs[f_index] - f_bins_center[i])
-            )
-            * df
-        )
-        B0_array.append(4 * np.sum(self_prod[f_index] / psd[f_index]) * df)
-        B1_array.append(
-            4
-            * np.sum(
-                self_prod[f_index]
-                / psd[f_index]
-                * (freqs[f_index] - f_bins_center[i])
-            )
-            * df
-        )
+        idx = np.where((freqs >= f_bins[i]) & (freqs < f_bins[i + 1]))[0]
+        A0.append(4 * np.sum(data_prod[idx] / psd[idx]) * df)
+        A1.append(4 * np.sum(data_prod[idx] / psd[idx] * (freqs[idx] - f_bins_center[i])) * df)
+        B0.append(4 * np.sum(self_prod[idx] / psd[idx]) * df)
+        B1.append(4 * np.sum(self_prod[idx] / psd[idx] * (freqs[idx] - f_bins_center[i])) * df)
+    return jnp.array(A0), jnp.array(A1), jnp.array(B0), jnp.array(B1)
 
-    A0_array = jnp.array(A0_array)
-    A1_array = jnp.array(A1_array)
-    B0_array = jnp.array(B0_array)
-    B1_array = jnp.array(B1_array)
-    return A0_array, A1_array, B0_array, B1_array
 
-def original_likelihood(
-    params: dict[str, Float],
-    h_sky: dict[str, Float[Array, " n_dim"]],
-    detectors: list[Detector],
-    freqs: Float[Array, " n_dim"],
-    align_time: Float,
-    **kwargs,
-) -> Float:
-    log_likelihood = 0.0
-    df = freqs[1] - freqs[0]
-    for detector in detectors:
-        h_dec = detector.fd_response(freqs, h_sky, params) * align_time
-        match_filter_SNR = (
-            4 * jnp.sum((jnp.conj(h_dec) * detector.data) / detector.psd * df).real
-        )
-        optimal_SNR = 4 * jnp.sum(jnp.conj(h_dec) * h_dec / detector.psd * df).real
-        log_likelihood += match_filter_SNR - optimal_SNR / 2
+def setup_heterodyne(ref_params, detectors, waveform, frequencies, epoch, n_bins):
+    """Build heterodyning reference state. Returns stacked arrays (n_det, n_bins).
 
-    return log_likelihood
+    All detector-indexed quantities are stacked as (n_det, n_bins) JAX arrays
+    instead of Python dicts, enabling vectorized computation in the likelihood.
+    """
+    params = {k: float(v) for k, v in ref_params.items()}
+    if jnp.isclose(params.get('eta', 0.25), 0.25):
+        params['eta'] = 0.249995
 
-class HeterodynedLikelihood():
-    def __init__(self, detectors: list[Detector], waveform, frequencies, epoch, gmst):
-        self.detectors = detectors
-        self.waveform = waveform
-        self.frequencies = frequencies
-        self.epoch = epoch
-        self.gmst = gmst
-        self.n_bins = 100
-        self.A0_array = {}
-        self.A1_array = {}
-        self.B0_array = {}
-        self.B1_array = {}
-        self.waveform_low_ref = {}
-        self.waveform_center_ref = {}
+    print(f"Setting up heterodyning with {n_bins} bins...")
+    h_sky = waveform(frequencies, params)
 
-    def make_binning_scheme(
-        self, freqs: npt.NDArray[np.floating], n_bins: int, chi: float = 1
-    ) -> tuple[Float[Array, " n_bins+1"], Float[Array, " n_bins"]]:
+    freq_grid, freq_grid_center = make_binning_scheme(np.array(frequencies), n_bins)
+    freq_grid_low = freq_grid[:-1]
 
-        phase_diff_array = max_phase_diff(freqs, freqs[0], freqs[-1], chi=chi)
-        bin_f = interp1d(phase_diff_array, freqs)
-        f_bins = np.array([])
-        for i in np.linspace(phase_diff_array[0], phase_diff_array[-1], n_bins + 1):
-            f_bins = np.append(f_bins, bin_f(i))
-        f_bins_center = (f_bins[:-1] + f_bins[1:]) / 2
-        return jnp.array(f_bins), jnp.array(f_bins_center)
+    # Mask to valid waveform support.
+    # Use a SINGLE mask on centers, then derive edges from it to maintain
+    # the invariant: len(edges) = len(centers) + 1, with edge[i] <= center[i] < edge[i+1].
+    h_amp = jnp.sum(jnp.array([jnp.abs(h_sky[k]) for k in h_sky]), axis=0)
+    f_valid = frequencies[jnp.where(h_amp > 0)[0]]
+    f_max_val, f_min_val = jnp.max(f_valid), jnp.min(f_valid)
 
-    def maximize_likelihood(
-        self,
-        popsize: int = 100,
-        n_steps: int = 500,
-        ):
-        # Optimize only parameters that matter for the waveform reference state
-        opt_parameters = [p for p in parameters if p.name not in ("H_0", "v_p")]
-        opt_param_names = [p.name for p in opt_parameters]
+    mask_center = jnp.where((freq_grid_center <= f_max_val) & (freq_grid_center >= f_min_val))[0]
+    freq_grid_center = freq_grid_center[mask_center]
+    freq_grid_low = freq_grid_low[mask_center]
 
-        def y_opt(x):
-            named_params = dict(zip(opt_param_names, x))
-            return -self.evaluate_original(named_params)
+    # Edges: need len(centers) + 1 edges that bracket the valid centers
+    start_idx = mask_center[0]
+    end_idx = mask_center[-1] + 2     # +1 inclusive, +1 for extra right edge
+    freq_grid = freq_grid[start_idx:end_idx]
 
-        print("Starting the optimizer (excluding H_0 and v_p)")
+    h_sky_low = waveform(freq_grid_low, params)
+    h_sky_center = waveform(freq_grid_center, params)
 
-        optimizer = optimization_Adam(n_steps=n_steps, learning_rate=0.001, noise_level=1)
+    align_time = jnp.exp(-1j * 2 * jnp.pi * frequencies * (epoch + params['t_c']))
+    align_time_low = jnp.exp(-1j * 2 * jnp.pi * freq_grid_low * (epoch + params['t_c']))
+    align_time_center = jnp.exp(-1j * 2 * jnp.pi * freq_grid_center * (epoch + params['t_c']))
 
-        initial_position = jnp.zeros((popsize, len(opt_param_names))) + jnp.nan
-        while not jax.tree.reduce(
-            jnp.logical_and, jax.tree.map(lambda x: jnp.isfinite(x), initial_position)
-        ).all():
-            non_finite_index = jnp.where(
-                jnp.any(
-                    ~jax.tree.reduce(
-                        jnp.logical_and,
-                        jax.tree.map(lambda x: jnp.isfinite(x), initial_position),
-                    ),
-                    axis=1,
-                )
-            )[0]
+    # Build per-detector arrays, then stack
+    A0_list, A1_list, B0_list, B1_list = [], [], [], []
+    ref_low_list, ref_center_list = [], []
 
-            init_key = jax.random.PRNGKey(0)
-            init_key, subkey = jax.random.split(init_key, 2)
-            # Sample from prior for the optimization parameters only
-            prior_keys = jax.random.split(subkey, len(opt_parameters))
-            guess_dict = {}
-            for param, key in zip(opt_parameters, prior_keys):
-                guess_dict[param.name] = sample_prior(param, key, popsize)
+    for det in detectors:
+        waveform_ref = det.fd_response(frequencies, h_sky, params) * align_time
+        ref_low_list.append(det.fd_response(freq_grid_low, h_sky_low, params) * align_time_low)
+        ref_center_list.append(det.fd_response(freq_grid_center, h_sky_center, params) * align_time_center)
 
-            # Convert to array format for only the optimized parameters
-            guess = jnp.array(jax.tree.leaves({k: guess_dict[k] for k in opt_param_names})).T
+        A0, A1, B0, B1 = compute_coefficients(
+            det.data, waveform_ref, det.psd, frequencies, freq_grid, freq_grid_center)
+        # No further masking needed: compute_coefficients already received the
+        # masked grids, so its output contains only the valid bins.
+        A0_list.append(A0)
+        A1_list.append(A1)
+        B0_list.append(B0)
+        B1_list.append(B1)
 
-            finite_guess = jnp.where(
-                jnp.all(jax.tree.map(lambda x: jnp.isfinite(x), guess), axis=1)
-            )[0]
-            common_length = min(len(finite_guess), len(non_finite_index))
-            initial_position = initial_position.at[
-                non_finite_index[:common_length]
-            ].set(guess[:common_length])
+    # Stack into (n_det, n_bins) arrays — no dicts in the hot path
+    hetero = {
+        'freq_grid_low': freq_grid_low,
+        'freq_grid_center': freq_grid_center,
+        'A0': jnp.stack(A0_list),            # (n_det, n_bins)
+        'A1': jnp.stack(A1_list),
+        'B0': jnp.stack(B0_list),
+        'B1': jnp.stack(B1_list),
+        'ref_low': jnp.stack(ref_low_list),   # (n_det, n_bins)
+        'ref_center': jnp.stack(ref_center_list),
+    }
+    print(f"Heterodyning setup complete. Bin shape: {hetero['A0'].shape}")
+    return hetero
 
-        rng_key, optimized_positions, summary = optimizer.optimize(
-            jax.random.PRNGKey(12094), y_opt, initial_position
-        )
+hetero = setup_heterodyne(ref_params, detectors, waveform, frequencies, epoch, N_BINS)
 
-        best_fit = optimized_positions[jnp.argmin(summary["final_log_prob"])]
+# Extract as module-level constants for closure capture (static in JIT)
+FREQ_LOW = hetero['freq_grid_low']
+FREQ_CENTER = hetero['freq_grid_center']
+A0 = hetero['A0']          # (n_det, n_bins)
+A1 = hetero['A1']
+B0 = hetero['B0']
+B1 = hetero['B1']
+REF_LOW = hetero['ref_low']      # (n_det, n_bins)
+REF_CENTER = hetero['ref_center']
 
-        # Return only the optimized parameters (do NOT include H_0 or v_p)
-        named_params = dict(zip(opt_param_names, best_fit))
-        # Ensure derived 'eta' exists for waveform evaluation
-        try:
-            qval = float(named_params.get("q", 1.0))
-            named_params["eta"] = qval / ((1.0 + qval) ** 2)
-        except Exception:
-            named_params["eta"] = 0.249
 
-        return named_params
-
-    def evaluate_original(
-        self, params: dict[str, Float]
-    ) -> (
-        Float
-    ):
-        log_likelihood = 0
-        frequencies = self.frequencies
-        params["gmst"] = self.gmst
-        params["eta"] = params["q"] / ((1 + params["q"]) ** 2)
-        # evaluate the waveform as usual
-        waveform_sky = self.waveform(frequencies, params)
-        align_time = jnp.exp(
-            -1j * 2 * jnp.pi * frequencies * (self.epoch + params["t_c"])
-        )
-        log_likelihood = original_likelihood(
-            params,
-            waveform_sky,
-            self.detectors,
-            frequencies,
-            align_time
-        )
-        
-        return log_likelihood
-        # guard final losses
-        final_losses = jnp.where(jnp.isfinite(final_losses), final_losses, 1e20)
-        best_idx = int(jnp.argmin(final_losses))
-        best_fit = params[best_idx]
-        
-        named_params = dict(zip(parameter_names, best_fit))
-        # Add derived parameter 'eta' required by waveform code
-        try:
-            qval = float(named_params.get("q"))
-            named_params["eta"] = qval / ((1.0 + qval) ** 2)
-        except Exception:
-            # fallback: set eta to a default small value
-            named_params["eta"] = 0.249
-        
-        return named_params
-
-    def reference_state(self):
-        popsize = 100
-        n_steps = 2000
-        params = self.maximize_likelihood(
-            popsize=popsize,
-            n_steps=n_steps,
-        )
-        params = {key: float(value) for key, value in params.items()}           
-        print(f'Optimized reference parameters: {params}')
-        params["gmst"] = self.gmst
-        if "eta" in params:
-            if jnp.isclose(params["eta"], 0.25):
-                params["eta"] = 0.249995
-
-        h_sky = waveform(self.frequencies, params)
-        # Get the grid of the relative binning scheme (contains the final endpoint)
-        # and the center points
-        freq_grid, self.freq_grid_center = self.make_binning_scheme(
-            np.array(self.frequencies), self.n_bins
-            )
-        self.freq_grid_low = freq_grid[:-1]
-        # Get frequency masks to be applied, for both original
-        # and heterodyne frequency grid
-        h_amp = jnp.sum(
-            jnp.array([jnp.abs(h_sky[key]) for key in h_sky.keys()]), axis=0
-        )
-        f_valid = self.frequencies[jnp.where(h_amp > 0)[0]]
-        f_max = jnp.max(f_valid)
-        f_min = jnp.min(f_valid)
-
-        mask_heterodyne_grid = jnp.where((freq_grid <= f_max) & (freq_grid >= f_min))[0]
-        mask_heterodyne_low = jnp.where(
-            (self.freq_grid_low <= f_max) & (self.freq_grid_low >= f_min)
-        )[0]
-        mask_heterodyne_center = jnp.where(
-            (self.freq_grid_center <= f_max) & (self.freq_grid_center >= f_min)
-        )[0]
-        freq_grid = freq_grid[mask_heterodyne_grid]
-        self.freq_grid_low = self.freq_grid_low[mask_heterodyne_low]
-        self.freq_grid_center = self.freq_grid_center[mask_heterodyne_center]
-
-        # Assure frequency grids have same length
-        if len(self.freq_grid_low) > len(self.freq_grid_center):
-            self.freq_grid_low = self.freq_grid_low[: len(self.freq_grid_center)]
-
-        h_sky_low = self.waveform(self.freq_grid_low, params)
-        h_sky_center = self.waveform(self.freq_grid_center, params)
-        # Get phase shifts to align time of coalescence
-        align_time = jnp.exp(
-            -1j
-            * 2
-            * jnp.pi
-            * self.frequencies
-            * (self.epoch + params["t_c"])
-        )
-        align_time_low = jnp.exp(
-            -1j
-            * 2
-            * jnp.pi
-            * self.freq_grid_low
-            * (self.epoch + params["t_c"])
-        )
-        align_time_center = jnp.exp(
-            -1j
-            * 2
-            * jnp.pi
-            * self.freq_grid_center
-            * (self.epoch + params["t_c"])
-        )
-
-        for detector in self.detectors:
-            waveform_ref = (
-                detector.fd_response(self.frequencies, h_sky, params)
-                * align_time
-            )
-            self.waveform_low_ref[detector.name] = (
-                detector.fd_response(self.freq_grid_low, h_sky_low, params)
-                * align_time_low
-            )
-            self.waveform_center_ref[detector.name] = (
-                detector.fd_response(
-                    self.freq_grid_center, h_sky_center, params
-                )
-                * align_time_center
-            )
-            A0, A1, B0, B1 = compute_coefficients(
-                detector.data,
-                waveform_ref,
-                detector.psd,
-                self.frequencies,
-                freq_grid,
-                self.freq_grid_center,
-            )
-            self.A0_array[detector.name] = A0[mask_heterodyne_center]
-            self.A1_array[detector.name] = A1[mask_heterodyne_center]
-            self.B0_array[detector.name] = B0[mask_heterodyne_center]
-            self.B1_array[detector.name] = B1[mask_heterodyne_center]
-
-    def evaluate(self, params: dict[str, Float]) -> Float:
-        frequencies_low = self.freq_grid_low
-        frequencies_center = self.freq_grid_center
-        params["gmst"] = self.gmst
-        params["eta"] = params["q"] / ((1 + params["q"]) ** 2)
-        # evaluate the waveforms as usual
-        waveform_sky_low = self.waveform(frequencies_low, params)
-        waveform_sky_center = self.waveform(frequencies_center, params)
-        align_time_low = jnp.exp(
-            -1j * 2 * jnp.pi * frequencies_low * (self.epoch + params["t_c"])
-        )
-        align_time_center = jnp.exp(
-            -1j * 2 * jnp.pi * frequencies_center * (self.epoch + params["t_c"])
-        )
-        return relative_binning_likelihood_function(
-            params,
-            self.A0_array,
-            self.A1_array,
-            self.B0_array,
-            self.B1_array,
-            waveform_sky_low,
-            waveform_sky_center,
-            self.waveform_low_ref,
-            self.waveform_center_ref,
-            self.detectors,
-            frequencies_low,
-            frequencies_center,
-            align_time_low,
-            align_time_center
-        )
-
-# | Define the likelihood function
-likelihood_function = HeterodynedLikelihood(
-    detectors,
-    waveform,
-    frequencies,
-    epoch,
-    gmst)
+# ============================================================================
+# 7. PHASE-MARGINALIZED HETERODYNED LIKELIHOOD (array-native)
+# ============================================================================
 
 @jax.jit
-def loglikelihood_fn(params_array):
-    # Convert array to dictionary
-    params = dict(zip(parameter_names, params_array))
-    params["eta"] = params["q"] / (1 + params["q"]) ** 2
+def loglikelihood_fn(x):
+    """Phase-marginalized heterodyned log-likelihood + standard siren terms.
 
-    # Defined as in Abbott et al. 2017 (https://arxiv.org/pdf/1710.05832.pdf)
-    ll_vr = stats.norm.logpdf(3327, params["v_p"] + params["H_0"] * params["d_L"], 72)
-    ll_vp = stats.norm.logpdf(310, params["v_p"], 150)
+    The hot path is fully array-native:
+      1. Build param dict ONCE for jimgw API calls (traced at compile time)
+      2. Waveform evaluation at ~100 bin frequencies (jimgw, traced once)
+      3. Detector responses stacked as (n_det, n_bins) (jimgw, traced once per det)
+      4. Heterodyned computation vectorized over detectors (pure JAX arrays)
+      5. Phase marginalization via log I_0(|complex <d|h>|)
 
-    return likelihood_function.evaluate(params) + ll_vr + ll_vp
+    Note: dict creation for jimgw API is a trace-time operation. After JIT
+    compilation, the XLA graph contains only array ops — no Python overhead.
+    """
+    # --- Build param dict for jimgw API (trace-time only) ---
+    params = {
+        'M_c': x[I_MC], 'q': x[I_Q], 's1_z': x[I_S1Z], 's2_z': x[I_S2Z],
+        'iota': x[I_IOTA], 'd_L': x[I_DL], 't_c': x[I_TC],
+        'psi': x[I_PSI], 'ra': x[I_RA], 'dec': x[I_DEC],
+        'lambda_1': x[I_L1], 'lambda_2': x[I_L2],
+        'eta': x[I_Q] / (1 + x[I_Q]) ** 2,
+        'phase_c': 0.0,  # marginalized out
+        'gmst': gmst,
+    }
 
-# Define the Nested Sampling algorithm parameters
-num_dims = len(parameter_names)
+    # --- Waveform at bin frequencies (jimgw API, traced once) ---
+    h_sky_low = waveform(FREQ_LOW, params)
+    h_sky_center = waveform(FREQ_CENTER, params)
+
+    # --- Time-alignment phase shifts ---
+    align_low = jnp.exp(-1j * 2 * jnp.pi * FREQ_LOW * (epoch + x[I_TC]))
+    align_center = jnp.exp(-1j * 2 * jnp.pi * FREQ_CENTER * (epoch + x[I_TC]))
+
+    # --- Detector responses: stack as (n_det, n_bins) ---
+    # Each fd_response call is traced once per detector (3 subgraphs, fused by XLA)
+    det_resp_low = jnp.stack([
+        det.fd_response(FREQ_LOW, h_sky_low, params) * align_low
+        for det in detectors
+    ])  # (n_det, n_bins)
+    det_resp_center = jnp.stack([
+        det.fd_response(FREQ_CENTER, h_sky_center, params) * align_center
+        for det in detectors
+    ])  # (n_det, n_bins)
+
+    # --- Heterodyned computation: vectorized over detectors ---
+    r0 = det_resp_center / REF_CENTER                                    # (n_det, n_bins)
+    r1 = (det_resp_low / REF_LOW - r0) / (FREQ_LOW - FREQ_CENTER)       # (n_det, n_bins)
+
+    # Complex <d|h> accumulated across detectors and bins (phase-marginalized)
+    complex_d_inner_h = jnp.sum(A0 * r0.conj() + A1 * r1.conj())        # scalar
+
+    # Optimal SNR: sum over detectors and bins
+    optimal_SNR = jnp.sum(
+        B0 * jnp.abs(r0) ** 2 + 2 * B1 * (r0 * r1.conj()).real
+    )                                                                     # scalar
+
+    # Phase-marginalized log-likelihood: -<h|h>/2 + log I_0(|<d|h>|)
+    ll_gw = -optimal_SNR.real / 2 + log_i0(jnp.absolute(complex_d_inner_h))
+
+    # --- Standard siren velocity terms (Abbott et al. 2017, arXiv:1710.05832) ---
+    # v_r ~ N(v_p + H_0 * d_L, 72)  — Hubble flow + peculiar velocity
+    # v_p ~ N(310, 150)              — host group prior
+    ll_vr = stats.norm.logpdf(3327.0, x[I_VP] + x[I_H0] * x[I_DL], 72.0)
+    ll_vp = stats.norm.logpdf(310.0, x[I_VP], 150.0)
+
+    return ll_gw + ll_vr + ll_vp
+
+
+# ============================================================================
+# 8. NESTED SAMPLING SETUP
+# ============================================================================
+
 num_live = 5000
 num_delete = int(num_live * 0.5)
-num_mcmc_steps = int(num_dims * 5)
+num_mcmc_steps = int(NUM_DIMS * 5)
 
-# Initialize the Nested Sampling algorithm
+@jax.jit
+def stepper_fn(x, d, t):
+    """Linear step with periodic wrapping for psi (pi) and ra (2pi).
+
+    Returns (new_position, is_accepted) as required by blackjax.nss API.
+    """
+    y = x + t * d
+    y = y.at[I_PSI].set(jnp.mod(y[I_PSI], jnp.pi))
+    y = y.at[I_RA].set(jnp.mod(y[I_RA], 2 * jnp.pi))
+    return y, True
+
 nested_sampler = blackjax.nss(
     logprior_fn=logprior_fn,
     loglikelihood_fn=loglikelihood_fn,
     num_delete=num_delete,
     num_inner_steps=num_mcmc_steps,
+    stepper_fn=stepper_fn,
 )
+
+
+# ============================================================================
+# 9. PRIOR SAMPLING & INITIALIZATION
+# ============================================================================
+
+def sample_from_prior(key, n):
+    """Draw n samples for all parameters. Returns (n, NUM_DIMS) array."""
+    keys = jax.random.split(key, NUM_DIMS)
+    samples = jnp.zeros((n, NUM_DIMS))
+
+    for i in range(NUM_DIMS):
+        lo, hi = float(PRIOR_LO[i]), float(PRIOR_HI[i])
+        ptype = int(PRIOR_TYPE[i])
+        if ptype == 0:    # uniform
+            col = jax.random.uniform(keys[i], (n,), minval=lo, maxval=hi)
+        elif ptype == 1:  # sin (iota): inverse CDF = arccos(1 - 2u)
+            col = jnp.arccos(1 - 2 * jax.random.uniform(keys[i], (n,)))
+        elif ptype == 2:  # cos (dec): inverse CDF = arcsin(2u - 1)
+            col = jnp.arcsin(2 * jax.random.uniform(keys[i], (n,)) - 1)
+        elif ptype == 3:  # beta(3,1)
+            col = jax.random.beta(keys[i], 3.0, 1.0, (n,)) * (hi - lo) + lo
+        elif ptype == 4:  # log-uniform: x = lo * (hi/lo)^u
+            col = lo * (hi / lo) ** jax.random.uniform(keys[i], (n,))
+        samples = samples.at[:, i].set(col)
+    return samples
+
+rng_key = jax.random.PRNGKey(0)
+rng_key, init_key = jax.random.split(rng_key)
+initial_particles = sample_from_prior(init_key, num_live)
+
+state = nested_sampler.init(initial_particles)
+
+
+# ============================================================================
+# 10. RUN NESTED SAMPLING
+# ============================================================================
 
 @jax.jit
 def one_step(carry, xs):
@@ -556,54 +488,39 @@ def one_step(carry, xs):
     state, dead_point = nested_sampler.step(subk, state)
     return (state, k), dead_point
 
-# | Sample live points from the prior
-def sample_prior(parameter, key, n_live):
-    if parameter.prior_fn == UniformPrior:
-        return jax.random.uniform(key, (n_live,), minval=parameter.args[0], maxval=parameter.args[1])
-    elif parameter.prior_fn == SinPrior:
-        return 2 * jnp.arcsin(jax.random.uniform(key, (n_live,)) ** 0.5)
-    elif parameter.prior_fn == CosPrior:
-        return 2 * jnp.arcsin(jax.random.uniform(key, (n_live,)) ** 0.5) - jnp.pi / 2.0
-    elif parameter.prior_fn == BetaPrior:
-        return jax.random.beta(key, 3.0, 1.0, (n_live,)) * (parameter.args[1] - parameter.args[0]) + parameter.args[0]
-    elif parameter.prior_fn == FlatInLogPrior:
-        return parameter.args[0] * (parameter.args[1] / parameter.args[0]) ** jax.random.uniform(key, (n_live,))
-
-rng_key = jax.random.PRNGKey(0)
-rng_key, init_key = jax.random.split(rng_key, 2)
-init_keys = jax.random.split(init_key, len(parameters))
-initial_particles = jnp.vstack([sample_prior(param, key, num_live) for param, key in zip(parameters, init_keys)]).T
-likelihood_function.reference_state()
-
-state = nested_sampler.init(initial_particles)
-
-# Run nested sampling
-print("Running nested sampling...")
+print(f"Running nested sampling: {num_live} live, {NUM_DIMS}D (phase_c marginalized)")
 ns_start = time.time()
 dead = []
 
 with tqdm.tqdm(desc="Dead points", unit=" dead points") as pbar:
-    while (not state.logZ_live - state.logZ < -3):
+    while not state.integrator.logZ_live - state.integrator.logZ < -3:
         (state, rng_key), dead_info = one_step((state, rng_key), None)
         dead.append(dead_info)
         pbar.update(num_delete)
 
-dead = blackjax.ns.utils.finalise(state, dead)
 ns_time = time.time() - ns_start
 
-# Post processing
-data = jnp.vstack([dead.particles[name] for name in parameter_names]).T
+
+# ============================================================================
+# 11. POST-PROCESSING & OUTPUT
+# ============================================================================
+
+# Combine dead + live points via blackjax utility.
+# finalise() concatenates all dead NSInfo objects with the final live particles,
+# returning a single NSInfo with .particles (StateWithLogLikelihood).
+result = finalise(state, dead, update_info=False)
+
 samples = NestedSamples(
-    data,
-    logL=dead.loglikelihood,
-    logL_birth=dead.loglikelihood_birth,
-    columns=parameter_names,
-    labels=labels,
-    logzero=jnp.nan,
+    np.array(result.particles.position),
+    logL=np.array(result.particles.loglikelihood),
+    logL_birth=np.array(result.particles.loglikelihood_birth),
+    columns=PARAM_NAMES,
+    labels=PARAM_LABELS,
 )
 
-print(f"Sampler runtime: {ns_time:.2f} seconds")
-print(f"Log Evidence: {samples.logZ():.2f} ± {samples.logZ(100).std():.2f}")
+print(f"Runtime: {ns_time:.2f}s")
+logzs = samples.logZ(100)
+print(f"Log Evidence: {logzs.mean():.2f} +/- {logzs.std():.2f}")
 
 samples.to_csv(f'{label}.csv')
-print(f"Samples saved to {label}.csv")
+print(f"Saved to {label}.csv")
