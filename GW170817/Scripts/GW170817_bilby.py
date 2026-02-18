@@ -66,10 +66,9 @@ roll_off = 0.4
 psd_duration = 1024
 psd_pad = 16
 
-# Label for output
-label = f'GW170817_bilby_{args.mode}_{args.waveform}'
-if args.phase_marginalization:
-    label += '_phasemarg'
+# Label for output (consistent with JAX script naming: PhaseMarg / NoMarg prefix)
+marg_tag = 'PhaseMarg' if args.phase_marginalization else 'NoMarg'
+label = f'{marg_tag}_Bilby_{args.mode}_{args.waveform}'
 outdir = os.path.join('Results', label)
 os.makedirs(outdir, exist_ok=True)
 
@@ -281,7 +280,7 @@ logger.info(f'Total runtime: {t_total:.1f}s ({t_total/3600:.2f}h)')
 # ============================================================================
 # Save a CSV matching the JAX output format for the plotter
 posteriors = result.posterior
-csv_path = os.path.join('Results', f'Bilby_{args.mode}_{args.waveform}.csv')
+csv_path = os.path.join('Results', f'{marg_tag}_Bilby_{args.mode}_{args.waveform}.csv')
 
 # Map bilby parameter names to JAX names
 param_map = {

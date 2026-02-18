@@ -1,21 +1,20 @@
 """
-Phase-Marginalized (Unheterodyned) Nested Sampling for GW170817
-================================================================
+Unheterodyned Nested Sampling for GW170817
+=============================================
 
-Identical to GW170817_heterodyned_1.py except the likelihood evaluates the
-full frequency-domain inner product over ~260k bins instead of using relative
-binning.  This is ~2500x slower per likelihood call but contains no
-approximation error — useful as a reference run to validate heterodyning.
+Full frequency-domain likelihood over ~260k bins (no relative binning).
+~2500x slower per call but no approximation error — reference for validation.
 
-Differences from heterodyned version:
-  - No heterodyning setup (sections 5-6 removed)
-  - Likelihood computes full <d|h> and <h|h> inner products
-  - Pre-stacks detector data/psd as (n_det, n_freq) arrays for vectorisation
-  - No reference parameters needed
-  - Chunked init to avoid OOM on A100 40GB
+With --phase-marginalization:
+  14D parameter space, phase_c analytically marginalized via log I_0(|<d|h>|)
+  (jimgw: PhaseMarginalizedLikelihoodFD pattern)
+Without --phase-marginalization:
+  15D parameter space, phase_c sampled as uniform [0, 2pi]
+  (jimgw: BaseTransientLikelihoodFD pattern)
 
 Usage:
   python GW170817_unheterodyned_1.py [--waveform {IMRPhenomD_NRTidalv2,TaylorF2}]
+                                      [--phase-marginalization]
 """
 
 # ============================================================================
@@ -32,6 +31,7 @@ import jax.numpy as jnp
 import jax.scipy.stats as stats
 import numpy as np
 import blackjax
+import pickle
 import time
 import tqdm
 from astropy.time import Time
@@ -65,9 +65,16 @@ parser.add_argument('--psd-source', choices=['self', 'bilby', 'gwtc1', 'kazewong
                     help='PSD source: "self" (estimated from data via gwpy), "bilby" (Bilby PSDs), '
                          '"gwtc1" (official BayesWave PSDs from LIGO-P1900011), '
                          '"kazewong" (kazewong pre-processed PSDs)')
+parser.add_argument('--phase-marginalization', action='store_true',
+                    help='Enable analytic phase marginalization (removes phase_c from sampling)')
+parser.add_argument('--checkpoint-every', type=int, default=5,
+                    help='Save checkpoint every N nested sampling steps (default: 5)')
+parser.add_argument('--no-resume', action='store_true',
+                    help='Start fresh even if a checkpoint file exists')
 args = parser.parse_args()
 data_source = args.data_source
 psd_source = args.psd_source
+phase_marg = args.phase_marginalization
 
 @jax.jit
 def log_i0(x):
@@ -85,31 +92,41 @@ PARAM_LABELS = [
     r"$M_c$", r"$q$", r"$s_{1z}$", r"$s_{2z}$", r"$\iota$", r"$d_L$", r"$t_c$",
     r"$\psi$", r"$\alpha$", r"$\delta$", r"$\Lambda_1$", r"$\Lambda_2$", r"$H_0$", r"$v_p$",
 ]
-NUM_DIMS = len(PARAM_NAMES)
 
 I_MC, I_Q, I_S1Z, I_S2Z, I_IOTA, I_DL, I_TC = 0, 1, 2, 3, 4, 5, 6
 I_PSI, I_RA, I_DEC, I_L1, I_L2, I_H0, I_VP = 7, 8, 9, 10, 11, 12, 13
 
-# Prior bounds: M_c^det range from Abbott et al., PhysRevX 9, 011001, Sec. II.D
-# NGC 4993 host galaxy at z=0.0099
-PRIOR_LO = jnp.array([
+_PRIOR_LO_BASE = [
     1.184, 0.125, -0.05, -0.05,             # M_c, q, s1_z, s2_z
     0.0, 1.0, -0.1,                          # iota, d_L, t_c
     0.0, 0.0, -jnp.pi / 2,                   # psi, ra, dec
     0.0, 0.0, 20.0, -1000.0,                # lambda_1, lambda_2, H_0, v_p
-])
-PRIOR_HI = jnp.array([
+]
+_PRIOR_HI_BASE = [
     2.168, 1.00, 0.05, 0.05,                # M_c, q, s1_z, s2_z
     jnp.pi, 75.0, 0.1,                       # iota, d_L, t_c
     jnp.pi, 2 * jnp.pi, jnp.pi / 2,         # psi, ra, dec
     5000.0, 5000.0, 140.0, 1000.0,          # lambda_1, lambda_2, H_0, v_p
-])
+]
+_PRIOR_TYPE_BASE = [0, 0, 0, 0, 1, 3, 0, 0, 0, 2, 0, 0, 4, 0]
+
+if not phase_marg:
+    PARAM_NAMES.append("phase_c")
+    PARAM_LABELS.append(r"$\phi_c$")
+    I_PHASEC = 14
+    _PRIOR_LO_BASE.append(0.0)
+    _PRIOR_HI_BASE.append(float(2 * jnp.pi))
+    _PRIOR_TYPE_BASE.append(0)
+
+NUM_DIMS = len(PARAM_NAMES)
+
+PRIOR_LO = jnp.array(_PRIOR_LO_BASE)
+PRIOR_HI = jnp.array(_PRIOR_HI_BASE)
 
 M_COMP_LO = 0.5
 M_COMP_HI = 7.7
 
-# Prior type encoding: 0=uniform, 1=sin(iota), 2=cos(dec), 3=beta(d_L), 4=log-uniform(H_0)
-PRIOR_TYPE = jnp.array([0, 0, 0, 0, 1, 3, 0, 0, 0, 2, 0, 0, 4, 0])
+PRIOR_TYPE = jnp.array(_PRIOR_TYPE_BASE)
 
 _PRIOR_RANGE = PRIOR_HI - PRIOR_LO
 _PRIOR_LOG_RANGE = jnp.log(_PRIOR_RANGE)
@@ -172,7 +189,10 @@ psd_pad = 16
 psd_duration = 1024
 
 waveform_tag = args.waveform
-label = f'Results/PhaseMarg_Unheterodyned_{waveform_tag}_{data_source}_psd-{psd_source}'
+marg_tag = 'PhaseMarg' if phase_marg else 'NoMarg'
+label = f'Results/{marg_tag}_Unheterodyned_{waveform_tag}_{data_source}_psd-{psd_source}'
+checkpoint_path = f'{label}_checkpoint.pkl'
+CHECKPOINT_EVERY = args.checkpoint_every
 
 start = gps - (duration - post_trigger_duration)
 end = gps + post_trigger_duration
@@ -231,10 +251,19 @@ def load_external_psd(psd_src, ifo_name, target_freqs):
         freqs_psd, psd_vals = psd_data[:, 0], psd_data[:, 1]
     else:
         raise ValueError(f"Unknown PSD source: {psd_src}")
-    psd_interp = interp1d(freqs_psd, psd_vals, kind='linear',
-                          fill_value='extrapolate', bounds_error=False)
+    # Replace inf with large sentinel before interpolation to avoid
+    # scipy RuntimeWarning from inf arithmetic (inf-finite=inf, inf*0=NaN).
+    # After interpolation, restore inf where the result exceeds the sentinel threshold.
+    _PSD_INF_SENTINEL = 1e300
+    inf_mask_src = ~np.isfinite(psd_vals)
+    psd_vals_safe = np.where(inf_mask_src, _PSD_INF_SENTINEL, psd_vals)
+    psd_interp = interp1d(freqs_psd, psd_vals_safe, kind='linear',
+                          fill_value=_PSD_INF_SENTINEL, bounds_error=False)
+    psd_values = psd_interp(np.array(target_freqs))
+    # Restore inf where interpolation touched sentinel-affected regions
+    psd_values = np.where(psd_values >= _PSD_INF_SENTINEL * 0.5, np.inf, psd_values)
     return PowerSpectrum(
-        values=jnp.array(psd_interp(np.array(target_freqs))),
+        values=jnp.array(psd_values),
         frequencies=jnp.array(target_freqs),
         name=ifo_name,
     )
@@ -324,15 +353,17 @@ print(f"Frequency grid: {frequencies.shape[0]} bins, df={df:.6f} Hz")
 
 
 # ============================================================================
-# 6. PHASE-MARGINALIZED FULL LIKELIHOOD
+# 6. FULL LIKELIHOOD (phase-marginalized or standard)
 # ============================================================================
 
 @jax.jit
 def loglikelihood_fn(x):
-    """Phase-marginalized full frequency-domain log-likelihood.
+    """Full frequency-domain log-likelihood + standard siren terms.
 
-    Computes the exact inner products <d|h> and <h|h> over all frequency bins
-    in [fmin, fmax]. No relative binning approximation.
+    When phase_marg=True (PhaseMarginalizedLikelihoodFD pattern):
+      ll_gw = -<h|h>/2 + log I_0(|<d|h>|)
+    When phase_marg=False (BaseTransientLikelihoodFD pattern):
+      ll_gw = Re(<d|h>) - <h|h>/2
     """
     params = {
         'M_c': x[I_MC], 'q': x[I_Q], 's1_z': x[I_S1Z], 's2_z': x[I_S2Z],
@@ -340,7 +371,7 @@ def loglikelihood_fn(x):
         'psi': x[I_PSI], 'ra': x[I_RA], 'dec': x[I_DEC],
         'lambda_1': x[I_L1], 'lambda_2': x[I_L2],
         'eta': x[I_Q] / (1 + x[I_Q]) ** 2,
-        'phase_c': 0.0,
+        'phase_c': 0.0 if phase_marg else x[I_PHASEC],
         'trigger_time': gps,
         'gmst': gmst,
     }
@@ -355,14 +386,15 @@ def loglikelihood_fn(x):
     ])
 
     # Inner products: 4 * df * sum(d * h^* / S) over frequency, summed over detectors
-    # <d|h> — complex (carries phase information for marginalization)
     complex_d_inner_h = 4 * df * jnp.sum(DATA_FD * h_det.conj() / PSD)
-
-    # <h|h> — real (optimal SNR squared)
     optimal_snr_sq = 4 * df * jnp.sum(jnp.abs(h_det) ** 2 / PSD)
 
-    # Phase-marginalized: -<h|h>/2 + log I_0(|<d|h>|)
-    ll_gw = -optimal_snr_sq.real / 2 + log_i0(jnp.absolute(complex_d_inner_h))
+    if phase_marg:
+        # jimgw: PhaseMarginalizedLikelihoodFD
+        ll_gw = -optimal_snr_sq.real / 2 + log_i0(jnp.absolute(complex_d_inner_h))
+    else:
+        # jimgw: BaseTransientLikelihoodFD
+        ll_gw = jnp.real(complex_d_inner_h) - optimal_snr_sq.real / 2
 
     # Standard siren terms
     ll_vr = stats.norm.logpdf(3327.0, x[I_VP] + x[I_H0] * x[I_DL], 72.0)
@@ -384,6 +416,8 @@ def stepper_fn(x, d, t):
     y = x + t * d
     y = y.at[I_PSI].set(jnp.mod(y[I_PSI], jnp.pi))
     y = y.at[I_RA].set(jnp.mod(y[I_RA], 2 * jnp.pi))
+    if not phase_marg:
+        y = y.at[I_PHASEC].set(jnp.mod(y[I_PHASEC], 2 * jnp.pi))
     return y, True
 
 nested_sampler = blackjax.nss(
@@ -396,7 +430,7 @@ nested_sampler = blackjax.nss(
 
 
 # ============================================================================
-# 8. PRIOR SAMPLING & INITIALIZATION
+# 8. PRIOR SAMPLING & INITIALIZATION (with checkpoint resume)
 # ============================================================================
 
 def sample_from_prior(key, n):
@@ -435,54 +469,93 @@ def sample_from_prior(key, n):
 
     return jnp.array(np.concatenate(collected)[:n])
 
-t_init0 = time.time()
-rng_key = jax.random.PRNGKey(0)
-rng_key, init_key = jax.random.split(rng_key)
-initial_particles = sample_from_prior(init_key, num_live)
 
-# Chunked init: evaluate logprior/loglikelihood in batches to avoid OOM.
-# The default nested_sampler.init() vmaps over ALL particles at once,
-# which for 2000 × 260k freq bins × 3 dets × complex128 ≈ 35 GiB.
-INIT_CHUNK = 100
-print(f"Chunked init: {num_live} particles in batches of {INIT_CHUNK}...")
+# --- Checkpoint save/load ---
+def save_checkpoint(state, dead, rng_key, step_count):
+    """Atomically save sampling state to disk for resume."""
+    tmp = checkpoint_path + '.tmp'
+    with open(tmp, 'wb') as f:
+        pickle.dump({
+            'state': jax.device_get(state),
+            'dead': [jax.device_get(d) for d in dead],
+            'rng_key': jax.device_get(rng_key),
+            'step_count': step_count,
+        }, f)
+    os.replace(tmp, checkpoint_path)
+    print(f"  [checkpoint] Saved at step {step_count} -> {checkpoint_path}")
 
-logpriors = []
-loglikes = []
-for i in range(0, num_live, INIT_CHUNK):
-    chunk = initial_particles[i:i+INIT_CHUNK]
-    lp = jax.vmap(logprior_fn)(chunk)
-    ll = jax.vmap(loglikelihood_fn)(chunk)
-    jax.block_until_ready(ll)
-    logpriors.append(lp)
-    loglikes.append(ll)
-    print(f"  init chunk {i}-{i+len(chunk)}: done")
 
-logprior_all = jnp.concatenate(logpriors)
-loglike_all = jnp.concatenate(loglikes)
-loglike_birth_all = jnp.nan * jnp.ones_like(loglike_all)
+def load_checkpoint():
+    """Load sampling state from disk."""
+    with open(checkpoint_path, 'rb') as f:
+        return pickle.load(f)
 
-particles = StateWithLogLikelihood(
-    position=initial_particles,
-    logdensity=logprior_all,
-    loglikelihood=loglike_all,
-    loglikelihood_birth=loglike_birth_all,
-)
-integrator = init_integrator(particles)
-# Compute covariance from live particles (needed for slice direction proposals)
-tmp_state = AdaptiveNSState(particles=particles, integrator=integrator, inner_kernel_params={})
-inner_kernel_params = update_inner_kernel_params(None, tmp_state, None, {})
-state = AdaptiveNSState(
-    particles=particles,
-    integrator=integrator,
-    inner_kernel_params=inner_kernel_params,
-)
 
-t_init = time.time() - t_init0
-print(f"[TIMING] Prior sampling + chunked init: {t_init:.1f}s")
+# --- Try to resume from checkpoint ---
+resumed = False
+if os.path.exists(checkpoint_path) and not args.no_resume:
+    print(f"Found checkpoint: {checkpoint_path}")
+    ckpt = load_checkpoint()
+    state = ckpt['state']
+    dead = ckpt['dead']
+    rng_key = ckpt['rng_key']
+    step_count = ckpt['step_count']
+    resumed = True
+    t_init = 0.0
+    t_jit = 0.0
+    print(f"Resumed from step {step_count} with {len(dead)} dead point batches")
+
+if not resumed:
+    t_init0 = time.time()
+    rng_key = jax.random.PRNGKey(0)
+    rng_key, init_key = jax.random.split(rng_key)
+    initial_particles = sample_from_prior(init_key, num_live)
+
+    # Chunked init: evaluate logprior/loglikelihood in batches to avoid OOM.
+    # The default nested_sampler.init() vmaps over ALL particles at once,
+    # which for 2000 × 260k freq bins × 3 dets × complex128 ≈ 35 GiB.
+    INIT_CHUNK = 100
+    print(f"Chunked init: {num_live} particles in batches of {INIT_CHUNK}...")
+
+    logpriors = []
+    loglikes = []
+    for i in range(0, num_live, INIT_CHUNK):
+        chunk = initial_particles[i:i+INIT_CHUNK]
+        lp = jax.vmap(logprior_fn)(chunk)
+        ll = jax.vmap(loglikelihood_fn)(chunk)
+        jax.block_until_ready(ll)
+        logpriors.append(lp)
+        loglikes.append(ll)
+        print(f"  init chunk {i}-{i+len(chunk)}: done")
+
+    logprior_all = jnp.concatenate(logpriors)
+    loglike_all = jnp.concatenate(loglikes)
+    loglike_birth_all = jnp.nan * jnp.ones_like(loglike_all)
+
+    particles = StateWithLogLikelihood(
+        position=initial_particles,
+        logdensity=logprior_all,
+        loglikelihood=loglike_all,
+        loglikelihood_birth=loglike_birth_all,
+    )
+    integrator = init_integrator(particles)
+    tmp_state = AdaptiveNSState(particles=particles, integrator=integrator, inner_kernel_params={})
+    inner_kernel_params = update_inner_kernel_params(None, tmp_state, None, {})
+    state = AdaptiveNSState(
+        particles=particles,
+        integrator=integrator,
+        inner_kernel_params=inner_kernel_params,
+    )
+
+    t_init = time.time() - t_init0
+    print(f"[TIMING] Prior sampling + chunked init: {t_init:.1f}s")
+
+    step_count = 0
+    dead = []
 
 
 # ============================================================================
-# 9. RUN NESTED SAMPLING
+# 9. RUN NESTED SAMPLING (with checkpointing every {CHECKPOINT_EVERY} steps)
 # ============================================================================
 
 @jax.jit
@@ -492,22 +565,30 @@ def one_step(carry, xs):
     state, dead_point = nested_sampler.step(subk, state)
     return (state, k), dead_point
 
-print(f"Running nested sampling: {num_live} live, {NUM_DIMS}D (phase_c marginalized, FULL likelihood)")
-print("JIT-compiling first step (this will be slow — ~260k freq bins)...")
-t_jit0 = time.time()
-(state, rng_key), dead_first = one_step((state, rng_key), None)
-jax.block_until_ready(state)
-t_jit = time.time() - t_jit0
-print(f"[TIMING] JIT compilation (first step): {t_jit:.1f}s")
+phase_msg = "phase_c marginalized" if phase_marg else "phase_c sampled"
+print(f"Running nested sampling: {num_live} live, {NUM_DIMS}D ({phase_msg}, FULL likelihood)")
+print(f"Checkpointing every {CHECKPOINT_EVERY} steps to {checkpoint_path}")
+
+if not resumed:
+    print("JIT-compiling first step (this will be slow — ~260k freq bins)...")
+    t_jit0 = time.time()
+    (state, rng_key), dead_first = one_step((state, rng_key), None)
+    jax.block_until_ready(state)
+    t_jit = time.time() - t_jit0
+    print(f"[TIMING] JIT compilation (first step): {t_jit:.1f}s")
+    dead.append(dead_first)
+    step_count += 1
 
 ns_start = time.time()
-dead = [dead_first]
 
-with tqdm.tqdm(desc="Dead points", initial=num_delete, unit=" dead points") as pbar:
+with tqdm.tqdm(desc="Dead points", initial=len(dead) * num_delete, unit=" dead points") as pbar:
     while not state.integrator.logZ_live - state.integrator.logZ < -3:
         (state, rng_key), dead_info = one_step((state, rng_key), None)
         dead.append(dead_info)
+        step_count += 1
         pbar.update(num_delete)
+        if step_count % CHECKPOINT_EVERY == 0:
+            save_checkpoint(state, dead, rng_key, step_count)
 
 ns_time = time.time() - ns_start
 
@@ -531,6 +612,11 @@ print(f"Log Evidence: {logzs.mean():.2f} +/- {logzs.std():.2f}")
 
 samples.to_csv(f'{label}.csv')
 print(f"Saved to {label}.csv")
+
+# Clean up checkpoint after successful completion
+if os.path.exists(checkpoint_path):
+    os.remove(checkpoint_path)
+    print(f"Removed checkpoint: {checkpoint_path}")
 
 t_total = time.time() - t0
 print(f"\n{'='*50}")

@@ -1,19 +1,18 @@
 """
-Phase-Marginalized Heterodyned Nested Sampling for GW170817 (Kazewong/Bilby data)
-==================================================================================
+Heterodyned Nested Sampling for GW170817 (Kazewong/Bilby data)
+================================================================
 
 Same inference pipeline as GW170817_heterodyned_1.py but uses pre-processed
-bilby data from EventData/kazewong/ instead of fetching from GWOSC. This
-bypasses all data conditioning differences (windowing, PSD estimation, etc.)
-to isolate waveform model and prior effects on the posterior.
+bilby data from EventData/kazewong/ instead of fetching from GWOSC.
 
-Key differences from GW170817_heterodyned_1.py:
-  - Data: pre-processed bilby fd_strain + PSD text files (no GWOSC fetch)
-  - Bins: 501 (matching kazewong reference) instead of 100
-  - fmax: 1792 Hz (matching kazewong reference) instead of 2048 Hz
+With --phase-marginalization:
+  14D parameter space, phase_c analytically marginalized via log I_0(|<d|h>|)
+Without --phase-marginalization:
+  15D parameter space, phase_c sampled as uniform [0, 2pi]
 
 Usage:
   python GW170817_heterodyned_kazewong.py [--waveform {IMRPhenomD_NRTidalv2,TaylorF2}]
+                                           [--phase-marginalization]
 """
 
 # ============================================================================
@@ -52,9 +51,12 @@ parser.add_argument('--psd-source', choices=['kazewong', 'bilby', 'gwtc1'],
                     default='kazewong',
                     help='PSD source: "kazewong" (pre-processed), "bilby" (Bilby PSDs), '
                          '"gwtc1" (official BayesWave PSDs from LIGO-P1900011)')
+parser.add_argument('--phase-marginalization', action='store_true',
+                    help='Enable analytic phase marginalization (removes phase_c from sampling)')
 args = parser.parse_args()
 waveform_tag = args.waveform
 psd_source = args.psd_source
+phase_marg = args.phase_marginalization
 
 # Numerically stable log I_0 for phase marginalization
 from jax.scipy.special import i0e
@@ -75,31 +77,41 @@ PARAM_LABELS = [
     r"$M_c$", r"$q$", r"$s_{1z}$", r"$s_{2z}$", r"$\iota$", r"$d_L$", r"$t_c$",
     r"$\psi$", r"$\alpha$", r"$\delta$", r"$\Lambda_1$", r"$\Lambda_2$", r"$H_0$", r"$v_p$",
 ]
-NUM_DIMS = len(PARAM_NAMES)
 
 I_MC, I_Q, I_S1Z, I_S2Z, I_IOTA, I_DL, I_TC = 0, 1, 2, 3, 4, 5, 6
 I_PSI, I_RA, I_DEC, I_L1, I_L2, I_H0, I_VP = 7, 8, 9, 10, 11, 12, 13
 
-# Prior bounds: M_c^det range from Abbott et al., PhysRevX 9, 011001, Sec. II.D
-# NGC 4993 host galaxy at z=0.0099
-PRIOR_LO = jnp.array([
+_PRIOR_LO_BASE = [
     1.184, 0.125, -0.05, -0.05,             # M_c, q, s1_z, s2_z
     0.0, 1.0, -0.1,                          # iota, d_L, t_c
     0.0, 0.0, -jnp.pi / 2,                   # psi, ra, dec
     0.0, 0.0, 20.0, -1000.0,                # lambda_1, lambda_2, H_0, v_p
-])
-PRIOR_HI = jnp.array([
+]
+_PRIOR_HI_BASE = [
     2.168, 1.00, 0.05, 0.05,                # M_c, q, s1_z, s2_z
     jnp.pi, 75.0, 0.1,                       # iota, d_L, t_c
     jnp.pi, 2 * jnp.pi, jnp.pi / 2,         # psi, ra, dec
     5000.0, 5000.0, 140.0, 1000.0,          # lambda_1, lambda_2, H_0, v_p
-])
+]
+_PRIOR_TYPE_BASE = [0, 0, 0, 0, 1, 3, 0, 0, 0, 2, 0, 0, 4, 0]
+
+if not phase_marg:
+    PARAM_NAMES.append("phase_c")
+    PARAM_LABELS.append(r"$\phi_c$")
+    I_PHASEC = 14
+    _PRIOR_LO_BASE.append(0.0)
+    _PRIOR_HI_BASE.append(float(2 * jnp.pi))
+    _PRIOR_TYPE_BASE.append(0)
+
+NUM_DIMS = len(PARAM_NAMES)
+
+PRIOR_LO = jnp.array(_PRIOR_LO_BASE)
+PRIOR_HI = jnp.array(_PRIOR_HI_BASE)
 
 M_COMP_LO = 0.5
 M_COMP_HI = 7.7
 
-# Prior type encoding: 0=uniform, 1=sin(iota), 2=cos(dec), 3=beta(d_L), 4=log-uniform(H_0)
-PRIOR_TYPE = jnp.array([0, 0, 0, 0, 1, 3, 0, 0, 0, 2, 0, 0, 4, 0])
+PRIOR_TYPE = jnp.array(_PRIOR_TYPE_BASE)
 
 _PRIOR_RANGE = PRIOR_HI - PRIOR_LO
 _PRIOR_LOG_RANGE = jnp.log(_PRIOR_RANGE)
@@ -153,11 +165,12 @@ def logprior_fn(x):
 
 gps = 1187008882.43
 fmin = 23.0
-fmax = 2048.0   # Match kazewong reference (not 2048)
+fmax = 2048.0
 duration = 128
 post_trigger_duration = 2
 
-label = f'Results/PhaseMarg_Heterodyned_Kazewong_{waveform_tag}_psd-{psd_source}'
+marg_tag = 'PhaseMarg' if phase_marg else 'NoMarg'
+label = f'Results/{marg_tag}_Heterodyned_Kazewong_{waveform_tag}_psd-{psd_source}'
 
 KAZEWONG_DIR = 'EventData/GWOSC/GW170817/kazewong'
 KAZEWONG_PREFIX = 'GW170817-IMRD_data0_1187008882-43_generation_data_dump.pickle'
@@ -187,10 +200,19 @@ def load_external_psd(psd_src, ifo_name, target_freqs):
         freqs_psd, psd_vals = psd_data[:, 0], psd_data[:, 1]
     else:
         raise ValueError(f"Unknown PSD source: {psd_src}")
-    psd_interp = interp1d(freqs_psd, psd_vals, kind='linear',
-                          fill_value='extrapolate', bounds_error=False)
+    # Replace inf with large sentinel before interpolation to avoid
+    # scipy RuntimeWarning from inf arithmetic (inf-finite=inf, inf*0=NaN).
+    # After interpolation, restore inf where the result exceeds the sentinel threshold.
+    _PSD_INF_SENTINEL = 1e300
+    inf_mask_src = ~np.isfinite(psd_vals)
+    psd_vals_safe = np.where(inf_mask_src, _PSD_INF_SENTINEL, psd_vals)
+    psd_interp = interp1d(freqs_psd, psd_vals_safe, kind='linear',
+                          fill_value=_PSD_INF_SENTINEL, bounds_error=False)
+    psd_values = psd_interp(np.array(target_freqs))
+    # Restore inf where interpolation touched sentinel-affected regions
+    psd_values = np.where(psd_values >= _PSD_INF_SENTINEL * 0.5, np.inf, psd_values)
     return PowerSpectrum(
-        values=jnp.array(psd_interp(np.array(target_freqs))),
+        values=jnp.array(psd_values),
         frequencies=jnp.array(target_freqs),
         name=ifo_name,
     )
@@ -307,16 +329,39 @@ def make_binning_scheme(freqs, n_bins, chi=1):
     return jnp.array(f_bins), jnp.array(f_bins_center)
 
 def compute_coefficients(data, h_ref, psd, freqs, f_bins, f_bins_center):
+    """Pre-compute heterodyning coefficients A0, A1, B0, B1 per bin.
+
+    Uses np.searchsorted for O(n_bins * log n_freq) bin assignment instead
+    of O(n_bins * n_freq) boolean masking. The bin boundaries are identical:
+    searchsorted(side='left') gives the first index >= edge, matching the
+    original (freqs >= f_bins[i]) & (freqs < f_bins[i+1]) condition.
+    """
     df = freqs[1] - freqs[0]
+    freqs_np = np.array(freqs)
+    psd_np = np.array(psd)
     data_prod = np.array(data * h_ref.conj())
     self_prod = np.array(h_ref * h_ref.conj())
-    A0, A1, B0, B1 = [], [], [], []
-    for i in range(len(f_bins) - 1):
-        idx = np.where((freqs >= f_bins[i]) & (freqs < f_bins[i + 1]))[0]
-        A0.append(4 * np.sum(data_prod[idx] / psd[idx]) * df)
-        A1.append(4 * np.sum(data_prod[idx] / psd[idx] * (freqs[idx] - f_bins_center[i])) * df)
-        B0.append(4 * np.sum(self_prod[idx] / psd[idx]) * df)
-        B1.append(4 * np.sum(self_prod[idx] / psd[idx] * (freqs[idx] - f_bins_center[i])) * df)
+
+    # Binary-search bin edges: bin i spans [f_bins[i], f_bins[i+1])
+    edges = np.array(f_bins)
+    bin_start = np.searchsorted(freqs_np, edges[:-1], side='left')
+    bin_end = np.searchsorted(freqs_np, edges[1:], side='left')
+    centers_np = np.array(f_bins_center)
+
+    n_bins = len(f_bins_center)
+    A0 = np.empty(n_bins, dtype=complex)
+    A1 = np.empty(n_bins, dtype=complex)
+    B0 = np.empty(n_bins, dtype=complex)
+    B1 = np.empty(n_bins, dtype=complex)
+    for i in range(n_bins):
+        s = slice(bin_start[i], bin_end[i])
+        d_over_psd = data_prod[s] / psd_np[s]
+        h_over_psd = self_prod[s] / psd_np[s]
+        freq_diff = freqs_np[s] - centers_np[i]
+        A0[i] = 4 * np.sum(d_over_psd) * df
+        A1[i] = 4 * np.sum(d_over_psd * freq_diff) * df
+        B0[i] = 4 * np.sum(h_over_psd) * df
+        B1[i] = 4 * np.sum(h_over_psd * freq_diff) * df
     return jnp.array(A0), jnp.array(A1), jnp.array(B0), jnp.array(B1)
 
 
@@ -390,7 +435,7 @@ REF_CENTER = hetero['ref_center']
 
 
 # ============================================================================
-# 7. PHASE-MARGINALIZED HETERODYNED LIKELIHOOD
+# 7. HETERODYNED LIKELIHOOD (phase-marginalized or standard)
 # ============================================================================
 
 @jax.jit
@@ -401,7 +446,7 @@ def loglikelihood_fn(x):
         'psi': x[I_PSI], 'ra': x[I_RA], 'dec': x[I_DEC],
         'lambda_1': x[I_L1], 'lambda_2': x[I_L2],
         'eta': x[I_Q] / (1 + x[I_Q]) ** 2,
-        'phase_c': 0.0,
+        'phase_c': 0.0 if phase_marg else x[I_PHASEC],
         'trigger_time': gps,
         'gmst': gmst,
     }
@@ -421,12 +466,15 @@ def loglikelihood_fn(x):
     r0 = det_resp_center / REF_CENTER
     r1 = (det_resp_low / REF_LOW - r0) / (FREQ_LOW - FREQ_CENTER)
 
-    complex_d_inner_h = jnp.sum(A0 * r0.conj() + A1 * r1.conj())
+    complex_match = jnp.sum(A0 * r0.conj() + A1 * r1.conj())
     optimal_SNR = jnp.sum(
         B0 * jnp.abs(r0) ** 2 + 2 * B1 * (r0 * r1.conj()).real
     )
 
-    ll_gw = -optimal_SNR.real / 2 + log_i0(jnp.absolute(complex_d_inner_h))
+    if phase_marg:
+        ll_gw = -optimal_SNR.real / 2 + log_i0(jnp.absolute(complex_match))
+    else:
+        ll_gw = (complex_match - optimal_SNR / 2).real
 
     # Standard siren velocity terms (Abbott et al. 2017)
     ll_vr = stats.norm.logpdf(3327.0, x[I_VP] + x[I_H0] * x[I_DL], 72.0)
@@ -448,6 +496,8 @@ def stepper_fn(x, d, t):
     y = x + t * d
     y = y.at[I_PSI].set(jnp.mod(y[I_PSI], jnp.pi))
     y = y.at[I_RA].set(jnp.mod(y[I_RA], 2 * jnp.pi))
+    if not phase_marg:
+        y = y.at[I_PHASEC].set(jnp.mod(y[I_PHASEC], 2 * jnp.pi))
     return y, True
 
 nested_sampler = blackjax.nss(
@@ -520,7 +570,8 @@ def one_step(carry, xs):
     state, dead_point = nested_sampler.step(subk, state)
     return (state, k), dead_point
 
-print(f"Running nested sampling: {num_live} live, {NUM_DIMS}D (phase_c marginalized)")
+phase_msg = "phase_c marginalized" if phase_marg else "phase_c sampled"
+print(f"Running nested sampling: {num_live} live, {NUM_DIMS}D ({phase_msg})")
 print("JIT-compiling first step...")
 t_jit0 = time.time()
 (state, rng_key), dead_first = one_step((state, rng_key), None)

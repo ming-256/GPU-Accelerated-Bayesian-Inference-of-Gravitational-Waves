@@ -29,18 +29,6 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-# Jupyter Notebook
-.ipynb_checkpoints
-*.ipynb
-
-# Results and output files
-Results/
-*.csv
-*.hdf5
-*.h5
-*.dat
-*.txt.gz
-
 # Plots and figures
 *.png
 *.jpg
