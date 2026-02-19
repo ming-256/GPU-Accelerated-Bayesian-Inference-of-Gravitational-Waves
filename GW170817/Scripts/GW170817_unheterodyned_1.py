@@ -61,12 +61,14 @@ parser.add_argument('--data-source', choices=['fetch', 'local'],
                     help='Data source: "fetch" pulls from GWOSC via gwpy (requires internet), '
                          '"local" reads HDF5 files from EventData/GWOSC/GW170817/')
 parser.add_argument('--psd-source', choices=['self', 'bilby', 'gwtc1', 'kazewong'],
-                    default='self',
+                    default='gwtc1',
                     help='PSD source: "self" (estimated from data via gwpy), "bilby" (Bilby PSDs), '
                          '"gwtc1" (official BayesWave PSDs from LIGO-P1900011), '
                          '"kazewong" (kazewong pre-processed PSDs)')
 parser.add_argument('--phase-marginalization', action='store_true',
                     help='Enable analytic phase marginalization (removes phase_c from sampling)')
+parser.add_argument('--output-dir', default='Results',
+                    help='Directory to write output CSV files (default: Results)')
 parser.add_argument('--checkpoint-every', type=int, default=5,
                     help='Save checkpoint every N nested sampling steps (default: 5)')
 parser.add_argument('--no-resume', action='store_true',
@@ -75,6 +77,7 @@ args = parser.parse_args()
 data_source = args.data_source
 psd_source = args.psd_source
 phase_marg = args.phase_marginalization
+output_dir = args.output_dir
 
 @jax.jit
 def log_i0(x):
@@ -99,16 +102,16 @@ I_PSI, I_RA, I_DEC, I_L1, I_L2, I_H0, I_VP = 7, 8, 9, 10, 11, 12, 13
 _PRIOR_LO_BASE = [
     1.184, 0.125, -0.05, -0.05,             # M_c, q, s1_z, s2_z
     0.0, 1.0, -0.1,                          # iota, d_L, t_c
-    0.0, 0.0, -jnp.pi / 2,                   # psi, ra, dec
+    0.0, 3.44, -0.41,                           # psi, ra, dec (NGC 4993)
     0.0, 0.0, 20.0, -1000.0,                # lambda_1, lambda_2, H_0, v_p
 ]
 _PRIOR_HI_BASE = [
     2.168, 1.00, 0.05, 0.05,                # M_c, q, s1_z, s2_z
     jnp.pi, 75.0, 0.1,                       # iota, d_L, t_c
-    jnp.pi, 2 * jnp.pi, jnp.pi / 2,         # psi, ra, dec
+    jnp.pi, 3.45, -0.40,                       # psi, ra, dec (NGC 4993)
     5000.0, 5000.0, 140.0, 1000.0,          # lambda_1, lambda_2, H_0, v_p
 ]
-_PRIOR_TYPE_BASE = [0, 0, 0, 0, 1, 3, 0, 0, 0, 2, 0, 0, 4, 0]
+_PRIOR_TYPE_BASE = [0, 0, 0, 0, 1, 3, 0, 0, 0, 0, 0, 0, 4, 0]
 
 if not phase_marg:
     PARAM_NAMES.append("phase_c")
@@ -190,7 +193,8 @@ psd_duration = 1024
 
 waveform_tag = args.waveform
 marg_tag = 'PhaseMarg' if phase_marg else 'NoMarg'
-label = f'Results/{marg_tag}_Unheterodyned_{waveform_tag}_{data_source}_psd-{psd_source}'
+import os; os.makedirs(output_dir, exist_ok=True)
+label = f'{output_dir}/{marg_tag}_Unheterodyned_{waveform_tag}_{data_source}_psd-{psd_source}'
 checkpoint_path = f'{label}_checkpoint.pkl'
 CHECKPOINT_EVERY = args.checkpoint_every
 

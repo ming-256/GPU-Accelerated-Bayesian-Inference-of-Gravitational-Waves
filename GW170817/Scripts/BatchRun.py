@@ -33,25 +33,25 @@ import sys
 # Helper: generate command variants with and without --phase-marginalization
 # ---------------------------------------------------------------------------
 def _with_phase_marg(base_cmds):
-    """For each base command, produce two variants: with and without --phase-marginalization."""
+    """For each base command, produce only the --phase-marginalization variant."""
     out = []
     for cmd in base_cmds:
         out.append(cmd + " --phase-marginalization")
-        out.append(cmd)
     return out
 
 # ---------------------------------------------------------------------------
 # Heterodyned runs: GWOSC data (local preferred, fetch fallback)
 # ---------------------------------------------------------------------------
 _HETERODYNED_GWOSC_BASE = [
-    # Local data + various PSDs (self PSD excluded — unreliable estimation)
-    #"python GW170817/Scripts/GW170817_heterodyned_1.py --data-source local --psd-source bilby   --waveform IMRPhenomD_NRTidalv2",
-    #"python GW170817/Scripts/GW170817_heterodyned_1.py --data-source local --psd-source gwtc1   --waveform IMRPhenomD_NRTidalv2",
-    "python GW170817/Scripts/GW170817_heterodyned_1.py --data-source local --psd-source kazewong --waveform IMRPhenomD_NRTidalv2",
-    # Local data + TaylorF2
-    #"python GW170817/Scripts/GW170817_heterodyned_1.py --data-source local --psd-source bilby   --waveform TaylorF2",
-    #"python GW170817/Scripts/GW170817_heterodyned_1.py --data-source local --psd-source gwtc1   --waveform TaylorF2",
-    "python GW170817/Scripts/GW170817_heterodyned_1.py --data-source local --psd-source kazewong --waveform TaylorF2",
+    # heterodyned_2: flat-in-z prior (_flatZ suffix)
+    "python GW170817/Scripts/GW170817_heterodyned_2.py --data-source local --psd-source gwtc1 --waveform IMRPhenomD_NRTidalv2 --output-dir Results/gwtc1_phasemarg",
+    "python GW170817/Scripts/GW170817_heterodyned_2.py --data-source local --psd-source gwtc1 --waveform TaylorF2 --output-dir Results/gwtc1_phasemarg",
+    # heterodyned_3: wider v_p = 250 km/s (_vp250 suffix)
+    "python GW170817/Scripts/GW170817_heterodyned_3.py --data-source local --psd-source gwtc1 --waveform IMRPhenomD_NRTidalv2 --output-dir Results/gwtc1_phasemarg",
+    "python GW170817/Scripts/GW170817_heterodyned_3.py --data-source local --psd-source gwtc1 --waveform TaylorF2 --output-dir Results/gwtc1_phasemarg",
+    # heterodyned_1: baseline Beta(3,1) prior (_baseline suffix)
+    "python GW170817/Scripts/GW170817_heterodyned_1.py --data-source local --psd-source gwtc1 --waveform IMRPhenomD_NRTidalv2 --output-dir Results/gwtc1_phasemarg",
+    "python GW170817/Scripts/GW170817_heterodyned_1.py --data-source local --psd-source gwtc1 --waveform TaylorF2 --output-dir Results/gwtc1_phasemarg",
 ]
 HETERODYNED_GWOSC = _with_phase_marg(_HETERODYNED_GWOSC_BASE)
 
@@ -72,14 +72,8 @@ HETERODYNED_KAZEWONG = _with_phase_marg(_HETERODYNED_KAZEWONG_BASE)
 # Unheterodyned runs (reference — much slower)
 # ---------------------------------------------------------------------------
 _UNHETERODYNED_GWOSC_BASE = [
-    # IMRPhenomD_NRTidalv2
-    "python GW170817/Scripts/GW170817_unheterodyned_1.py --data-source local --psd-source bilby   --waveform IMRPhenomD_NRTidalv2",
-    "python GW170817/Scripts/GW170817_unheterodyned_1.py --data-source local --psd-source gwtc1   --waveform IMRPhenomD_NRTidalv2",
-    "python GW170817/Scripts/GW170817_unheterodyned_1.py --data-source local --psd-source kazewong --waveform IMRPhenomD_NRTidalv2",
-    # TaylorF2
-    "python GW170817/Scripts/GW170817_unheterodyned_1.py --data-source local --psd-source bilby   --waveform TaylorF2",
-    "python GW170817/Scripts/GW170817_unheterodyned_1.py --data-source local --psd-source gwtc1   --waveform TaylorF2",
-    "python GW170817/Scripts/GW170817_unheterodyned_1.py --data-source local --psd-source kazewong --waveform TaylorF2",
+    "python GW170817/Scripts/GW170817_unheterodyned_1.py --data-source local --psd-source gwtc1 --waveform IMRPhenomD_NRTidalv2 --output-dir Results/gwtc1_phasemarg",
+    "python GW170817/Scripts/GW170817_unheterodyned_1.py --data-source local --psd-source gwtc1 --waveform TaylorF2 --output-dir Results/gwtc1_phasemarg",
 ]
 UNHETERODYNED_GWOSC = _with_phase_marg(_UNHETERODYNED_GWOSC_BASE)
 
@@ -108,7 +102,7 @@ BILBY = _with_phase_marg(_BILBY_BASE)
 
 # Group mapping for --group filter
 GROUPS = {
-    'heterodyned': HETERODYNED_GWOSC + HETERODYNED_KAZEWONG,
+    'heterodyned': HETERODYNED_GWOSC + UNHETERODYNED_GWOSC,
     'heterodyned-gwosc': HETERODYNED_GWOSC,
     'heterodyned-kazewong': HETERODYNED_KAZEWONG,
     'unheterodyned': UNHETERODYNED_GWOSC + UNHETERODYNED_KAZEWONG,

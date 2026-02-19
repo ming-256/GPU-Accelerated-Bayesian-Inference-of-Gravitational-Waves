@@ -1,24 +1,38 @@
 """
-Heterodyned Nested Sampling for GW170817
+Heterodyned Nested Sampling for GW150914
 ==========================================
 
-Performs Bayesian inference on the binary neutron star event GW170817 using:
-  - Waveform: IMRPhenomD_NRTidalv2 or TaylorF2 (selectable via --waveform)
+Performs Bayesian inference on the binary black hole event GW150914 using:
+  - Waveform: IMRPhenomD (BBH, no tidal corrections)
   - Likelihood: Heterodyned (relative binning), optionally phase-marginalized
   - Sampler: Blackjax nested slice sampling with periodic boundary wrapping
 
+GW150914 was the first direct detection of gravitational waves from a BBH
+merger, observed by LIGO Hanford (H1) and LIGO Livingston (L1) on
+September 14, 2015 during the first observing run (O1).
+
+References:
+  - Discovery: Abbott et al. (2016), arXiv:1602.03837
+  - GWTC-1 catalog: Abbott et al. (2019), arXiv:1811.12907
+
 With --phase-marginalization:
-  14D parameter space, phase_c analytically marginalized via log I_0(|<d|h>|)
+  10D parameter space, phase_c analytically marginalized via log I_0(|<d|h>|)
   (jimgw: HeterodynedPhaseMarginalizedLikelihoodFD pattern)
 
 Without --phase-marginalization:
-  15D parameter space, phase_c sampled as uniform [0, 2pi]
+  11D parameter space, phase_c sampled as uniform [0, 2pi]
   (jimgw: HeterodynedTransientLikelihoodFD pattern)
 
+Parameter space (BBH, no tidal, no standard siren):
+  M_c, q, s1_z, s2_z, iota, d_L, t_c, psi, ra, dec [, phase_c]
+
 Usage:
-  python GW170817_heterodyned_1.py [--waveform {IMRPhenomD_NRTidalv2,TaylorF2}]
-                                    [--ref-params {gwtc1,optimize}]
-                                    [--phase-marginalization]
+  python GW150914_heterodyned.py [--waveform {IMRPhenomD}]
+                                  [--data-source {fetch,local}]
+                                  [--psd-source {self,gwtc1}]
+                                  [--ref-params {gwtc1,optimize}]
+                                  [--phase-marginalization]
+                                  [--output-dir DIR]
 """
 
 # ============================================================================
@@ -32,7 +46,6 @@ import jax
 jax.config.update('jax_enable_x64', True)
 
 import jax.numpy as jnp
-import jax.scipy.stats as stats
 import numpy as np
 import blackjax
 import h5py
@@ -43,30 +56,29 @@ from scipy.interpolate import interp1d
 from anesthetic import NestedSamples
 from blackjax.ns.utils import finalise
 
-from jimgw.core.single_event.detector import get_H1, get_L1, get_V1
-from jimgw.core.single_event.waveform import RippleIMRPhenomD_NRTidalv2, RippleTaylorF2
+from jimgw.core.single_event.detector import get_H1, get_L1
+from jimgw.core.single_event.waveform import RippleIMRPhenomD
 from jimgw.core.single_event.data import Data, PowerSpectrum
 from gwpy.timeseries import TimeSeries
 
 # ============================================================================
 # 0. COMMAND-LINE ARGUMENTS
 # ============================================================================
-parser = argparse.ArgumentParser(description='Heterodyned nested sampling for GW170817')
-parser.add_argument('--waveform', choices=['IMRPhenomD_NRTidalv2', 'TaylorF2'],
-                    default='IMRPhenomD_NRTidalv2', help='Waveform approximant')
+parser = argparse.ArgumentParser(description='Heterodyned nested sampling for GW150914')
+parser.add_argument('--waveform', choices=['IMRPhenomD'],
+                    default='IMRPhenomD', help='Waveform approximant (IMRPhenomD only for BBH)')
 parser.add_argument('--data-source', choices=['fetch', 'local'],
                     default='fetch',
                     help='Data source: "fetch" pulls from GWOSC via gwpy (requires internet), '
-                         '"local" reads HDF5 files from EventData/GWOSC/GW170817/')
-parser.add_argument('--psd-source', choices=['self', 'bilby', 'gwtc1', 'kazewong'],
+                         '"local" reads HDF5 files from EventData/GWOSC/GW150914/')
+parser.add_argument('--psd-source', choices=['self', 'gwtc1'],
                     default='self',
-                    help='PSD source: "self" (estimated from data via gwpy), "bilby" (Bilby PSDs), '
-                         '"gwtc1" (official BayesWave PSDs from LIGO-P1900011), '
-                         '"kazewong" (kazewong pre-processed PSDs)')
+                    help='PSD source: "self" (estimated from data via gwpy Welch), '
+                         '"gwtc1" (official BayesWave PSDs from GWTC-1)')
 parser.add_argument('--ref-params', choices=['gwtc1', 'optimize'],
                     default='gwtc1',
                     help='Reference parameters: "gwtc1" loads median from GWTC-1 posteriors '
-                         '(Results/GW170817_GWTC-1.hdf5), "optimize" finds the maximum-likelihood '
+                         '(Results/GW150914_GWTC-1.hdf5), "optimize" finds the maximum-likelihood '
                          'point via Adam optimization of the phase-marginalized likelihood')
 parser.add_argument('--phase-marginalization', action='store_true',
                     help='Enable analytic phase marginalization (removes phase_c from sampling)')
@@ -92,45 +104,49 @@ def log_i0(x):
 # ============================================================================
 # 2. PARAMETER CONFIGURATION (static arrays, no dicts in hot path)
 # ============================================================================
-# 14 parameters when phase_c is analytically marginalized (phase_marg=True),
-# 15 parameters when phase_c is sampled (phase_marg=False).
+# 10 parameters when phase_c is analytically marginalized (phase_marg=True),
+# 11 parameters when phase_c is sampled (phase_marg=False).
 # All configuration is expressed as static JAX arrays for JIT-friendly access.
+#
+# BBH event: no tidal parameters (lambda_1, lambda_2), no standard siren
+# terms (H_0, v_p).
 
 # Parameter names (used only at boundaries: init, output, jimgw API calls)
 PARAM_NAMES = [
     "M_c", "q", "s1_z", "s2_z", "iota", "d_L", "t_c",
-    "psi", "ra", "dec", "lambda_1", "lambda_2", "H_0", "v_p",
+    "psi", "ra", "dec",
 ]
 PARAM_LABELS = [
     r"$M_c$", r"$q$", r"$s_{1z}$", r"$s_{2z}$", r"$\iota$", r"$d_L$", r"$t_c$",
-    r"$\psi$", r"$\alpha$", r"$\delta$", r"$\Lambda_1$", r"$\Lambda_2$", r"$H_0$", r"$v_p$",
+    r"$\psi$", r"$\alpha$", r"$\delta$",
 ]
 
 # Static parameter indices (compile-time constants for array access)
 I_MC, I_Q, I_S1Z, I_S2Z, I_IOTA, I_DL, I_TC = 0, 1, 2, 3, 4, 5, 6
-I_PSI, I_RA, I_DEC, I_L1, I_L2, I_H0, I_VP = 7, 8, 9, 10, 11, 12, 13
+I_PSI, I_RA, I_DEC = 7, 8, 9
 
-# Prior bounds: M_c^det range from Abbott et al., PhysRevX 9, 011001, Sec. II.D
-# NGC 4993 host galaxy at z=0.0099
+# Prior bounds: BBH parameter ranges
+# M_c in [10, 80] M_sun (detector-frame), full spin range [-1, 1]
+# d_L in [1, 2000] Mpc with power-law prior p(d_L) ∝ d_L^2
+# t_c in [-0.05, 0.05] s (tighter than BNS, short BBH signal)
 _PRIOR_LO_BASE = [
-    1.184, 0.125, -0.05, -0.05,             # M_c, q, s1_z, s2_z
-    0.0, 1.0, -0.1,                          # iota, d_L, t_c
-    0.0, 0.0, -jnp.pi / 2,                   # psi, ra, dec
-    0.0, 0.0, 20.0, -1000.0,                 # lambda_1, lambda_2, H_0, v_p
+    10.0, 0.125, -1.0, -1.0,                 # M_c, q, s1_z, s2_z
+    0.0, 1.0, -0.05,                          # iota, d_L, t_c
+    0.0, 0.0, -jnp.pi / 2,                    # psi, ra, dec
 ]
 _PRIOR_HI_BASE = [
-    2.168, 1.00, 0.05, 0.05,                # M_c, q, s1_z, s2_z
-    jnp.pi, 75.0, 0.1,                       # iota, d_L, t_c
-    jnp.pi, 2 * jnp.pi, jnp.pi / 2,         # psi, ra, dec
-    5000.0, 5000.0, 140.0, 1000.0,           # lambda_1, lambda_2, H_0, v_p
+    80.0, 1.00, 1.0, 1.0,                    # M_c, q, s1_z, s2_z
+    jnp.pi, 2000.0, 0.05,                     # iota, d_L, t_c
+    jnp.pi, 2 * jnp.pi, jnp.pi / 2,          # psi, ra, dec
 ]
-_PRIOR_TYPE_BASE = [0, 0, 0, 0, 1, 3, 0, 0, 0, 2, 0, 0, 4, 0]
+# Prior type encoding: 0=uniform, 1=sin(iota), 2=cos(dec), 5=power-law(d_L)
+_PRIOR_TYPE_BASE = [0, 0, 0, 0, 1, 5, 0, 0, 0, 2]
 
-# When phase_c is NOT marginalized, add it as 15th parameter (uniform [0, 2pi])
+# When phase_c is NOT marginalized, add it as 11th parameter (uniform [0, 2pi])
 if not phase_marg:
     PARAM_NAMES.append("phase_c")
     PARAM_LABELS.append(r"$\phi_c$")
-    I_PHASEC = 14
+    I_PHASEC = 10
     _PRIOR_LO_BASE.append(0.0)
     _PRIOR_HI_BASE.append(float(2 * jnp.pi))
     _PRIOR_TYPE_BASE.append(0)  # uniform
@@ -141,17 +157,21 @@ PRIOR_LO = jnp.array(_PRIOR_LO_BASE)
 PRIOR_HI = jnp.array(_PRIOR_HI_BASE)
 
 # Component mass bounds (applied as hard cut in M_c-q space)
-M_COMP_LO = 0.5   # M_sun
-M_COMP_HI = 7.7   # M_sun
+M_COMP_LO = 1.0    # M_sun
+M_COMP_HI = 100.0  # M_sun
 
-# Prior type encoding: 0=uniform, 1=sin(iota), 2=cos(dec), 3=beta(d_L), 4=log-uniform(H_0)
+# Prior type encoding: 0=uniform, 1=sin(iota), 2=cos(dec), 5=power-law(d_L)
 PRIOR_TYPE = jnp.array(_PRIOR_TYPE_BASE)
 
 # Pre-computed prior constants (avoid recomputation in JIT)
 _PRIOR_RANGE = PRIOR_HI - PRIOR_LO
 _PRIOR_LOG_RANGE = jnp.log(_PRIOR_RANGE)
-_PRIOR_LOG_LOG_RATIO = jnp.log(jnp.log(PRIOR_HI / PRIOR_LO))
-_BETA_LN = jax.scipy.special.betaln(3.0, 1.0)
+
+# Power-law d_L prior: p(d_L) = d_L^2 / ((hi^3 - lo^3)/3)
+# log p(d_L) = 2*log(d_L) - log((hi^3 - lo^3)/3)
+_DL_LO = 1.0
+_DL_HI = 2000.0
+_DL_LOG_NORM = jnp.log((_DL_HI**3 - _DL_LO**3) / 3.0)
 
 
 # ============================================================================
@@ -177,19 +197,15 @@ def logprior_fn(x):
     # Cos prior (dec): log(cos(x)/2) on [-pi/2, pi/2]
     lp_cos = jnp.where(in_bounds, jnp.log(jnp.abs(jnp.cos(x)) + 1e-300) - jnp.log(2.0), -jnp.inf)
 
-    # Beta(3,1) prior (d_L): log(3*u^2 / range) where u = (x-lo)/(hi-lo)
-    u = (x - PRIOR_LO) / _PRIOR_RANGE
-    lp_beta = jnp.where(in_bounds, 2.0 * jnp.log(jnp.abs(u) + 1e-300) - _PRIOR_LOG_RANGE - _BETA_LN, -jnp.inf)
-
-    # Log-uniform (Jeffreys) prior (H_0): -log(log(hi/lo)) - log(x)
-    lp_log = jnp.where(in_bounds, -_PRIOR_LOG_LOG_RATIO - jnp.log(jnp.abs(x) + 1e-300), -jnp.inf)
+    # Power-law prior (d_L): log(d_L^2 / ((hi^3 - lo^3)/3))
+    lp_powerlaw = jnp.where(in_bounds, 2.0 * jnp.log(jnp.abs(x) + 1e-300) - _DL_LOG_NORM, -jnp.inf)
 
     # Select per-parameter prior using type index
     lp = jnp.where(PRIOR_TYPE == 0, lp_uniform,
          jnp.where(PRIOR_TYPE == 1, lp_sin,
          jnp.where(PRIOR_TYPE == 2, lp_cos,
-         jnp.where(PRIOR_TYPE == 3, lp_beta,
-                    lp_log))))
+         jnp.where(PRIOR_TYPE == 5, lp_powerlaw,
+                    lp_uniform))))  # fallback (should not be reached)
 
     total = jnp.sum(lp)
 
@@ -204,8 +220,7 @@ def logprior_fn(x):
     total = jnp.where(mass_ok, total, -jnp.inf)
 
     # Jacobian |∂(m1,m2)/∂(M_c,q)| = M_c * (1+q)^(2/5) / q^(6/5)
-    # Converts uniform-in-(M_c,q) to uniform-in-(m1,m2), as assumed in
-    # Abbott et al., PhysRevX 9, 011001, Sec. II.D (z=0.0099 for NGC 4993)
+    # Converts uniform-in-(M_c,q) to uniform-in-(m1,m2)
     log_jacobian = jnp.log(x[I_MC]) - 1.2 * jnp.log(x[I_Q]) + 0.4 * jnp.log(1.0 + x[I_Q])
     total = total + log_jacobian
 
@@ -216,10 +231,10 @@ def logprior_fn(x):
 # 4. EVENT CONFIGURATION & DETECTOR DATA
 # ============================================================================
 
-gps = 1187008882.43
-fmin = 23.0
-fmax = 2048.0
-duration = 128
+gps = 1126259462.4
+fmin = 20.0
+fmax = 1024.0
+duration = 4        # BBH signal is very short in-band
 post_trigger_duration = 2
 roll_off = 0.4
 tukey_alpha = 2 * roll_off / duration
@@ -227,8 +242,8 @@ psd_pad = 16
 psd_duration = 1024
 
 marg_tag = 'PhaseMarg' if phase_marg else 'NoMarg'
-import os; os.makedirs(output_dir, exist_ok=True)
-label = f'{output_dir}/{marg_tag}_Heterodyned_{waveform_tag}_{data_source}_psd-{psd_source}_ref-{ref_params_source}_baseline'
+os.makedirs(output_dir, exist_ok=True)
+label = f'{output_dir}/{marg_tag}_Heterodyned_IMRPhenomD_{data_source}_psd-{psd_source}_ref-{ref_params_source}'
 
 # Analysis segment: [gps - (duration - post_trigger), gps + post_trigger]
 start = gps - (duration - post_trigger_duration)
@@ -241,11 +256,10 @@ psd_end = start - psd_pad
 t0 = time.time()
 
 # Local GWOSC HDF5 file mapping: ifo name -> file path
-GWOSC_LOCAL_DIR = 'EventData/GWOSC/GW170817'
+GWOSC_LOCAL_DIR = 'EventData/GWOSC/GW150914'
 GWOSC_LOCAL_FILES = {
-    'H1': os.path.join(GWOSC_LOCAL_DIR, 'H-H1_LOSC_CLN_4_V1-1187007040-2048.hdf5'),
-    'L1': os.path.join(GWOSC_LOCAL_DIR, 'L-L1_LOSC_CLN_4_V1-1187007040-2048.hdf5'),
-    'V1': os.path.join(GWOSC_LOCAL_DIR, 'V-V1_LOSC_CLN_4_V1-1187007040-2048.hdf5'),
+    'H1': os.path.join(GWOSC_LOCAL_DIR, 'H-H1_GWOSC_4KHZ_R1-1126257414-4096.hdf5'),
+    'L1': os.path.join(GWOSC_LOCAL_DIR, 'L-L1_GWOSC_4KHZ_R1-1126257414-4096.hdf5'),
 }
 
 def load_gwosc_local(ifo_name, gps_start, gps_end):
@@ -268,32 +282,20 @@ PSD_FFT_LENGTH = 32  # seconds per FFT segment
 PSD_OVERLAP_FRAC = 0.5
 PSD_METHOD = 'median'
 
-GWOSC_PSD_DIR = 'EventData/GWOSC/GW170817'
-KAZEWONG_PSD_DIR = 'EventData/GWOSC/GW170817/kazewong'
-KAZEWONG_PSD_PREFIX = 'GW170817-IMRD_data0_1187008882-43_generation_data_dump.pickle'
+GWOSC_PSD_DIR = 'EventData/GWOSC/GW150914'
 
 
 def load_external_psd(psd_src, ifo_name, target_freqs):
     """Load PSD from an external file and interpolate to target frequency grid.
 
     Sources:
-      - 'bilby':   Bilby PSD files from EventData/GWOSC/GW170817/Bilby/
-      - 'gwtc1':   Official BayesWave PSDs from GWTC1_GW170817_PSDs.dat (LIGO-P1900011)
-      - 'kazewong': Kazewong PSD files from EventData/GWOSC/GW170817/kazewong/
+      - 'gwtc1': Official BayesWave PSDs from GWTC-1 (LIGO-P1900011)
     """
-    if psd_src == 'bilby':
-        psd_file = os.path.join(GWOSC_PSD_DIR, 'Bilby', f'{ifo_name.lower()}_psd.txt')
-        psd_data = np.loadtxt(psd_file)
-        freqs_psd, psd_vals = psd_data[:, 0], psd_data[:, 1]
-    elif psd_src == 'gwtc1':
-        psd_data = np.loadtxt(os.path.join(GWOSC_PSD_DIR, 'GWTC1_GW170817_PSDs.dat'))
+    if psd_src == 'gwtc1':
+        psd_data = np.loadtxt(os.path.join(GWOSC_PSD_DIR, 'GWTC1_GW150914_PSDs.dat'))
         freqs_psd = psd_data[:, 0]
-        col_map = {'H1': 1, 'L1': 2, 'V1': 3}
+        col_map = {'H1': 1, 'L1': 2}
         psd_vals = psd_data[:, col_map[ifo_name]]
-    elif psd_src == 'kazewong':
-        psd_file = os.path.join(KAZEWONG_PSD_DIR, f'{KAZEWONG_PSD_PREFIX}_{ifo_name}_psd.txt')
-        psd_data = np.loadtxt(psd_file)
-        freqs_psd, psd_vals = psd_data[:, 0], psd_data[:, 1]
     else:
         raise ValueError(f"Unknown PSD source: {psd_src}")
     # Replace inf with large sentinel before interpolation to avoid
@@ -314,7 +316,7 @@ def load_external_psd(psd_src, ifo_name, target_freqs):
     )
 
 
-detectors = [get_H1(), get_L1(), get_V1()]
+detectors = [get_H1(), get_L1()]
 N_DET = len(detectors)
 print(f"Data source: {data_source}, PSD source: {psd_source}")
 
@@ -327,10 +329,10 @@ for ifo in detectors:
         if psd_source == 'self':
             psd_ts = load_gwosc_local_gwpy(ifo.name, psd_start, psd_end)
     else:
-        # Fetch from GWOSC via gwpy (version=2 required for GW170817: V1/V3 have L1 glitch)
-        strain_data = Data.from_gwosc(ifo.name, start, end, version=2)
+        # Fetch from GWOSC via gwpy (no version needed for O1 data)
+        strain_data = Data.from_gwosc(ifo.name, start, end)
         if psd_source == 'self':
-            psd_ts = TimeSeries.fetch_open_data(ifo.name, psd_start, psd_end, version=2)
+            psd_ts = TimeSeries.fetch_open_data(ifo.name, psd_start, psd_end)
     t_fetch = time.time() - t_det
 
     strain_data.set_tukey_window(alpha=tukey_alpha)
@@ -348,7 +350,7 @@ for ifo in detectors:
             window=('tukey', psd_alpha),
             method=PSD_METHOD,
         )
-        # Interpolate PSD to strain frequency grid (PSD df=1/32 -> strain df=1/128)
+        # Interpolate PSD to strain frequency grid (PSD df may differ from strain df)
         psd_interp_fn = interp1d(
             psd_gwpy.frequencies.value, psd_gwpy.value,
             kind='linear', fill_value=(psd_gwpy.value[0], psd_gwpy.value[-1]),
@@ -373,13 +375,9 @@ for ifo in detectors:
 t_data = time.time() - t0
 print(f"[TIMING] Data loading: {t_data:.1f}s")
 
-H1, L1, V1 = detectors
+H1, L1 = detectors
 
-if waveform_tag == 'TaylorF2':
-    waveform = RippleTaylorF2(f_ref=20.0, use_lambda_tildes=False)
-else:
-    waveform_tag = 'IMRPhenomD_NRTidalv2'
-    waveform = RippleIMRPhenomD_NRTidalv2(f_ref=20.0, use_lambda_tildes=False, no_taper=False)
+waveform = RippleIMRPhenomD(f_ref=20.0)
 print(f"Waveform: {waveform_tag}")
 
 frequencies = H1.sliced_frequencies
@@ -391,11 +389,14 @@ gmst = Time(gps, format="gps").sidereal_time("apparent", "greenwich").rad
 # 5. REFERENCE PARAMETERS (from GWTC-1 posteriors or optimization)
 # ============================================================================
 
-def load_reference_params(hdf5_path, dataset='IMRPhenomPv2NRT_lowSpin_posterior'):
+def load_reference_params(hdf5_path, dataset='IMRPhenomPv2_posterior'):
     """Load GWTC-1 posterior samples and compute median reference parameters.
 
     Converts detector-frame masses and spin magnitudes/tilts to the ripple
     parametrization (M_c, q, eta, s1_z, s2_z, ...).
+
+    Note: GW150914 GWTC-1 file uses 'IMRPhenomPv2_posterior' dataset
+    (different from GW170817's 'IMRPhenomPv2NRT_lowSpin_posterior').
     """
     with h5py.File(hdf5_path, 'r') as f:
         data = f[dataset][:]
@@ -417,8 +418,6 @@ def load_reference_params(hdf5_path, dataset='IMRPhenomPv2NRT_lowSpin_posterior'
         'iota': float(np.median(np.arccos(data['costheta_jn']))),
         'ra': float(np.median(data['right_ascension'])),
         'dec': float(np.median(data['declination'])),
-        'lambda_1': float(np.median(data['lambda1'])),
-        'lambda_2': float(np.median(data['lambda2'])),
         't_c': 0.0, 'phase_c': 0.0, 'psi': 0.0,
         'trigger_time': float(gps),
         'gmst': float(gmst),
@@ -441,7 +440,7 @@ def optimize_reference_params(detectors, waveform, frequencies, popsize=100, n_s
 
     Args:
         detectors: List of detector objects with loaded data and PSDs.
-        waveform: Waveform model (e.g. RippleIMRPhenomD_NRTidalv2).
+        waveform: Waveform model (RippleIMRPhenomD).
         frequencies: Frequency array for likelihood evaluation.
         popsize: Number of parallel walkers (default: 100).
         n_steps: Adam steps per walker (default: 1500).
@@ -456,7 +455,7 @@ def optimize_reference_params(detectors, waveform, frequencies, popsize=100, n_s
 
     OPT_NAMES = [
         'M_c', 'q', 's1_z', 's2_z', 'iota', 'd_L', 't_c',
-        'psi', 'ra', 'dec', 'lambda_1', 'lambda_2',
+        'psi', 'ra', 'dec',
     ]
     OPT_NDIM = len(OPT_NAMES)
 
@@ -485,7 +484,6 @@ def optimize_reference_params(detectors, waveform, frequencies, popsize=100, n_s
             'M_c': x_phys[0], 'q': x_phys[1], 's1_z': x_phys[2], 's2_z': x_phys[3],
             'iota': x_phys[4], 'd_L': x_phys[5], 't_c': x_phys[6],
             'psi': x_phys[7], 'ra': x_phys[8], 'dec': x_phys[9],
-            'lambda_1': x_phys[10], 'lambda_2': x_phys[11],
             'eta': x_phys[1] / (1 + x_phys[1]) ** 2,
             'phase_c': 0.0,
             'trigger_time': gps,
@@ -575,7 +573,6 @@ def optimize_reference_params(detectors, waveform, frequencies, popsize=100, n_s
         't_c': float(best_phys[6]),
         'psi': float(best_phys[7]), 'ra': float(best_phys[8]),
         'dec': float(best_phys[9]),
-        'lambda_1': float(best_phys[10]), 'lambda_2': float(best_phys[11]),
         'phase_c': 0.0,
         'trigger_time': float(gps),
         'gmst': float(gmst),
@@ -587,7 +584,7 @@ def optimize_reference_params(detectors, waveform, frequencies, popsize=100, n_s
 
 t_ref0 = time.time()
 if ref_params_source == 'gwtc1':
-    ref_params = load_reference_params('Results/GW170817_GWTC-1.hdf5')
+    ref_params = load_reference_params('Results/GW150914_GWTC-1.hdf5')
     print(f"Reference (gwtc1): M_c={ref_params['M_c']:.4f}, q={ref_params['q']:.4f}, d_L={ref_params['d_L']:.1f}")
 else:
     ref_params = optimize_reference_params(detectors, waveform, frequencies)
@@ -745,7 +742,7 @@ REF_CENTER = hetero['ref_center']
 
 @jax.jit
 def loglikelihood_fn(x):
-    """Heterodyned log-likelihood + standard siren terms.
+    """Heterodyned log-likelihood for BBH (GW-only, no standard siren terms).
 
     When phase_marg=True (HeterodynedPhaseMarginalizedLikelihoodFD pattern):
       ll_gw = -<h|h>/2 + log I_0(|<d|h>|)
@@ -754,13 +751,15 @@ def loglikelihood_fn(x):
 
     The if/else on phase_marg is resolved at trace time (Python bool),
     producing two distinct compiled functions with no runtime overhead.
+
+    BBH: no tidal parameters, no standard siren velocity terms.
+    Returns ll_gw only.
     """
     # --- Build param dict for jimgw API (trace-time only) ---
     params = {
         'M_c': x[I_MC], 'q': x[I_Q], 's1_z': x[I_S1Z], 's2_z': x[I_S2Z],
         'iota': x[I_IOTA], 'd_L': x[I_DL], 't_c': x[I_TC],
         'psi': x[I_PSI], 'ra': x[I_RA], 'dec': x[I_DEC],
-        'lambda_1': x[I_L1], 'lambda_2': x[I_L2],
         'eta': x[I_Q] / (1 + x[I_Q]) ** 2,
         'phase_c': 0.0 if phase_marg else x[I_PHASEC],
         'trigger_time': gps,
@@ -800,11 +799,7 @@ def loglikelihood_fn(x):
         # jimgw: HeterodynedTransientLikelihoodFD
         ll_gw = (complex_match - optimal_SNR / 2).real
 
-    # --- Standard siren velocity terms (Abbott et al. 2017, arXiv:1710.05832) ---
-    ll_vr = stats.norm.logpdf(3327.0, x[I_VP] + x[I_H0] * x[I_DL], 72.0)
-    ll_vp = stats.norm.logpdf(310.0, x[I_VP], 150.0)
-
-    return ll_gw + ll_vr + ll_vp
+    return ll_gw
 
 
 # ============================================================================
@@ -864,10 +859,13 @@ def sample_from_prior(key, n):
                 col = jnp.arccos(1 - 2 * jax.random.uniform(keys[i], (n_try,)))
             elif ptype == 2:  # cos (dec): inverse CDF = arcsin(2u - 1)
                 col = jnp.arcsin(2 * jax.random.uniform(keys[i], (n_try,)) - 1)
-            elif ptype == 3:  # beta(3,1)
-                col = jax.random.beta(keys[i], 3.0, 1.0, (n_try,)) * (hi - lo) + lo
-            elif ptype == 4:  # log-uniform: x = lo * (hi/lo)^u
-                col = lo * (hi / lo) ** jax.random.uniform(keys[i], (n_try,))
+            elif ptype == 5:  # power-law d_L: p(d_L) ∝ d_L^2 -> CDF inversion
+                # F(d_L) = (d_L^3 - lo^3) / (hi^3 - lo^3)
+                # d_L = (lo^3 + u * (hi^3 - lo^3))^(1/3)
+                u = jax.random.uniform(keys[i], (n_try,))
+                col = (lo**3 + u * (hi**3 - lo**3)) ** (1.0 / 3.0)
+            else:  # fallback: uniform
+                col = jax.random.uniform(keys[i], (n_try,), minval=lo, maxval=hi)
             batch = batch.at[:, i].set(col)
 
         # Filter by component mass constraint

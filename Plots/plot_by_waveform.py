@@ -48,12 +48,12 @@ WAVEFORM_GROUPS = [
     (
         'IMRPhenomD_NRTidalv2_local',
         '*_IMRPhenomD_NRTidalv2_local_*.csv',
-        'IMRPhenomD\_NRTidalv2 (jim / local)',
+        r'IMRPhenomD\_NRTidalv2 (jim / local)',
     ),
     (
         'IMRPhenomD_NRTidalv2_Kazewong',
         '*_Kazewong_IMRPhenomD_NRTidalv2_*.csv',
-        'IMRPhenomD\_NRTidalv2 (Kazewong)',
+        r'IMRPhenomD\_NRTidalv2 (Kazewong)',
     ),
     (
         'TaylorF2_local',

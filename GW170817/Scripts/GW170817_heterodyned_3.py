@@ -1,22 +1,12 @@
 """
-Heterodyned Nested Sampling for GW170817
-==========================================
+Heterodyned Nested Sampling for GW170817 — sigma_vp=250
+========================================================
 
-Performs Bayesian inference on the binary neutron star event GW170817 using:
-  - Waveform: IMRPhenomD_NRTidalv2 or TaylorF2 (selectable via --waveform)
-  - Likelihood: Heterodyned (relative binning), optionally phase-marginalized
-  - Sampler: Blackjax nested slice sampling with periodic boundary wrapping
-
-With --phase-marginalization:
-  14D parameter space, phase_c analytically marginalized via log I_0(|<d|h>|)
-  (jimgw: HeterodynedPhaseMarginalizedLikelihoodFD pattern)
-
-Without --phase-marginalization:
-  15D parameter space, phase_c sampled as uniform [0, 2pi]
-  (jimgw: HeterodynedTransientLikelihoodFD pattern)
+Variant of GW170817_heterodyned_1.py with one change:
+  Peculiar velocity uncertainty: sigma_vp = 250 km/s (was 150 km/s).
 
 Usage:
-  python GW170817_heterodyned_1.py [--waveform {IMRPhenomD_NRTidalv2,TaylorF2}]
+  python GW170817_heterodyned_3.py [--waveform {IMRPhenomD_NRTidalv2,TaylorF2}]
                                     [--ref-params {gwtc1,optimize}]
                                     [--phase-marginalization]
 """
@@ -228,7 +218,7 @@ psd_duration = 1024
 
 marg_tag = 'PhaseMarg' if phase_marg else 'NoMarg'
 import os; os.makedirs(output_dir, exist_ok=True)
-label = f'{output_dir}/{marg_tag}_Heterodyned_{waveform_tag}_{data_source}_psd-{psd_source}_ref-{ref_params_source}_baseline'
+label = f'{output_dir}/{marg_tag}_Heterodyned_{waveform_tag}_{data_source}_psd-{psd_source}_ref-{ref_params_source}_vp250'
 
 # Analysis segment: [gps - (duration - post_trigger), gps + post_trigger]
 start = gps - (duration - post_trigger_duration)
@@ -802,7 +792,7 @@ def loglikelihood_fn(x):
 
     # --- Standard siren velocity terms (Abbott et al. 2017, arXiv:1710.05832) ---
     ll_vr = stats.norm.logpdf(3327.0, x[I_VP] + x[I_H0] * x[I_DL], 72.0)
-    ll_vp = stats.norm.logpdf(310.0, x[I_VP], 150.0)
+    ll_vp = stats.norm.logpdf(310.0, x[I_VP], 250.0)
 
     return ll_gw + ll_vr + ll_vp
 
