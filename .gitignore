@@ -12,6 +12,9 @@ ENV/
 *.out
 *.txt
 *.json
+*.dat
+*.pkl
+
 # Python artifacts
 __pycache__/
 *.py[cod]
