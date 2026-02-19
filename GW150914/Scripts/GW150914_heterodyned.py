@@ -57,7 +57,7 @@ from anesthetic import NestedSamples
 from blackjax.ns.utils import finalise
 
 from jimgw.core.single_event.detector import get_H1, get_L1
-from jimgw.core.single_event.waveform import RippleIMRPhenomD
+from jimgw.core.single_event.waveform import RippleIMRPhenomD, RippleIMRPhenomXAS
 from jimgw.core.single_event.data import Data, PowerSpectrum
 from gwpy.timeseries import TimeSeries
 
@@ -65,8 +65,8 @@ from gwpy.timeseries import TimeSeries
 # 0. COMMAND-LINE ARGUMENTS
 # ============================================================================
 parser = argparse.ArgumentParser(description='Heterodyned nested sampling for GW150914')
-parser.add_argument('--waveform', choices=['IMRPhenomD'],
-                    default='IMRPhenomD', help='Waveform approximant (IMRPhenomD only for BBH)')
+parser.add_argument('--waveform', choices=['IMRPhenomD', 'IMRPhenomXAS'],
+                    default='IMRPhenomD', help='Waveform approximant (IMRPhenomD or IMRPhenomXAS for BBH)')
 parser.add_argument('--data-source', choices=['fetch', 'local'],
                     default='fetch',
                     help='Data source: "fetch" pulls from GWOSC via gwpy (requires internet), '
@@ -372,8 +372,12 @@ print(f"[TIMING] Data loading: {t_data:.1f}s")
 
 H1, L1 = detectors
 
-waveform = RippleIMRPhenomD(f_ref=20.0)
-print(f"Waveform: {waveform_tag}")
+WAVEFORM_MAP = {
+    'IMRPhenomD': RippleIMRPhenomD,
+    'IMRPhenomXAS': RippleIMRPhenomXAS,
+}
+waveform = WAVEFORM_MAP[waveform_tag](f_ref=20.0)
+print(f"Waveform: {waveform_tag} ({waveform})")
 
 frequencies = H1.sliced_frequencies
 epoch = duration - post_trigger_duration
