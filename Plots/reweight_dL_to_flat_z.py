@@ -83,7 +83,12 @@ print(f"Effective sample size after reweighting: {n_eff:.0f} / {len(samples)}")
 # so we save as a plain weighted CSV instead.
 output_path = args.output
 if output_path is None:
-    output_path = args.input_csv.replace('.csv', '_flatZ.csv')
+    output_path = args.input_csv.replace('.csv', '_reweighted_flatZ.csv')
+
+# Safety: warn if the input filename suggests it already has a flat-in-z prior
+if 'flatZ' in args.input_csv or 'flat_z' in args.input_csv.lower():
+    print("  WARNING: Input filename contains 'flatZ' — are you sure this has a Beta(3,1) d_L prior?")
+    print("           Reweighting a file that already has flat-in-z prior will give incorrect results.")
 
 # Save as CSV with a weights column appended
 import pandas as pd

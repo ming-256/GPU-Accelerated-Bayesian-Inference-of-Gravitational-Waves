@@ -77,8 +77,8 @@ parser.add_argument('--psd-source', choices=['self', 'gwtc2p1'],
                          '"gwtc2p1" (PSDs from GWTC-2p1 PE data release HDF5)')
 parser.add_argument('--ref-params', choices=['gwtc1', 'optimize'],
                     default='gwtc1',
-                    help='Reference parameters: "gwtc1" loads median from GWTC-1 posteriors '
-                         '(Results/GW150914_GWTC-1.hdf5), "optimize" finds the maximum-likelihood '
+                    help='Reference parameters: "gwtc1" loads median from GWTC-2p1 posteriors '
+                         '(EventData/GWOSC/GW150914/), "optimize" finds the maximum-likelihood '
                          'point via Adam optimization of the phase-marginalized likelihood')
 parser.add_argument('--phase-marginalization', action='store_true',
                     help='Enable analytic phase marginalization (removes phase_c from sampling)')
@@ -234,7 +234,7 @@ def logprior_fn(x):
 gps = 1126259462.4
 fmin = 20.0
 fmax = 1024.0
-duration = 4        # BBH signal is very short in-band
+duration = 8        # 8s coherent analysis (Abbott et al. 2016, PRL 116, 241102, Sec. II.B)
 post_trigger_duration = 2
 roll_off = 0.4
 tukey_alpha = 2 * roll_off / duration
@@ -285,29 +285,24 @@ PSD_METHOD = 'median'
 GWOSC_PSD_DIR = 'EventData/GWOSC/GW150914'
 
 
-def load_external_psd(psd_src, ifo_name, target_freqs):
-    """Load PSD from an external file and interpolate to target frequency grid.
+GWTC2P1_HDF5 = os.path.join(GWOSC_PSD_DIR,
+    'IGWN-GWTC2p1-v2-GW150914_095045_PEDataRelease_mixed_nocosmo.h5')
 
-    Sources:
-      - 'gwtc1': Official BayesWave PSDs from GWTC-1 (LIGO-P1900011)
-    """
-    if psd_src == 'gwtc1':
-        psd_data = np.loadtxt(os.path.join(GWOSC_PSD_DIR, 'GWTC1_GW150914_PSDs.dat'))
+def load_external_psd(psd_src, ifo_name, target_freqs):
+    """Load PSD from the GWTC-2p1 PE data release and interpolate to target frequency grid."""
+    if psd_src == 'gwtc2p1':
+        with h5py.File(GWTC2P1_HDF5, 'r') as f:
+            psd_data = f[f'C01:IMRPhenomXPHM/psds/{ifo_name}'][:]
         freqs_psd = psd_data[:, 0]
-        col_map = {'H1': 1, 'L1': 2}
-        psd_vals = psd_data[:, col_map[ifo_name]]
+        psd_vals = psd_data[:, 1]
     else:
         raise ValueError(f"Unknown PSD source: {psd_src}")
-    # Replace inf with large sentinel before interpolation to avoid
-    # scipy RuntimeWarning from inf arithmetic (inf-finite=inf, inf*0=NaN).
-    # After interpolation, restore inf where the result exceeds the sentinel threshold.
     _PSD_INF_SENTINEL = 1e300
     inf_mask_src = ~np.isfinite(psd_vals)
     psd_vals_safe = np.where(inf_mask_src, _PSD_INF_SENTINEL, psd_vals)
     psd_interp = interp1d(freqs_psd, psd_vals_safe, kind='linear',
                           fill_value=_PSD_INF_SENTINEL, bounds_error=False)
     psd_values = psd_interp(np.array(target_freqs))
-    # Restore inf where interpolation touched sentinel-affected regions
     psd_values = np.where(psd_values >= _PSD_INF_SENTINEL * 0.5, np.inf, psd_values)
     return PowerSpectrum(
         values=jnp.array(psd_values),
