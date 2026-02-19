@@ -122,7 +122,7 @@ _PRIOR_HI_BASE = [
     2.168, 1.00, 0.05, 0.05,                # M_c, q, s1_z, s2_z
     jnp.pi, 75.0, 0.1,                       # iota, d_L, t_c
     jnp.pi, 2 * jnp.pi, jnp.pi / 2,         # psi, ra, dec
-    5000.0, 5000.0, 140.0, 1000.0,           # lambda_1, lambda_2, H_0, v_p
+    5000.0, 5000.0, 250.0, 1000.0,           # lambda_1, lambda_2, H_0, v_p
 ]
 _PRIOR_TYPE_BASE = [0, 0, 0, 0, 1, 3, 0, 0, 0, 2, 0, 0, 4, 0]
 

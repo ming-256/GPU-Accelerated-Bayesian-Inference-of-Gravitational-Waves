@@ -20,9 +20,11 @@ COMMON_ARGS=(
 )
 
 SCRIPTS=(
+    "GW170817/Scripts/GW170817_heterodyned_1.py"
+    "GW170817/Scripts/GW170817_heterodyned_2.py"
     "GW170817/Scripts/GW170817_heterodyned_3.py"
 )
-TAGS=("vp250")
+TAGS=("baseline" "flatZ" "vp250")
 
 WAVEFORMS=("IMRPhenomD_NRTidalv2" "TaylorF2")
 
