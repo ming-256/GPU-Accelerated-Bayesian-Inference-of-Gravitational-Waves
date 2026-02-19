@@ -4,6 +4,14 @@ env/
 ENV/
 *.venv
 
+# Results
+*.csv
+*.hdf5
+*.h5
+*.log
+*.out
+*.txt
+*.json
 # Python artifacts
 __pycache__/
 *.py[cod]
