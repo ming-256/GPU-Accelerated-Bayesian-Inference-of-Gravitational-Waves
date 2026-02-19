@@ -71,10 +71,10 @@ parser.add_argument('--data-source', choices=['fetch', 'local'],
                     default='fetch',
                     help='Data source: "fetch" pulls from GWOSC via gwpy (requires internet), '
                          '"local" reads HDF5 files from EventData/GWOSC/GW150914/')
-parser.add_argument('--psd-source', choices=['self', 'gwtc1'],
+parser.add_argument('--psd-source', choices=['self', 'gwtc2p1'],
                     default='self',
                     help='PSD source: "self" (estimated from data via gwpy Welch), '
-                         '"gwtc1" (official BayesWave PSDs from GWTC-1)')
+                         '"gwtc2p1" (PSDs from GWTC-2p1 PE data release HDF5)')
 parser.add_argument('--ref-params', choices=['gwtc1', 'optimize'],
                     default='gwtc1',
                     help='Reference parameters: "gwtc1" loads median from GWTC-1 posteriors '
@@ -258,8 +258,8 @@ t0 = time.time()
 # Local GWOSC HDF5 file mapping: ifo name -> file path
 GWOSC_LOCAL_DIR = 'EventData/GWOSC/GW150914'
 GWOSC_LOCAL_FILES = {
-    'H1': os.path.join(GWOSC_LOCAL_DIR, 'H-H1_GWOSC_4KHZ_R1-1126257414-4096.hdf5'),
-    'L1': os.path.join(GWOSC_LOCAL_DIR, 'L-L1_GWOSC_4KHZ_R1-1126257414-4096.hdf5'),
+    'H1': os.path.join(GWOSC_LOCAL_DIR, 'H-H1_LOSC_4_V1-1126256640-4096.hdf5'),
+    'L1': os.path.join(GWOSC_LOCAL_DIR, 'L-L1_LOSC_4_V1-1126256640-4096.hdf5'),
 }
 
 def load_gwosc_local(ifo_name, gps_start, gps_end):
@@ -389,35 +389,30 @@ gmst = Time(gps, format="gps").sidereal_time("apparent", "greenwich").rad
 # 5. REFERENCE PARAMETERS (from GWTC-1 posteriors or optimization)
 # ============================================================================
 
-def load_reference_params(hdf5_path, dataset='IMRPhenomPv2_posterior'):
-    """Load GWTC-1 posterior samples and compute median reference parameters.
+def load_reference_params(hdf5_path, dataset='C01:IMRPhenomXPHM/posterior_samples'):
+    """Load GWTC-2p1 posterior samples and compute median reference parameters.
 
-    Converts detector-frame masses and spin magnitudes/tilts to the ripple
-    parametrization (M_c, q, eta, s1_z, s2_z, ...).
-
-    Note: GW150914 GWTC-1 file uses 'IMRPhenomPv2_posterior' dataset
-    (different from GW170817's 'IMRPhenomPv2NRT_lowSpin_posterior').
+    Uses the IGWN GWTC-2p1 PE data release format (pesummary convention):
+      chirp_mass, mass_ratio, a_1, tilt_1, a_2, tilt_2, luminosity_distance,
+      iota, ra, dec, ...
     """
     with h5py.File(hdf5_path, 'r') as f:
         data = f[dataset][:]
 
-    m1 = np.median(data['m1_detector_frame_Msun'])
-    m2 = np.median(data['m2_detector_frame_Msun'])
-    M = m1 + m2
-    eta_val = m1 * m2 / M**2
-    Mc = M * eta_val**(3.0 / 5)
-    q_val = m2 / m1
+    Mc = np.median(data['chirp_mass'])       # detector-frame chirp mass
+    q_val = np.median(data['mass_ratio'])    # q = m2/m1 <= 1
+    eta_val = q_val / (1 + q_val) ** 2
 
-    s1_z = np.median(data['spin1'] * data['costilt1'])
-    s2_z = np.median(data['spin2'] * data['costilt2'])
+    s1_z = np.median(data['spin_1z'])
+    s2_z = np.median(data['spin_2z'])
 
     ref = {
         'M_c': float(Mc), 'q': float(q_val), 'eta': float(eta_val),
         's1_z': float(s1_z), 's2_z': float(s2_z),
-        'd_L': float(np.median(data['luminosity_distance_Mpc'])),
-        'iota': float(np.median(np.arccos(data['costheta_jn']))),
-        'ra': float(np.median(data['right_ascension'])),
-        'dec': float(np.median(data['declination'])),
+        'd_L': float(np.median(data['luminosity_distance'])),
+        'iota': float(np.median(data['iota'])),
+        'ra': float(np.median(data['ra'])),
+        'dec': float(np.median(data['dec'])),
         't_c': 0.0, 'phase_c': 0.0, 'psi': 0.0,
         'trigger_time': float(gps),
         'gmst': float(gmst),
@@ -584,7 +579,7 @@ def optimize_reference_params(detectors, waveform, frequencies, popsize=100, n_s
 
 t_ref0 = time.time()
 if ref_params_source == 'gwtc1':
-    ref_params = load_reference_params('Results/GW150914_GWTC-1.hdf5')
+    ref_params = load_reference_params('EventData/GWOSC/GW150914/IGWN-GWTC2p1-v2-GW150914_095045_PEDataRelease_mixed_nocosmo.h5')
     print(f"Reference (gwtc1): M_c={ref_params['M_c']:.4f}, q={ref_params['q']:.4f}, d_L={ref_params['d_L']:.1f}")
 else:
     ref_params = optimize_reference_params(detectors, waveform, frequencies)
