@@ -3,8 +3,9 @@ Heterodyned Nested Sampling for GW170817 — flat-in-z prior
 ============================================================
 
 Variant of GW170817_heterodyned_1.py with one change:
-  d_L prior: flat in redshift z (= uniform in d_L + Jacobian H_0/c)
+  d_L prior: flat in redshift z (= uniform in d_L, LVK convention)
   instead of Beta(3,1) ∝ d_L^2.
+  H_0 prior remains log-uniform (unchanged from baseline).
 
 Usage:
   python GW170817_heterodyned_2.py [--waveform {IMRPhenomD_NRTidalv2,TaylorF2}]
@@ -115,8 +116,8 @@ _PRIOR_HI_BASE = [
     jnp.pi, 2 * jnp.pi, jnp.pi / 2,         # psi, ra, dec
     5000.0, 5000.0, 250.0, 1000.0,           # lambda_1, lambda_2, H_0, v_p
 ]
-# d_L prior type: 0 (uniform) instead of 3 (Beta(3,1)) — flat-in-z uses
-# uniform d_L + explicit Jacobian H_0/c added in logprior_fn.
+# d_L prior type: 0 (uniform) instead of 3 (Beta(3,1)) — flat-in-z (LVK convention).
+# Uniform d_L at fixed H_0 is equivalent to flat-in-z since z ∝ d_L.
 _PRIOR_TYPE_BASE = [0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 0, 4, 0]
 
 # When phase_c is NOT marginalized, add it as 15th parameter (uniform [0, 2pi])
@@ -197,9 +198,10 @@ def logprior_fn(x):
     mass_ok = (m1 >= M_COMP_LO) & (m1 <= M_COMP_HI) & (m2 >= M_COMP_LO) & (m2 <= M_COMP_HI)
     total = jnp.where(mass_ok, total, -jnp.inf)
 
-    # Flat-in-z Jacobian: p(d_L) = p(z) |dz/dd_L| = const * H_0/c.
-    # With uniform d_L base prior, we add log(H_0) (c is absorbed into normalization).
-    total = total + jnp.log(x[I_H0])
+    # Flat-in-z prior (LVK convention): uniform in d_L at fixed H_0.
+    # Since z ∝ d_L at fixed H_0, flat-in-d_L ≡ flat-in-z.
+    # The base d_L prior is already uniform (type 0), so no Jacobian needed.
+    # The H_0 prior remains log-uniform (unchanged).
 
     # Jacobian |∂(m1,m2)/∂(M_c,q)| = M_c * (1+q)^(2/5) / q^(6/5)
     # Converts uniform-in-(M_c,q) to uniform-in-(m1,m2), as assumed in

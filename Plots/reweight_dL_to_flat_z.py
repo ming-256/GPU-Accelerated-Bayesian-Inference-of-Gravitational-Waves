@@ -5,34 +5,27 @@ Reweight d_L posterior samples from Beta(3,1) prior to flat-in-z prior.
 Takes nested sampling CSV results (with Beta(3,1) ∝ d_L^2 prior on d_L)
 and reweights them to a flat-in-redshift prior using importance sampling.
 
-Derivation
+Derivation  (LVK convention — only change the d_L prior)
 ----------
 Old prior:  p_old(d_L) = Beta(3,1) on [lo, hi] = 3u^2 / (hi - lo),
-            where u = (d_L - lo) / (hi - lo).
+            where u = (d_L - lo) / (hi - lo).  This is ∝ d_L^2 (volumetric).
 
-New prior:  flat in z, i.e. p_new(z) = const.
+New prior:  p_new(d_L) = uniform on [lo, hi] = 1 / (hi - lo).
+            At fixed H_0, flat-in-d_L is equivalent to flat-in-z
+            since z = H_0 d_L / c  ⟹  dz ∝ dd_L.
 
-Using d_L = cz/H_0 (low-z Hubble law),  |dz/dd_L| = H_0/c,  |dd_L/dz| = c/H_0.
+The H_0 prior is kept unchanged (log-uniform).
 
-Importance reweighting (change of variable from d_L to z):
+Importance reweighting:
 
-    w_new / w_old = p_new(z) / p_old(z)
-
-where the old prior expressed in z-space is:
-
-    p_old(z) = p_old(d_L) * |dd_L/dz| = p_old(d_L) * c / H_0
-
-Therefore:
-
-    w_new / w_old  = p_new(z) / [p_old(d_L) * (c / H_0)]
-                   = const * H_0 / [c * p_old(d_L)]
-                   ∝ H_0 / p_old(d_L)
-                   = H_0 * (hi - lo) / (3 u^2)
-                   = H_0 * (hi - lo)^3 / [3 * (d_L - lo)^2]
+    w_new / w_old = p_new(d_L) / p_old(d_L)
+                  = [1/(hi-lo)] / [3u^2/(hi-lo)]
+                  = 1 / (3 u^2)
+                  ∝ 1 / u^2
 
 Since we normalise weights at the end, all multiplicative constants cancel:
 
-    w_new ∝ w_old * H_0 / (d_L - d_L_lo)^2
+    w_new ∝ w_old / u^2
 
 Usage:
     # Reweight a single file:
@@ -85,15 +78,14 @@ def reweight_file(input_csv, output_path=None):
 
     # Extract needed columns
     d_L = samples['d_L'].to_numpy()
-    H_0 = samples['H_0'].to_numpy()
 
     # Original nested sampling weights (from evidence calculation)
     weights_old = np.asarray(samples.get_weights())
 
-    # Reweighting factor: w_new ∝ w_old * H_0 / (d_L - d_L_lo)^2
+    # Reweighting factor: w_new ∝ w_old / u^2  (LVK convention: only change d_L prior)
     # Guard against d_L == d_L_lo (u=0) which would give infinite weight
     u = (d_L - D_L_LO) / (D_L_HI - D_L_LO)
-    reweight_factor = H_0 / (u**2 + 1e-30)
+    reweight_factor = 1.0 / (u**2 + 1e-30)
 
     weights_new = weights_old * reweight_factor
 

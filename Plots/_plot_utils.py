@@ -53,8 +53,8 @@ COLORS = {
     'flatZ':          'tab:green',
     'vp250':          'tab:red',
     'reweighted':     'tab:cyan',
-    'unhetero_imr':   'gray',
-    'unhetero_tf2':   'dimgray',
+    'unhetero_imr':   '#555555',
+    'unhetero_tf2':   '#777777',
     'planck_inner':   '#0CDE79',
     'planck_outer':   '#6DE6AC',
     'shoes_inner':    '#E87317',
@@ -145,8 +145,10 @@ def compute_hpd(x_eval, pdf_vals, cred_level):
 # --------------------------------------------------------------------------- #
 # H_0 plot with MAP, HPD, SHoES, Planck
 # --------------------------------------------------------------------------- #
-def plot_h0(runs, out_name, xlim=(20, 180)):
-    """Create an H_0 posterior plot with MAP, HPD intervals, and reference bands.
+def plot_h0(runs, out_name, xlim=(20, 250), n_eval=500):
+    """Create an H_0 posterior plot using weighted KDE.
+
+    Area-normalised KDE with MAP, HPD credible intervals, SHoES and Planck bands.
 
     Parameters
     ----------
@@ -156,8 +158,11 @@ def plot_h0(runs, out_name, xlim=(20, 180)):
         Output filename stem (saved to OUT_DIR).
     xlim : tuple
         x-axis limits.
+    n_eval : int
+        Number of points for KDE evaluation grid.
     """
     fig, ax = plt.subplots(figsize=(10, 6))
+    x_eval = np.linspace(xlim[0], xlim[1], n_eval)
 
     for samples, label, color in runs:
         # Extract H_0 values and weights
@@ -170,22 +175,19 @@ def plot_h0(runs, out_name, xlim=(20, 180)):
 
         weights = weights / weights.sum()
 
-        # KDE
+        # Weighted KDE
         kde = gaussian_kde(h0_vals, weights=weights)
-        x_eval = np.linspace(max(xlim[0], h0_vals.min() - 5),
-                             min(xlim[1], h0_vals.max() + 5), 10000)
         pdf_vals = kde(x_eval)
 
-        # Normalise PDF for display
-        pdf_vals = pdf_vals / np.max(pdf_vals)
+        # Area-normalise
+        pdf_vals = pdf_vals / np.trapezoid(pdf_vals, x_eval)
 
-        # Plot KDE
+        # Plot
         ax.plot(x_eval, pdf_vals, color=color, lw=2, label=label)
         ax.fill_between(x_eval, pdf_vals, alpha=0.15, color=color)
 
         # MAP
         map_val = x_eval[np.argmax(pdf_vals)]
-        ax.axvline(map_val, color=color, lw=1.5, ls='-', alpha=0.8)
         print(f"  {label}: H_0 MAP = {map_val:.1f} km/s/Mpc")
 
         # HPD intervals
@@ -205,9 +207,9 @@ def plot_h0(runs, out_name, xlim=(20, 180)):
                alpha=0.3, zorder=0, label='SHoES')
 
     ax.set_xlim(xlim)
-    ax.set_ylim(0, 1)
+    ax.set_ylim(bottom=0)
     ax.set_xlabel(r'$H_0$ (km s$^{-1}$ Mpc$^{-1}$)')
-    ax.set_ylabel(r'Normalised $P(H_0)$')
+    ax.set_ylabel(r'$P(H_0)$ (km$^{-1}$ s Mpc)')
 
     for spine in ax.spines.values():
         spine.set_edgecolor('black')
@@ -242,8 +244,14 @@ def make_corner(datasets, params, out_name, figsize=(10, 10)):
         samples.plot_2d(
             axes,
             kinds=dict(diagonal='hist_1d', lower='kde_2d'),
+            diagonal_kwargs=dict(
+                bins=35,
+                histtype='step',
+                linewidth=2.0,
+                density=True,
+            ),
             lower_kwargs=dict(levels=[0.99730, 0.95450, 0.68269]),
-            color=color, alpha=0.65, label=label,
+            color=color, alpha=0.75, label=label,
         )
 
     axes.iloc[-1, 0].legend(
