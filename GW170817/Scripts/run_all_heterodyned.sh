@@ -16,7 +16,7 @@ COMMON_ARGS=(
     --psd-source gwtc1
     --ref-params gwtc1
     --phase-marginalization
-    --output-dir Results
+    --output-dir Results/gwtc1_phasemarg
 )
 
 SCRIPTS=(

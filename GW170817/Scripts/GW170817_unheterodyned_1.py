@@ -73,6 +73,10 @@ parser.add_argument('--checkpoint-every', type=int, default=5,
                     help='Save checkpoint every N nested sampling steps (default: 5)')
 parser.add_argument('--no-resume', action='store_true',
                     help='Start fresh even if a checkpoint file exists')
+parser.add_argument('--wide-prior', action='store_true',
+                    help='Use wider priors (relaxed M_c, q, spin, d_L bounds)')
+parser.add_argument('--label-suffix', default='',
+                    help='Suffix to append to output filename (e.g. "_narrow_prior")')
 args = parser.parse_args()
 data_source = args.data_source
 psd_source = args.psd_source
@@ -99,19 +103,39 @@ PARAM_LABELS = [
 I_MC, I_Q, I_S1Z, I_S2Z, I_IOTA, I_DL, I_TC = 0, 1, 2, 3, 4, 5, 6
 I_PSI, I_RA, I_DEC, I_L1, I_L2, I_H0, I_VP = 7, 8, 9, 10, 11, 12, 13
 
+# NGC 4993 host galaxy sky position (GW170817 EM counterpart)
+# RA = 197.4508 deg = 3.4462 rad, Dec = -23.3815 deg = -0.4081 rad
+_NGC4993_RA = 3.4462   # rad
+_NGC4993_DEC = -0.4081  # rad
+
+# Base priors (shared between narrow and wide)
 _PRIOR_LO_BASE = [
     1.184, 0.125, -0.05, -0.05,             # M_c, q, s1_z, s2_z
     0.0, 1.0, -0.1,                          # iota, d_L, t_c
-    0.0, 3.44, -0.41,                           # psi, ra, dec (NGC 4993)
-    0.0, 0.0, 20.0, -1000.0,                # lambda_1, lambda_2, H_0, v_p
+    0.0, 0.0, -jnp.pi / 2,                   # psi, ra, dec
+    0.0, 0.0, 20.0, -1000.0,                 # lambda_1, lambda_2, H_0, v_p
 ]
 _PRIOR_HI_BASE = [
     2.168, 1.00, 0.05, 0.05,                # M_c, q, s1_z, s2_z
     jnp.pi, 75.0, 0.1,                       # iota, d_L, t_c
-    jnp.pi, 3.45, -0.40,                       # psi, ra, dec (NGC 4993)
-    5000.0, 5000.0, 140.0, 1000.0,          # lambda_1, lambda_2, H_0, v_p
+    jnp.pi, 2 * jnp.pi, jnp.pi / 2,         # psi, ra, dec
+    5000.0, 5000.0, 250.0, 1000.0,           # lambda_1, lambda_2, H_0, v_p
 ]
-_PRIOR_TYPE_BASE = [0, 0, 0, 0, 1, 3, 0, 0, 0, 0, 0, 0, 4, 0]
+M_COMP_LO_VAL = 0.5
+M_COMP_HI_VAL = 7.7
+
+if args.wide_prior:
+    # "Wide" = RA/dec constrained to NGC 4993 host galaxy location (±0.05 rad ≈ ±3°)
+    _PRIOR_LO_BASE[I_RA]  = _NGC4993_RA - 0.05
+    _PRIOR_HI_BASE[I_RA]  = _NGC4993_RA + 0.05
+    _PRIOR_LO_BASE[I_DEC] = _NGC4993_DEC - 0.05
+    _PRIOR_HI_BASE[I_DEC] = _NGC4993_DEC + 0.05
+    print(f"Using HOST-LOCALISED priors: RA=[{_PRIOR_LO_BASE[I_RA]:.4f}, {_PRIOR_HI_BASE[I_RA]:.4f}], "
+          f"Dec=[{_PRIOR_LO_BASE[I_DEC]:.4f}, {_PRIOR_HI_BASE[I_DEC]:.4f}]")
+else:
+    # Default: full-sky RA/dec (narrow M_c/q/spin priors)
+    print("Using FULL-SKY priors (narrow M_c/q/spin)")
+_PRIOR_TYPE_BASE = [0, 0, 0, 0, 1, 3, 0, 0, 0, 2, 0, 0, 4, 0]
 
 if not phase_marg:
     PARAM_NAMES.append("phase_c")
@@ -126,8 +150,8 @@ NUM_DIMS = len(PARAM_NAMES)
 PRIOR_LO = jnp.array(_PRIOR_LO_BASE)
 PRIOR_HI = jnp.array(_PRIOR_HI_BASE)
 
-M_COMP_LO = 0.5
-M_COMP_HI = 7.7
+M_COMP_LO = M_COMP_LO_VAL
+M_COMP_HI = M_COMP_HI_VAL
 
 PRIOR_TYPE = jnp.array(_PRIOR_TYPE_BASE)
 
@@ -194,7 +218,8 @@ psd_duration = 1024
 waveform_tag = args.waveform
 marg_tag = 'PhaseMarg' if phase_marg else 'NoMarg'
 import os; os.makedirs(output_dir, exist_ok=True)
-label = f'{output_dir}/{marg_tag}_Unheterodyned_{waveform_tag}_{data_source}_psd-{psd_source}'
+label_suffix = args.label_suffix
+label = f'{output_dir}/{marg_tag}_Unheterodyned_{waveform_tag}_{data_source}_psd-{psd_source}{label_suffix}'
 checkpoint_path = f'{label}_checkpoint.pkl'
 CHECKPOINT_EVERY = args.checkpoint_every
 

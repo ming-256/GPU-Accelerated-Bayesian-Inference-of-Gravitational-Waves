@@ -1,132 +1,139 @@
-# Parallel Bilby — HPC Comparison Runs
+# Bilby HPC — CPU Comparison Runs
 
-Self-contained parallel_bilby configurations for GW150914 and GW170817, using
-the **same waveform models and priors** as our JAX analysis for direct comparison.
+Self-contained bilby analyses for **GW150914** and **GW170817**, using the
+**same waveform models, priors, and likelihood** as our JAX GPU analysis for
+direct wall-clock comparison.
+
 Transfer this entire `parallel_bilby/` folder to your HPC cluster.
 
-**Sampler:** PyPolyChord (PolyChord nested sampling via bilby)
-**Likelihood:** Relative binning (heterodyned) — `RelativeBinningGravitationalWaveTransient`
+**Sampler:** PyPolyChord (PolyChord nested sampling, MPI-parallelised)
+**Likelihood:** Relative binning (heterodyned) + analytic phase marginalisation
+**Standard siren:** GW170817 includes H_0 and v_p with NGC 4993 EM counterpart
+
+---
+
+## Quick start
+
+```bash
+# 1. Load modules (names vary by cluster)
+module load gcc openmpi python
+
+# 2. Install everything (creates venv + builds PolyChord)
+source setup_env.sh
+
+# 3. Edit cluster settings
+vi config.sh          # set NODES, CORES_PER_NODE, walltime, account
+
+# 4. Run
+bash run_all.sh       # generates data (login node) then submits Slurm jobs
+```
+
+---
 
 ## Directory structure
 
 ```
 parallel_bilby/
-├── README.md                              # this file
-├── requirements.txt                       # pip dependencies
-├── setup_env.sh                           # environment setup (conda/venv) + PolyChord
-├── run_all.sh                             # generate data + submit all jobs + timing
+├── README.md                   # this file
+├── config.sh                   # ★ USER EDITS THIS — nodes, cores, walltime
+├── setup_env.sh                # automated venv + PolyChord install
+├── run_all.sh                  # orchestration: data gen → Slurm submit
+├── requirements.txt            # pip dependencies
 ├── GW150914/
-│   ├── GW150914_IMRPhenomD.ini            # parallel_bilby config
-│   └── GW150914_IMRPhenomD.prior          # prior file
+│   ├── run_GW150914.py         # standalone bilby analysis (BBH)
+│   └── GW150914_IMRPhenomD.prior
 ├── GW170817/
-│   ├── GW170817.prior                     # shared prior file (BNS)
-│   ├── GW170817_IMRPhenomD_NRTidalv2.ini  # config — IMRPhenomD_NRTidalv2
-│   └── GW170817_TaylorF2.ini              # config — TaylorF2
-└── results/                               # ← ALL outputs land here
-    ├── timing_summary.txt                 # wall-clock timing for every stage
+│   ├── run_GW170817.py         # standalone bilby analysis (BNS + H_0, v_p)
+│   └── GW170817.prior          # includes H_0, v_p priors
+└── results/                    # ← ALL outputs land here
+    ├── timing_summary.txt
     ├── GW150914_IMRPhenomD/
-    │   ├── data/   ...data_dump.pickle
-    │   ├── result/ ...result.json         # posterior samples
-    │   └── submit/ ...bash script
+    │   ├── timing.txt
+    │   └── ...bilby result files...
     ├── GW170817_IMRPhenomD_NRTidalv2/
     │   └── ...
     └── GW170817_TaylorF2/
         └── ...
 ```
 
-## Waveform matching
-
-| Event    | Our JAX waveform              | Bilby approximant        | Type              |
-|----------|-------------------------------|--------------------------|-------------------|
-| GW150914 | `RippleIMRPhenomD`            | `IMRPhenomD`             | BBH, aligned spin |
-| GW170817 | `RippleIMRPhenomD_NRTidalv2`  | `IMRPhenomD_NRTidalv2`   | BNS, tidal        |
-| GW170817 | `RippleTaylorF2`              | `TaylorF2`               | BNS, tidal        |
-
-All three are aligned-spin, (2,2)-mode only — ensuring apples-to-apples comparison.
-
 ---
 
-## Prerequisites
+## What to edit: `config.sh`
 
-- **Fortran compiler** (gfortran) — required to build PolyChord
-- **MPI** (OpenMPI or MPICH) — required for parallel runs
-- **Python ≥ 3.9**
-- **conda** or **pip/venv**
+All cluster-specific settings are in **one file**.  Edit before running:
 
-On most HPC clusters:
 ```bash
-module load gcc openmpi anaconda3    # names vary by cluster
+# ── Cluster resources ────────────────────────────────────────────────
+NODES=4                        # nodes per job
+CORES_PER_NODE=16              # physical cores per node (nproc)
+
+# ── Wall-clock time (HH:MM:SS) ──────────────────────────────────────
+WALLTIME_GW150914="24:00:00"   # BBH — typically 1–4 h
+WALLTIME_GW170817="48:00:00"   # BNS — typically 12–48 h
+
+# ── Slurm account / partition ────────────────────────────────────────
+SLURM_ACCOUNT=""               # e.g. "myproject"
+SLURM_PARTITION=""             # e.g. "batch"
+SLURM_EXTRA=""                 # e.g. "--qos=normal"
+
+# ── Sampler ──────────────────────────────────────────────────────────
+NLIVE=2000                     # live points
+NUM_REPEATS=40                 # slice-sampling repeats
 ```
+
+### How to find CORES_PER_NODE
+
+```bash
+nproc                          # on a compute node
+sinfo -N -l | head -5          # from login node
+lscpu | grep "^CPU(s):"        # alternative
+```
+
+### How many nodes?
+
+Total MPI ranks = `NODES x CORES_PER_NODE`.  Aim for total ranks ~ `NLIVE`.
+
+| Cluster type        | CORES_PER_NODE | NODES (GW150914) | NODES (GW170817) |
+|----------------------|----------------|-------------------|-------------------|
+| 16-core (older)      | 16             | 4                 | 8                 |
+| 48-core (AMD Rome)   | 48             | 2                 | 4                 |
+| 128-core (AMD Milan) | 128            | 1                 | 2                 |
 
 ---
 
 ## Installation
 
-### Step 1: Install PolyChord from source
+### Prerequisites
 
-PolyChord must be built from source (it is **not** pip-installable).
+- Python >= 3.9
+- Fortran compiler (`gfortran`) — needed to build PolyChord
+- MPI (`openmpi` or `mpich`) — needed for multi-node parallel runs
 
 ```bash
-# Clone the repository
-git clone https://github.com/PolyChord/PolyChordLite.git
-cd PolyChordLite
-
-# Build with MPI (set MPI= for no MPI, or MPI=<nprocs> for MPI)
-make pypolychord MPI=
-python setup.py install --user
-
-# Go back
-cd ..
+module load gcc openmpi python   # typical HPC modules
 ```
 
-**With MPI** (recommended for HPC — add number of compile processes):
+### Automated setup (recommended)
+
 ```bash
-make pypolychord MPI=4
-python setup.py install --user
+source setup_env.sh
 ```
 
-**Verify installation:**
-```bash
-python -c "import pypolychord; print('PyPolyChord OK')"
-```
+This will:
+1. Create a Python venv at `pbilby_venv/`
+2. `pip install` all dependencies from `requirements.txt`
+3. Clone and build PolyChord from source with MPI support
+4. Verify the installation
 
-### Step 2: Install bilby stack
-
-**Option A — Automated setup (recommended):**
-```bash
-# Conda (installs everything including PolyChord):
-source setup_env.sh conda
-
-# OR venv:
-source setup_env.sh venv
-```
-
-**Option B — Manual install:**
-```bash
-pip install -r requirements.txt
-```
-
-The `setup_env.sh` script will:
-1. Create a conda/venv environment
-2. Install LALSuite, bilby, parallel-bilby, pypolychord-bilby, mpi4py
-3. Clone and build PolyChord from source automatically
-
-**Option C — Install only PolyChord** (if bilby is already installed):
-```bash
-source setup_env.sh polychord
-```
-
-### Verify everything works
+### Verify
 
 ```bash
+source pbilby_venv/bin/activate
 python -c "
-import bilby
-import pypolychord
-import lal
-import lalsimulation
-print('bilby:', bilby.__version__)
-print('PyPolyChord: OK')
-print('LALSuite: OK')
+import bilby; print('bilby', bilby.__version__)
+import pypolychord; print('PyPolyChord OK')
+import lal; print('LALSuite OK')
+import mpi4py; print('mpi4py OK')
 "
 ```
 
@@ -134,248 +141,187 @@ print('LALSuite: OK')
 
 ## Running
 
-### Generate data + submit all jobs (Slurm)
+### Option A: Slurm (standard HPC)
 
 ```bash
-cd parallel_bilby/
-bash run_all.sh              # generates data dumps → sbatch submits all 3
-                              # results go to results/<label>/
-                              # timing logged to results/timing_summary.txt
+bash run_all.sh              # data gen + submit 3 Slurm jobs
 ```
 
-Or step by step:
+This runs two steps:
+1. **Data generation** (serial, on login node): downloads GWOSC strain data,
+   estimates PSDs, saves pickles.  Requires internet access.
+2. **Sampling** (MPI, on compute nodes): loads pickle, runs PolyChord.
+   Auto-generates and submits Slurm batch scripts.
+
+To generate data without submitting:
 ```bash
-bash run_all.sh --gen-only   # generate data dumps only (no submission)
-bash run_all.sh              # submit to Slurm
+bash run_all.sh --gen-only
 ```
 
-### Run a single job manually
+### Option B: Local with MPI (testing / single node)
 
 ```bash
-# Step 1: Generate the data dump
-cd GW150914/
-parallel_bilby_generation GW150914_IMRPhenomD.ini
-
-# Step 2: Run with MPI (output goes to results/GW150914_IMRPhenomD/)
-mpirun -n 64 parallel_bilby_analysis results/GW150914_IMRPhenomD/data/GW150914_IMRPhenomD_data_dump.pickle
+bash run_all.sh --local          # uses NODES x CORES_PER_NODE MPI ranks
+bash run_all.sh --local-serial   # single process (quick sanity check)
 ```
 
-### Run locally (testing, no Slurm)
+### Option C: Run a single analysis manually
 
 ```bash
-bash run_all.sh --local 4    # runs all 3 with 4 MPI processes each
-                              # timing recorded for each sampling run
-```
+source pbilby_venv/bin/activate
 
-### Check results after completion
+# GW150914:
+python GW150914/run_GW150914.py --gen-only
+mpirun -n 64 python GW150914/run_GW150914.py \
+    --from-pickle results/GW150914_IMRPhenomD/GW150914_IMRPhenomD_data_dump.pickle
 
-```bash
-ls results/                           # all run directories + timing_summary.txt
-cat results/timing_summary.txt        # wall-clock timing for every stage
+# GW170817 (IMRPhenomD_NRTidalv2):
+python GW170817/run_GW170817.py --waveform IMRPhenomD_NRTidalv2 --gen-only
+mpirun -n 128 python GW170817/run_GW170817.py \
+    --waveform IMRPhenomD_NRTidalv2 \
+    --from-pickle results/GW170817_IMRPhenomD_NRTidalv2/GW170817_IMRPhenomD_NRTidalv2_data_dump.pickle
+
+# GW170817 (TaylorF2):
+python GW170817/run_GW170817.py --waveform TaylorF2 --gen-only
+mpirun -n 128 python GW170817/run_GW170817.py \
+    --waveform TaylorF2 \
+    --from-pickle results/GW170817_TaylorF2/GW170817_TaylorF2_data_dump.pickle
 ```
 
 ---
 
-## Slurm configuration — nodes, tasks, and how to find yours
+## Analysis details
 
-The `nodes` and `ntasks-per-node` settings in the `.ini` files are **cluster-dependent**.
-You need to match them to your HPC system. Here's how to find the right values:
+### Waveform matching (JAX vs bilby)
 
-### Where to configure
+| Event    | JAX waveform               | Bilby approximant        | Type              |
+|----------|----------------------------|--------------------------|-------------------|
+| GW150914 | `RippleIMRPhenomD`         | `IMRPhenomD`             | BBH, aligned spin |
+| GW170817 | `RippleIMRPhenomD_NRTidalv2` | `IMRPhenomD_NRTidalv2` | BNS, tidal        |
+| GW170817 | `RippleTaylorF2`           | `TaylorF2`               | BNS, tidal        |
 
-Edit the `## Slurm Settings` section at the bottom of each `.ini` file:
+All are aligned-spin, (2,2)-mode only.
 
-```ini
-## Slurm Settings
-nodes = 4
-ntasks-per-node = 16
-time = 24:00:00
+### GW150914 — BBH (10 sampled parameters + phase marginalised)
+
+| Parameter     | Prior                           |
+|---------------|---------------------------------|
+| M_c           | Uniform [10, 80] M_sun          |
+| q             | Uniform [0.125, 1]              |
+| chi_1, chi_2  | Uniform [-1, 1]                 |
+| d_L           | PowerLaw(alpha=2) [1, 2000] Mpc |
+| theta_jn      | Sine [0, pi]                    |
+| psi           | Uniform [0, pi]                 |
+| ra            | Uniform [0, 2pi]                |
+| dec           | Cosine [-pi/2, pi/2]            |
+| geocent_time  | Uniform [trigger +/- 0.05 s]    |
+| m_1, m_2      | Constraint [1, 100] M_sun       |
+| phase         | Analytically marginalised       |
+
+### GW170817 — BNS + standard siren (14 sampled parameters + phase marginalised)
+
+| Parameter     | Prior                             |
+|---------------|-----------------------------------|
+| M_c           | Uniform [1.184, 2.168] M_sun      |
+| q             | Uniform [0.125, 1]                |
+| chi_1, chi_2  | Uniform [-0.05, 0.05]             |
+| d_L           | PowerLaw(alpha=2) [1, 75] Mpc     |
+| theta_jn      | Sine [0, pi]                      |
+| psi           | Uniform [0, pi]                   |
+| ra            | Uniform [0, 2pi]                  |
+| dec           | Cosine [-pi/2, pi/2]              |
+| geocent_time  | Uniform [trigger +/- 0.1 s]       |
+| lambda_1      | Uniform [0, 5000]                 |
+| lambda_2      | Uniform [0, 5000]                 |
+| H_0           | LogUniform [20, 250] km/s/Mpc     |
+| v_p           | Uniform [-1000, 1000] km/s        |
+| m_1, m_2      | Constraint [0.5, 7.7] M_sun       |
+| phase         | Analytically marginalised         |
+
+### Standard siren likelihood (GW170817 only)
+
+The total log-likelihood is `log L_GW + log L_vr + log L_vp`, where:
+
+```
+L_vr = N(3327 | v_p + H_0 * d_L, 72)    recession velocity of NGC 4993
+L_vp = N(310  | v_p, 150)                peculiar velocity constraint
 ```
 
-### How to find your cluster's values
+These match the JAX script terms exactly.  The GW likelihood uses relative
+binning with fiducial parameters from GWTC-1 medians.
 
-1. **Cores per node** — check with your cluster:
-   ```bash
-   # Method 1: Slurm
-   sinfo -N -l | head -5        # shows CPUs per node
+### Likelihood settings
 
-   # Method 2: direct
-   nproc                         # cores on current node
-   lscpu | grep "^CPU(s):"      # same info
+| Setting               | Value |
+|-----------------------|-------|
+| Likelihood type       | RelativeBinningGravitationalWaveTransient |
+| epsilon               | 0.5   |
+| Phase marginalisation | Yes   |
+| Distance marginalisation | No |
+| Time marginalisation  | No    |
 
-   # Method 3: cluster docs
-   # Check your HPC's documentation/wiki for node specs
-   ```
+### Sampler settings
 
-2. **Set `ntasks-per-node`** = number of physical cores per node (not hyperthreads).
-   Common values: 16, 28, 32, 40, 48, 64, 128.
-
-3. **Set `nodes`** based on desired total MPI ranks:
-   - Total MPI ranks = `nodes × ntasks-per-node`
-   - Rule of thumb: total ranks ≈ `nlive` (2000) or a fraction of it
-   - More nodes = faster per iteration, but Slurm queue wait may be longer
-
-4. **Set `time`** based on estimated runtime (see table below) with some margin.
-
-### Example configurations by cluster type
-
-| Cluster type            | `ntasks-per-node` | `nodes` (GW150914) | `nodes` (GW170817) |
-|-------------------------|--------------------|---------------------|---------------------|
-| 16-core (older)         | 16                 | 4                   | 10                  |
-| 28-core (Broadwell)     | 28                 | 3                   | 6                   |
-| 48-core (AMD Rome)      | 48                 | 2                   | 4                   |
-| 128-core (AMD Milan)    | 128                | 1                   | 2                   |
-
-### Adding account/partition
-
-Most clusters require a project account and/or partition. Add these via
-`extra-lines` in the Slurm section **or** edit the generated submit script:
-
-```ini
-# In the .ini file:
-nodes = 4
-ntasks-per-node = 16
-time = 24:00:00
-
-# Add any extra Slurm directives your cluster needs:
-# extra-lines = --account=myproject --partition=batch --qos=normal
-```
-
-Or after generation, edit the submit script directly:
-```bash
-vi results/GW150914_IMRPhenomD/submit/bash_GW150914_IMRPhenomD.sh
-# Add: #SBATCH --account=myproject
-```
-
-### PBS/Torque clusters
-
-If your cluster uses PBS instead of Slurm, generate the data dump first, then
-write your own submission script calling:
-```bash
-mpirun parallel_bilby_analysis results/<label>/data/<label>_data_dump.pickle
-```
+| Setting      | Value |
+|-------------|-------|
+| Sampler      | PyPolyChord (PolyChord nested sampling) |
+| nlive        | 2000  |
+| num_repeats  | 40    |
+| nprior       | -1 (= 10 x nlive) |
 
 ---
 
-## Sampler settings
-
-All runs use **PyPolyChord** (PolyChord nested sampling):
-
-| Setting        | Value | Description                              |
-|----------------|-------|------------------------------------------|
-| `nlive`        | 2000  | Number of live points                    |
-| `nprior`       | -1    | Prior samples (−1 = 10 × nlive)          |
-| `num-repeats`  | 40    | Slice sampling repeats per iteration     |
-
-The likelihood uses **relative binning** (heterodyning) via bilby's
-`RelativeBinningGravitationalWaveTransient` with `epsilon = 0.5`, matching
-the heterodyned likelihood used in our JAX analysis.
-
----
-
-## Analysis settings (matched to JAX)
-
-### GW150914 — BBH
-| Parameter       | Value                       |
-|-----------------|-----------------------------|
-| Waveform        | IMRPhenomD                  |
-| Likelihood      | Relative binning (ε=0.5)   |
-| Duration        | 8 s                         |
-| f_min, f_max    | 20 Hz, 1024 Hz              |
-| f_ref           | 20 Hz                       |
-| Detectors       | H1, L1                      |
-| M_c prior       | Uniform [10, 80] M☉         |
-| q prior         | Uniform [0.125, 1]          |
-| Spin prior      | Uniform [-1, 1] (aligned)   |
-| d_L prior       | PowerLaw(α=2) [1, 2000] Mpc |
-| Mass constraint | m₁, m₂ ∈ [1, 100] M☉       |
-| t_c prior       | Uniform [−0.05, +0.05] s    |
-| Phase marg.     | Yes                         |
-
-### GW170817 — BNS
-| Parameter       | Value                           |
-|-----------------|---------------------------------|
-| Waveform        | IMRPhenomD_NRTidalv2 / TaylorF2 |
-| Likelihood      | Relative binning (ε=0.5)       |
-| Duration        | 128 s                           |
-| f_min, f_max    | 23 Hz, 2048 Hz                  |
-| f_ref           | 20 Hz                           |
-| Detectors       | H1, L1, V1                      |
-| M_c prior       | Uniform [1.184, 2.168] M☉       |
-| q prior         | Uniform [0.125, 1]              |
-| Spin prior      | Uniform [-0.05, 0.05] (low-spin)|
-| d_L prior       | PowerLaw(α=2) [1, 75] Mpc       |
-| Mass constraint | m₁, m₂ ∈ [0.5, 7.7] M☉         |
-| t_c prior       | Uniform [−0.1, +0.1] s          |
-| λ₁, λ₂ prior   | Uniform [0, 5000]               |
-| Phase marg.     | Yes                             |
-
----
-
-## Expected output
+## Output
 
 All results are consolidated in `results/`:
 
 ```
 results/
-├── timing_summary.txt                            # ← timing for all stages
+├── timing_summary.txt                     # wall-clock timing for all stages
 ├── GW150914_IMRPhenomD/
-│   ├── data/
-│   │   └── GW150914_IMRPhenomD_data_dump.pickle   # data + PSD + reference waveform
-│   ├── result/
-│   │   └── GW150914_IMRPhenomD_result.json        # bilby result (posteriors)
-│   └── submit/
-│       └── bash_GW150914_IMRPhenomD.sh            # auto-generated Slurm script
+│   ├── timing.txt                         # per-run timing breakdown
+│   ├── GW150914_IMRPhenomD_data_dump.pickle
+│   ├── GW150914_IMRPhenomD_result.json    # bilby posteriors + evidence
+│   └── submit/slurm_GW150914_IMRPhenomD.sh
 ├── GW170817_IMRPhenomD_NRTidalv2/
 │   └── ...
 └── GW170817_TaylorF2/
     └── ...
 ```
 
-### Timing log
-
-`results/timing_summary.txt` records wall-clock time for each stage:
-
-```
-TIMESTAMP             RUN                             STAGE            ELAPSED
-------------------------------------------------------------------------------------
-2026-02-19 14:00:01   GW150914_IMRPhenomD             data_generation  00:02:15 (135 s)
-2026-02-19 14:02:16   GW170817_IMRPhenomD_NRTidalv2   data_generation  00:05:30 (330 s)
-2026-02-19 14:07:46   GW170817_TaylorF2               data_generation  00:04:10 (250 s)
-2026-02-19 14:11:56   GW150914_IMRPhenomD             sampling_local   01:23:45 (5025 s)
-...
-2026-02-19 20:30:00   ALL                             total            06:30:00 (23400 s)
-```
-
-For Slurm jobs, sampling time is recorded in the Slurm output logs rather than
-the timing file (since `sbatch` returns immediately). Check with:
-```bash
-sacct -j <JOBID> --format=JobID,Elapsed,MaxRSS,State
-```
-
 ### Load results in Python
 
 ```python
 import bilby
-result = bilby.result.read_in_result("results/GW150914_IMRPhenomD/result/GW150914_IMRPhenomD_result.json")
+result = bilby.result.read_in_result(
+    "results/GW150914_IMRPhenomD/GW150914_IMRPhenomD_result.json")
 result.plot_corner()
-print(result.posterior[['chirp_mass', 'mass_ratio', 'luminosity_distance']].describe())
-print(f"Sampling time: {result.sampling_time:.1f} s")   # bilby records this internally
+print(f"Log evidence: {result.log_evidence:.2f}")
+print(f"Sampling time: {result.sampling_time:.1f} s")
+```
+
+### Check Slurm job status
+
+```bash
+squeue -u $USER                # running jobs
+sacct -j <JOBID> --format=JobID,Elapsed,MaxRSS,State
+cat results/GW150914_IMRPhenomD/slurm_*.out   # stdout log
 ```
 
 ---
 
 ## Estimated runtimes
 
-Runtimes with relative binning + PolyChord (faster than full likelihood):
+With relative binning + PolyChord (2000 live points):
 
-| Run                           | ~CPU-hours | Wall time (10 nodes × 16 cores) |
-|-------------------------------|------------|----------------------------------|
-| GW150914 IMRPhenomD           | ~200       | ~1-2 h                           |
-| GW170817 IMRPhenomD_NRTidalv2 | ~3000      | ~18 h                            |
-| GW170817 TaylorF2             | ~2000      | ~12 h                            |
+| Run                           | ~CPU-hours | Wall time (4 nodes x 16 cores) |
+|-------------------------------|------------|-------------------------------|
+| GW150914 IMRPhenomD           | ~200       | ~3 h                          |
+| GW170817 IMRPhenomD_NRTidalv2 | ~3000      | ~48 h                         |
+| GW170817 TaylorF2             | ~2000      | ~30 h                         |
 
-GW170817 is much slower due to the 128 s segment (vs 8 s for GW150914).
+GW170817 is much slower due to the 128 s segment (vs 8 s for GW150914) and
+the additional H_0/v_p parameters (14D vs 10D).
 
 ---
 
@@ -386,13 +332,21 @@ GW170817 is much slower due to the 128 s segment (vs 8 s for GW150914).
 - Check MPI: `module load openmpi` or `module load mpich`
 
 **`ImportError: No module named pypolychord`:**
-- Rebuild: `cd PolyChordLite && python setup.py install --user`
-- Or add to path: `export PYTHONPATH=$PYTHONPATH:$(pwd)/PolyChordLite/lib`
+- Rebuild: `source setup_env.sh polychord`
 
 **Data download fails (GWOSC):**
-- Ensure internet access from compute nodes, or pre-download data
-- Some clusters require proxy settings for HTTPS
+- Run `--gen-only` on a login node with internet access
+- Some clusters need proxy: `export HTTPS_PROXY=...`
 
-**MPI errors:**
+**MPI errors at runtime:**
 - Ensure `mpi4py` was built against the same MPI as PolyChord
-- Rebuild `mpi4py`: `pip install --no-cache-dir mpi4py`
+- Rebuild: `pip install --no-cache-dir mpi4py`
+- Check `mpirun --version` matches loaded module
+
+**PBS/Torque clusters (no Slurm):**
+- Run `bash run_all.sh --gen-only` to generate data pickles
+- Write your own PBS submission script calling:
+  ```bash
+  mpirun python3 GW170817/run_GW170817.py --waveform IMRPhenomD_NRTidalv2 \
+      --from-pickle results/GW170817_IMRPhenomD_NRTidalv2/..._data_dump.pickle
+  ```

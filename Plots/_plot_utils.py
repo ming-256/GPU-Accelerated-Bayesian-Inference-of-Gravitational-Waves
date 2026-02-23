@@ -206,6 +206,8 @@ def plot_h0(runs, out_name, xlim=(20, 250), n_eval=500):
     ax.axvspan(73.24 - 1.74, 73.24 + 1.74, color=COLORS['shoes_inner'],
                alpha=0.3, zorder=0, label='SHoES')
 
+    from matplotlib.ticker import MultipleLocator
+    ax.yaxis.set_major_locator(MultipleLocator(0.01))
     ax.set_xlim(xlim)
     ax.set_ylim(bottom=0)
     ax.set_xlabel(r'$H_0$ (km s$^{-1}$ Mpc$^{-1}$)')

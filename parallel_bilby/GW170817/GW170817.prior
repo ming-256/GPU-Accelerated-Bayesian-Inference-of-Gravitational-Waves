@@ -30,3 +30,9 @@ geocent_time = Uniform(minimum=1187008882.33, maximum=1187008882.53, name='geoce
 # Tidal deformation parameters
 lambda_1 = Uniform(minimum=0, maximum=5000, name='lambda_1', latex_label='$\\Lambda_1$')
 lambda_2 = Uniform(minimum=0, maximum=5000, name='lambda_2', latex_label='$\\Lambda_2$')
+
+# Standard siren parameters (H_0 and peculiar velocity)
+# H_0: log-uniform (Jeffreys) prior, matching JAX analysis [20, 250] km/s/Mpc
+H_0 = LogUniform(minimum=20.0, maximum=250.0, name='H_0', latex_label='$H_0$', unit='km/s/Mpc')
+# v_p: uniform prior on peculiar velocity of host galaxy (NGC 4993)
+v_p = Uniform(minimum=-1000.0, maximum=1000.0, name='v_p', latex_label='$v_p$', unit='km/s')

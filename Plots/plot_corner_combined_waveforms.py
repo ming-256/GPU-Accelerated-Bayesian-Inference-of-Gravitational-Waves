@@ -9,9 +9,9 @@ sys.path.insert(0, os.path.dirname(__file__))
 from _plot_utils import *
 
 IMR_CSV = os.path.join(RESULTS_DIR,
-    'PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_baseline.csv')
+    'gwtc1_phasemarg/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_baseline.csv')
 TF2_CSV = os.path.join(RESULTS_DIR,
-    'PhaseMarg_Heterodyned_TaylorF2_local_psd-gwtc1_ref-gwtc1_baseline.csv')
+    'gwtc1_phasemarg/PhaseMarg_Heterodyned_TaylorF2_local_psd-gwtc1_ref-gwtc1_baseline.csv')
 
 plot_params = ['M_c', 'q', 'd_L', 'iota']
 

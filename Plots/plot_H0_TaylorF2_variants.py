@@ -9,13 +9,13 @@ from _plot_utils import *
 
 CSVS = [
     (os.path.join(RESULTS_DIR,
-        'PhaseMarg_Heterodyned_TaylorF2_local_psd-gwtc1_ref-gwtc1_baseline.csv'),
+        'gwtc1_phasemarg/PhaseMarg_Heterodyned_TaylorF2_local_psd-gwtc1_ref-gwtc1_baseline.csv'),
      r'TaylorF2 baseline ($\sigma_{v_p}$=150)', COLORS['tf2_baseline']),
     (os.path.join(RESULTS_DIR,
-        'PhaseMarg_Heterodyned_TaylorF2_local_psd-gwtc1_ref-gwtc1_flatZ.csv'),
+        'gwtc1_phasemarg/PhaseMarg_Heterodyned_TaylorF2_local_psd-gwtc1_ref-gwtc1_flatZ.csv'),
      r'TaylorF2 flat-in-$z$', COLORS['flatZ']),
     (os.path.join(RESULTS_DIR,
-        'PhaseMarg_Heterodyned_TaylorF2_local_psd-gwtc1_ref-gwtc1_vp250.csv'),
+        'gwtc1_phasemarg/PhaseMarg_Heterodyned_TaylorF2_local_psd-gwtc1_ref-gwtc1_vp250.csv'),
      r'TaylorF2 $\sigma_{v_p}$=250', COLORS['vp250']),
 ]
 

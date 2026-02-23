@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # ============================================================================
-# run_all.sh — Generate data and submit/run all parallel_bilby jobs
+# run_all.sh — Generate data and submit/run all bilby analyses
 #
-# All results go into parallel_bilby/results/<label>/
-# Timing for every stage is logged to results/timing_summary.txt
+# Reads cluster settings from config.sh.  All results go into results/.
 #
 # Usage:
-#   bash run_all.sh              # generate + submit all 3 runs (Slurm)
-#   bash run_all.sh --gen-only   # generate data dumps only (no submit)
-#   bash run_all.sh --local N    # run locally with N MPI processes (no Slurm)
+#   bash run_all.sh                  # generate data + submit Slurm jobs
+#   bash run_all.sh --gen-only       # generate data pickles only (no sampling)
+#   bash run_all.sh --local          # generate + run locally with MPI
+#   bash run_all.sh --local-serial   # generate + run locally (no MPI, testing)
 # ============================================================================
 set -euo pipefail
 
@@ -16,153 +16,181 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$SCRIPT_DIR"
 
 MODE="${1:---submit}"
-NPROCS="${2:-4}"
 
-# ============================================================================
-# Configuration
-# ============================================================================
-declare -a CONFIGS=(
-    "GW150914/GW150914_IMRPhenomD.ini"
-    "GW170817/GW170817_IMRPhenomD_NRTidalv2.ini"
-    "GW170817/GW170817_TaylorF2.ini"
+# ── Load user configuration ──────────────────────────────────────────────────
+if [[ ! -f config.sh ]]; then
+    echo "ERROR: config.sh not found. It should be in the same directory as run_all.sh."
+    exit 1
+fi
+# shellcheck disable=SC1091
+source config.sh
+
+NPROCS=$(( NODES * CORES_PER_NODE ))
+
+# ── Run definitions ──────────────────────────────────────────────────────────
+# Each entry: SCRIPT|WAVEFORM_ARG|WALLTIME|LABEL
+declare -a RUNS=(
+    "GW150914/run_GW150914.py||${WALLTIME_GW150914}|GW150914_IMRPhenomD"
+    "GW170817/run_GW170817.py|--waveform IMRPhenomD_NRTidalv2|${WALLTIME_GW170817}|GW170817_IMRPhenomD_NRTidalv2"
+    "GW170817/run_GW170817.py|--waveform TaylorF2|${WALLTIME_GW170817}|GW170817_TaylorF2"
 )
 
-declare -a LABELS=(
-    "GW150914_IMRPhenomD"
-    "GW170817_IMRPhenomD_NRTidalv2"
-    "GW170817_TaylorF2"
-)
-
-TOTAL=${#CONFIGS[@]}
 RESULTS_DIR="${SCRIPT_DIR}/results"
 TIMING_FILE="${RESULTS_DIR}/timing_summary.txt"
-
-# Create results directory
 mkdir -p "$RESULTS_DIR"
 
-# ============================================================================
-# Timing helpers
-# ============================================================================
+# ── Timing helpers ───────────────────────────────────────────────────────────
 timer_start() { date +%s; }
 timer_elapsed() {
-    local start=$1
-    local end
-    end=$(date +%s)
-    local secs=$((end - start))
-    local h=$((secs / 3600))
-    local m=$(( (secs % 3600) / 60 ))
-    local s=$((secs % 60))
-    printf "%02d:%02d:%02d (%d s)" "$h" "$m" "$s" "$secs"
+    local secs=$(( $(date +%s) - $1 ))
+    printf "%02d:%02d:%02d (%d s)" $((secs/3600)) $(((secs%3600)/60)) $((secs%60)) "$secs"
 }
-
 log_timing() {
-    local label="$1"
-    local stage="$2"
-    local elapsed="$3"
     local line
-    line="$(date '+%Y-%m-%d %H:%M:%S')  ${label}  ${stage}  ${elapsed}"
+    line="$(date '+%Y-%m-%d %H:%M:%S')  $1  $2  $3"
     echo "$line" | tee -a "$TIMING_FILE"
 }
 
-# ============================================================================
-# Initialize timing log
-# ============================================================================
+# ── Initialize timing log ───────────────────────────────────────────────────
 {
     echo "============================================================"
-    echo "  Parallel Bilby — Timing Summary"
+    echo "  Bilby HPC — Timing Summary"
     echo "  Started: $(date)"
+    echo "  Config:  NODES=${NODES}  CORES_PER_NODE=${CORES_PER_NODE}"
     echo "============================================================"
     echo ""
-    printf "%-20s  %-30s  %-15s  %-20s\n" "TIMESTAMP" "RUN" "STAGE" "ELAPSED"
+    printf "%-20s  %-35s  %-15s  %-20s\n" "TIMESTAMP" "RUN" "STAGE" "ELAPSED"
     echo "------------------------------------------------------------------------------------"
 } >> "$TIMING_FILE"
 
 GLOBAL_START=$(timer_start)
 
 # ============================================================================
-# Step 1: Data generation
+# Step 1: Data generation (runs on login node, needs internet)
 # ============================================================================
 echo "============================================================"
-echo "  Parallel Bilby — Data Generation"
-echo "  Results directory: $RESULTS_DIR"
+echo "  Step 1: Data Generation"
+echo "  (downloading GWOSC data, estimating PSDs, saving pickles)"
 echo "============================================================"
 
-for i in "${!CONFIGS[@]}"; do
-    INI="${CONFIGS[$i]}"
-    LABEL="${LABELS[$i]}"
+TOTAL=${#RUNS[@]}
+declare -a PICKLE_PATHS=()
+
+for i in "${!RUNS[@]}"; do
+    IFS='|' read -r SCRIPT WAVEFORM_ARG WALLTIME LABEL <<< "${RUNS[$i]}"
+    OUTDIR="${RESULTS_DIR}/${LABEL}"
+
     echo ""
     echo "--- [$((i+1))/$TOTAL] Generating: $LABEL ---"
-    echo "  Config: $INI"
-
-    # cd into the config directory so prior-file paths resolve correctly
-    CONFIG_DIR="$(dirname "$INI")"
-    CONFIG_FILE="$(basename "$INI")"
 
     GEN_START=$(timer_start)
 
-    pushd "$CONFIG_DIR" > /dev/null
-    parallel_bilby_generation "$CONFIG_FILE"
-    popd > /dev/null
+    # shellcheck disable=SC2086
+    python3 "${SCRIPT}" ${WAVEFORM_ARG} --outdir "$OUTDIR" --gen-only \
+        --nlive "${NLIVE}" --num-repeats "${NUM_REPEATS}"
 
     GEN_ELAPSED=$(timer_elapsed "$GEN_START")
     log_timing "$LABEL" "data_generation" "$GEN_ELAPSED"
-    echo "  Done. (${GEN_ELAPSED})"
+    echo "  Done. ($GEN_ELAPSED)"
+
+    # Find the pickle
+    PICKLE=$(find "$OUTDIR" -name '*_data_dump.pickle' -print -quit 2>/dev/null || echo "")
+    PICKLE_PATHS+=("$PICKLE")
 done
 
-# ============================================================================
-# Step 2: Submit or run
-# ============================================================================
 if [[ "$MODE" == "--gen-only" ]]; then
     TOTAL_ELAPSED=$(timer_elapsed "$GLOBAL_START")
     log_timing "ALL" "gen-only_total" "$TOTAL_ELAPSED"
     echo ""
-    echo "Data generation complete. Total time: $TOTAL_ELAPSED"
+    echo "Data generation complete.  Total: $TOTAL_ELAPSED"
+    echo "Pickles:"
+    for p in "${PICKLE_PATHS[@]}"; do echo "  $p"; done
     echo "Timing log: $TIMING_FILE"
     exit 0
 fi
 
+# ============================================================================
+# Step 2: Sampling (Slurm submit or local)
+# ============================================================================
 echo ""
 echo "============================================================"
-echo "  Parallel Bilby — Sampling"
+echo "  Step 2: Sampling"
 echo "============================================================"
 
-for i in "${!CONFIGS[@]}"; do
-    LABEL="${LABELS[$i]}"
+for i in "${!RUNS[@]}"; do
+    IFS='|' read -r SCRIPT WAVEFORM_ARG WALLTIME LABEL <<< "${RUNS[$i]}"
+    PICKLE="${PICKLE_PATHS[$i]}"
     OUTDIR="${RESULTS_DIR}/${LABEL}"
-    PICKLE="${OUTDIR}/data/${LABEL}_data_dump.pickle"
 
     echo ""
-    echo "--- [$((i+1))/$TOTAL] Running: $LABEL ---"
+    echo "--- [$((i+1))/$TOTAL] Sampling: $LABEL ---"
 
-    if [[ ! -f "$PICKLE" ]]; then
-        echo "  ERROR: Data dump not found at $PICKLE"
-        echo "  Run with --gen-only first, or check generation output."
-        log_timing "$LABEL" "sampling" "SKIPPED — no data dump"
+    if [[ -z "$PICKLE" || ! -f "$PICKLE" ]]; then
+        echo "  ERROR: pickle not found for $LABEL — skipping"
+        log_timing "$LABEL" "sampling" "SKIPPED"
         continue
     fi
 
-    SAMP_START=$(timer_start)
+    # ── Local run (no Slurm) ─────────────────────────────────────────────
+    if [[ "$MODE" == "--local" || "$MODE" == "--local-serial" ]]; then
+        SAMP_START=$(timer_start)
 
-    if [[ "$MODE" == "--local" ]]; then
-        echo "  Running locally with $NPROCS MPI processes..."
-        mpirun -n "$NPROCS" parallel_bilby_analysis "$PICKLE"
+        if [[ "$MODE" == "--local" ]]; then
+            echo "  Running with mpirun -n $NPROCS ..."
+            # shellcheck disable=SC2086
+            mpirun -n "$NPROCS" python3 "${SCRIPT}" ${WAVEFORM_ARG} \
+                --outdir "$OUTDIR" --from-pickle "$PICKLE" \
+                --nlive "${NLIVE}" --num-repeats "${NUM_REPEATS}"
+        else
+            echo "  Running serial (no MPI, for testing)..."
+            # shellcheck disable=SC2086
+            python3 "${SCRIPT}" ${WAVEFORM_ARG} \
+                --outdir "$OUTDIR" --from-pickle "$PICKLE" \
+                --nlive "${NLIVE}" --num-repeats "${NUM_REPEATS}"
+        fi
 
         SAMP_ELAPSED=$(timer_elapsed "$SAMP_START")
         log_timing "$LABEL" "sampling_local" "$SAMP_ELAPSED"
-        echo "  Done. (${SAMP_ELAPSED})"
+        echo "  Done. ($SAMP_ELAPSED)"
+
+    # ── Slurm submission ─────────────────────────────────────────────────
     else
-        # Submit via Slurm (uses the auto-generated submit script)
-        SUBMIT_SCRIPT="${OUTDIR}/submit/bash_${LABEL}.sh"
-        if [[ -f "$SUBMIT_SCRIPT" ]]; then
-            echo "  Submitting: $SUBMIT_SCRIPT"
-            sbatch "$SUBMIT_SCRIPT"
-            log_timing "$LABEL" "slurm_submitted" "N/A (async)"
-        else
-            echo "  WARNING: Submit script not found at $SUBMIT_SCRIPT"
-            echo "  Check the outdir for the correct submit script name."
-            ls "${OUTDIR}/submit/" 2>/dev/null || echo "  (submit/ directory missing)"
-            log_timing "$LABEL" "sampling" "SKIPPED — no submit script"
-        fi
+        SUBMIT_DIR="${OUTDIR}/submit"
+        mkdir -p "$SUBMIT_DIR"
+        SUBMIT_SCRIPT="${SUBMIT_DIR}/slurm_${LABEL}.sh"
+
+        # Build Slurm batch script
+        {
+            echo "#!/bin/bash"
+            echo "#SBATCH --job-name=${LABEL}"
+            echo "#SBATCH --output=${OUTDIR}/slurm_%j.out"
+            echo "#SBATCH --error=${OUTDIR}/slurm_%j.err"
+            echo "#SBATCH --nodes=${NODES}"
+            echo "#SBATCH --ntasks-per-node=${CORES_PER_NODE}"
+            echo "#SBATCH --time=${WALLTIME}"
+            [[ -n "${SLURM_ACCOUNT:-}" ]]   && echo "#SBATCH --account=${SLURM_ACCOUNT}"
+            [[ -n "${SLURM_PARTITION:-}" ]] && echo "#SBATCH --partition=${SLURM_PARTITION}"
+            [[ -n "${SLURM_EXTRA:-}" ]]     && echo "#SBATCH ${SLURM_EXTRA}"
+            echo ""
+            echo "# Activate environment"
+            echo "source ${SCRIPT_DIR}/pbilby_venv/bin/activate"
+            echo ""
+            echo "cd ${SCRIPT_DIR}"
+            echo ""
+            echo "echo \"Starting: \$(date)\""
+            echo "echo \"Nodes: ${NODES}, Tasks/node: ${CORES_PER_NODE}, Total MPI ranks: ${NPROCS}\""
+            echo ""
+            echo "mpirun -n ${NPROCS} python3 ${SCRIPT} ${WAVEFORM_ARG} \\"
+            echo "    --outdir ${OUTDIR} --from-pickle ${PICKLE} \\"
+            echo "    --nlive ${NLIVE} --num-repeats ${NUM_REPEATS}"
+            echo ""
+            echo "echo \"Finished: \$(date)\""
+        } > "$SUBMIT_SCRIPT"
+
+        chmod +x "$SUBMIT_SCRIPT"
+        echo "  Submitting: $SUBMIT_SCRIPT"
+        sbatch "$SUBMIT_SCRIPT"
+        log_timing "$LABEL" "slurm_submitted" "N/A (async)"
     fi
 done
 
@@ -175,10 +203,7 @@ log_timing "ALL" "total" "$TOTAL_ELAPSED"
 echo ""
 echo "============================================================"
 echo "  All jobs dispatched."
-echo "  Total wall time: $TOTAL_ELAPSED"
-echo "  Timing log: $TIMING_FILE"
-echo "  Results:    $RESULTS_DIR/"
+echo "  Total wall time:  $TOTAL_ELAPSED"
+echo "  Timing log:       $TIMING_FILE"
+echo "  Results:          $RESULTS_DIR/"
 echo "============================================================"
-echo ""
-echo "Results directory structure:"
-ls -d "$RESULTS_DIR"/*/ 2>/dev/null || echo "  (no result subdirectories yet)"

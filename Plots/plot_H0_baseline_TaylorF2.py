@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 from _plot_utils import *
 
 BASELINE_CSV = os.path.join(RESULTS_DIR,
-    'PhaseMarg_Heterodyned_TaylorF2_local_psd-gwtc1_ref-gwtc1_baseline.csv')
+    'gwtc1_phasemarg/PhaseMarg_Heterodyned_TaylorF2_local_psd-gwtc1_ref-gwtc1_baseline.csv')
 
 runs = []
 if os.path.exists(BASELINE_CSV):

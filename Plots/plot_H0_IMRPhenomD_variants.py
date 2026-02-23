@@ -9,13 +9,13 @@ from _plot_utils import *
 
 CSVS = [
     (os.path.join(RESULTS_DIR,
-        'PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_baseline.csv'),
+        'gwtc1_phasemarg/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_baseline.csv'),
      r'IMRPhenomD baseline ($\sigma_{v_p}$=150)', COLORS['imr_baseline']),
     (os.path.join(RESULTS_DIR,
-        'PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_flatZ.csv'),
+        'gwtc1_phasemarg/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_flatZ.csv'),
      r'IMRPhenomD flat-in-$z$', COLORS['flatZ']),
     (os.path.join(RESULTS_DIR,
-        'PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_vp250.csv'),
+        'gwtc1_phasemarg/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_vp250.csv'),
      r'IMRPhenomD $\sigma_{v_p}$=250', COLORS['vp250']),
 ]
 

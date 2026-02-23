@@ -1,99 +1,133 @@
 #!/usr/bin/env bash
 # ============================================================================
-# setup_env.sh — Create a conda/venv environment for parallel_bilby on HPC
+# setup_env.sh — Create a venv and install all dependencies for bilby + PolyChord
 #
 # Usage:
-#   source setup_env.sh              # creates conda env + installs PolyChord
-#   source setup_env.sh venv         # uses venv instead of conda
-#   source setup_env.sh polychord    # install PolyChord only (env already exists)
+#   source setup_env.sh              # full install (venv + pip + PolyChord)
+#   source setup_env.sh polychord    # PolyChord only (venv already active)
+#
+# Prerequisites:
+#   - Python >= 3.9
+#   - Fortran compiler (gfortran)
+#   - MPI (OpenMPI or MPICH) — required for multi-node runs
+#
+# On most HPC clusters, load modules first:
+#   module load gcc openmpi python    # names vary by cluster
 # ============================================================================
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-METHOD="${1:-conda}"
-ENV_NAME="pbilby"
+MODE="${1:-full}"
+ENV_NAME="pbilby_venv"
+ENV_DIR="${SCRIPT_DIR}/${ENV_NAME}"
 POLYCHORD_DIR="${SCRIPT_DIR}/PolyChordLite"
 
-# ----------------------------------------------------------------------------
-# Install PolyChord from source
-# ----------------------------------------------------------------------------
+# ── Colours for output ──────────────────────────────────────────────────────
+RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; NC='\033[0m'
+info()  { echo -e "${GREEN}[INFO]${NC}  $*"; }
+warn()  { echo -e "${YELLOW}[WARN]${NC}  $*"; }
+error() { echo -e "${RED}[ERROR]${NC} $*"; }
+
+# ── Check prerequisites ─────────────────────────────────────────────────────
+check_prereqs() {
+    local ok=true
+
+    if ! command -v python3 &>/dev/null; then
+        error "python3 not found. Load a python module or install Python >= 3.9."
+        ok=false
+    fi
+
+    if ! command -v gfortran &>/dev/null && ! command -v ifort &>/dev/null; then
+        warn "No Fortran compiler found. PolyChord build may fail."
+        warn "Try: module load gcc"
+    fi
+
+    if ! command -v mpirun &>/dev/null && ! command -v mpiexec &>/dev/null; then
+        warn "No MPI found. PolyChord will be built WITHOUT MPI (single-node only)."
+        warn "For multi-node runs: module load openmpi (or mpich)"
+    fi
+
+    if [[ "$ok" == "false" ]]; then
+        error "Fix the above issues and re-run."
+        return 1
+    fi
+}
+
+# ── Install PolyChord from source ───────────────────────────────────────────
 install_polychord() {
-    echo "=== Installing PolyChord ==="
+    info "Installing PolyChord from source..."
 
     if [[ ! -d "$POLYCHORD_DIR" ]]; then
-        echo "  Cloning PolyChordLite..."
+        info "  Cloning PolyChordLite..."
         git clone https://github.com/PolyChord/PolyChordLite.git "$POLYCHORD_DIR"
     else
-        echo "  PolyChordLite already cloned at $POLYCHORD_DIR"
+        info "  PolyChordLite already present at $POLYCHORD_DIR"
     fi
 
     pushd "$POLYCHORD_DIR" > /dev/null
 
-    # Detect MPI — compile with MPI if mpirun is available
+    # Clean previous builds
+    make clean 2>/dev/null || true
+
     if command -v mpirun &>/dev/null || command -v mpiexec &>/dev/null; then
-        MPI_NPROCS=$(nproc 2>/dev/null || echo 2)
-        echo "  Building PolyChord with MPI support (MPI=${MPI_NPROCS})..."
-        make pypolychord MPI="${MPI_NPROCS}"
+        local nprocs
+        nprocs=$(nproc 2>/dev/null || echo 2)
+        info "  Building with MPI support (MPI=${nprocs})..."
+        make pypolychord MPI="${nprocs}"
     else
-        echo "  Building PolyChord without MPI..."
+        info "  Building without MPI..."
         make pypolychord MPI=
     fi
 
-    python setup.py install --user
+    pip install .
     popd > /dev/null
 
-    echo "  PolyChord installed successfully."
+    # Verify
+    if python3 -c "import pypolychord" 2>/dev/null; then
+        info "  PyPolyChord installed successfully."
+    else
+        error "  PyPolyChord import failed. Check the build log above."
+        return 1
+    fi
 }
 
-# ----------------------------------------------------------------------------
-# Conda environment
-# ----------------------------------------------------------------------------
-if [[ "$METHOD" == "conda" ]]; then
-    echo "=== Creating conda environment '${ENV_NAME}' ==="
+# ── Full install ─────────────────────────────────────────────────────────────
+if [[ "$MODE" == "full" ]]; then
+    check_prereqs
 
-    if ! command -v conda &>/dev/null; then
-        echo "ERROR: conda not found. Load it first (e.g. 'module load anaconda3')."
-        exit 1
-    fi
+    info "Creating venv at ${ENV_DIR}..."
+    python3 -m venv "${ENV_DIR}"
+    # shellcheck disable=SC1091
+    source "${ENV_DIR}/bin/activate"
 
-    conda create -n "${ENV_NAME}" python=3.11 -y
-    conda activate "${ENV_NAME}"
+    info "Upgrading pip..."
+    pip install --upgrade pip setuptools wheel
 
-    # Install LALSuite from conda-forge (best compatibility on HPC)
-    conda install -c conda-forge lalsuite gwpy -y
+    info "Installing Python dependencies from requirements.txt..."
+    pip install -r "${SCRIPT_DIR}/requirements.txt"
 
-    # Install bilby stack via pip
-    pip install parallel-bilby bilby mpi4py pesummary pypolychord-bilby
-
-    # Install PolyChord from source
+    # PolyChord from source (must be compiled, not pip-installable)
     install_polychord
 
-    echo "=== Done. Activate with: conda activate ${ENV_NAME} ==="
+    info "Verifying installation..."
+    python3 -c "
+import bilby; print(f'  bilby {bilby.__version__}')
+import pypolychord; print('  PyPolyChord OK')
+import lal; print('  LALSuite OK')
+import mpi4py; print('  mpi4py OK')
+print('All checks passed.')
+"
 
-# ----------------------------------------------------------------------------
-# Venv environment
-# ----------------------------------------------------------------------------
-elif [[ "$METHOD" == "venv" ]]; then
-    echo "=== Creating venv '${ENV_NAME}' ==="
+    echo ""
+    info "Setup complete."
+    info "Activate with:  source ${ENV_DIR}/bin/activate"
+    info "Then run:        bash run_all.sh"
 
-    python3 -m venv "${ENV_NAME}"
-    source "${ENV_NAME}/bin/activate"
-
-    pip install --upgrade pip
-    pip install -r requirements.txt
-
-    # Install PolyChord from source
-    install_polychord
-
-    echo "=== Done. Activate with: source ${ENV_NAME}/bin/activate ==="
-
-# ----------------------------------------------------------------------------
-# PolyChord only (env already exists)
-# ----------------------------------------------------------------------------
-elif [[ "$METHOD" == "polychord" ]]; then
+# ── PolyChord only ──────────────────────────────────────────────────────────
+elif [[ "$MODE" == "polychord" ]]; then
     install_polychord
 
 else
-    echo "Usage: source setup_env.sh [conda|venv|polychord]"
-    exit 1
+    echo "Usage: source setup_env.sh [full|polychord]"
+    return 1 2>/dev/null || exit 1
 fi
