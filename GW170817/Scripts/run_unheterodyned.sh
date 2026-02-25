@@ -21,23 +21,6 @@ COMMON_ARGS="--phase-marginalization --data-source local --psd-source gwtc1 --ou
 
 MODE="${1:-all}"
 
-# --------------------------------------------------------------------------- #
-# Full-sky runs (narrow M_c/q/spin, full RA/dec)
-# --------------------------------------------------------------------------- #
-if [ "$MODE" = "all" ] || [ "$MODE" = "fullsky" ]; then
-    echo "================================================================"
-    echo "  FULL-SKY — IMRPhenomD_NRTidalv2"
-    echo "================================================================"
-    python $SCRIPT --waveform IMRPhenomD_NRTidalv2 $COMMON_ARGS \
-        --label-suffix "_narrow_prior"
-
-    echo ""
-    echo "================================================================"
-    echo "  FULL-SKY — TaylorF2"
-    echo "================================================================"
-    python $SCRIPT --waveform TaylorF2 $COMMON_ARGS \
-        --label-suffix "_narrow_prior"
-fi
 
 # --------------------------------------------------------------------------- #
 # Host-localised runs (RA/dec constrained to NGC 4993)
@@ -56,6 +39,24 @@ if [ "$MODE" = "all" ] || [ "$MODE" = "host" ]; then
     echo "================================================================"
     python $SCRIPT --waveform TaylorF2 $COMMON_ARGS \
         --wide-prior
+fi
+
+# --------------------------------------------------------------------------- #
+# Full-sky runs (narrow M_c/q/spin, full RA/dec)
+# --------------------------------------------------------------------------- #
+if [ "$MODE" = "all" ] || [ "$MODE" = "fullsky" ]; then
+    echo "================================================================"
+    echo "  FULL-SKY — IMRPhenomD_NRTidalv2"
+    echo "================================================================"
+    python $SCRIPT --waveform IMRPhenomD_NRTidalv2 $COMMON_ARGS \
+        --label-suffix "_full_sky"
+
+    echo ""
+    echo "================================================================"
+    echo "  FULL-SKY — TaylorF2"
+    echo "================================================================"
+    python $SCRIPT --waveform TaylorF2 $COMMON_ARGS \
+        --label-suffix "_full_sky"
 fi
 
 echo ""
