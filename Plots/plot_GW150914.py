@@ -13,7 +13,7 @@ from _plot_utils import *
 # Config
 # --------------------------------------------------------------------------- #
 OUR_CSV = os.path.join(RESULTS_DIR,
-    'PhaseMarg_Heterodyned_IMRPhenomD_local_psd-gwtc2p1_ref-gwtc1.csv')
+    'gwtc1_phasemarg/PhaseMarg_Heterodyned_IMRPhenomD_local_psd-gwtc2p1_ref-gwtc1.csv')
 
 plot_columns = [r'$\mathcal{M}_c$', r'$q$', r'$\chi_{\rm eff}$',
                 r'$d_L$', r'$\iota$']

@@ -44,6 +44,27 @@ python Plots/plot_dL_posterior.py
 echo "=== H0: prior vs posterior ==="
 python Plots/plot_prior_vs_posterior_H0.py
 
+echo "=== Corner + H0: unheterodyned vs GWTC-1 ==="
+python Plots/plot_unheterodyned_vs_gwtc.py
+
+echo "=== Corner + H0: H0 prior comparison (standard vs narrow) ==="
+python Plots/plot_h0_prior_comparison.py
+
+echo "=== Corner + H0: reweighted vs sampled flat-in-z ==="
+python Plots/plot_corner_reweighted_vs_sampled_flatZ.py
+
+echo "=== H0: summary of all methods ==="
+python Plots/plot_H0_summary.py
+
+echo "=== Corner + ESS: heterodyned vs unheterodyned speedup ==="
+python Plots/plot_speedup_comparison.py
+
+echo "=== Phase marginalization schematic (analytic vs grid) ==="
+python Plots/plot_phase_marginalization_schematic.py
+
+echo "=== Corner + H0: full sky vs narrow sky ==="
+python Plots/plot_full_sky_vs_narrow.py
+
 echo ""
 echo "=== Computing analysis tables ==="
 

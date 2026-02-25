@@ -55,6 +55,8 @@ COLORS = {
     'reweighted':     'tab:cyan',
     'unhetero_imr':   '#555555',
     'unhetero_tf2':   '#777777',
+    'small_h0_imr':   'tab:red',
+    'small_h0_tf2':   'tab:pink',
     'planck_inner':   '#0CDE79',
     'planck_outer':   '#6DE6AC',
     'shoes_inner':    '#E87317',

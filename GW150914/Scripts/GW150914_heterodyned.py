@@ -57,7 +57,7 @@ from anesthetic import NestedSamples
 from blackjax.ns.utils import finalise
 
 from jimgw.core.single_event.detector import get_H1, get_L1
-from jimgw.core.single_event.waveform import RippleIMRPhenomD, RippleIMRPhenomXAS
+from jimgw.core.single_event.waveform import RippleIMRPhenomD
 from jimgw.core.single_event.data import Data, PowerSpectrum
 from gwpy.timeseries import TimeSeries
 
@@ -65,7 +65,7 @@ from gwpy.timeseries import TimeSeries
 # 0. COMMAND-LINE ARGUMENTS
 # ============================================================================
 parser = argparse.ArgumentParser(description='Heterodyned nested sampling for GW150914')
-parser.add_argument('--waveform', choices=['IMRPhenomD', 'IMRPhenomXAS'],
+parser.add_argument('--waveform', choices=['IMRPhenomD'],
                     default='IMRPhenomD', help='Waveform approximant (IMRPhenomD or IMRPhenomXAS for BBH)')
 parser.add_argument('--data-source', choices=['fetch', 'local'],
                     default='fetch',
@@ -82,7 +82,7 @@ parser.add_argument('--ref-params', choices=['gwtc1', 'optimize'],
                          'point via Adam optimization of the phase-marginalized likelihood')
 parser.add_argument('--phase-marginalization', action='store_true',
                     help='Enable analytic phase marginalization (removes phase_c from sampling)')
-parser.add_argument('--output-dir', default='Results',
+parser.add_argument('--output-dir', default='Results/gwtc1_phasemarg',
                     help='Directory to write output CSV files (default: Results)')
 args = parser.parse_args()
 waveform_tag = args.waveform
@@ -243,7 +243,7 @@ psd_duration = 1024
 
 marg_tag = 'PhaseMarg' if phase_marg else 'NoMarg'
 os.makedirs(output_dir, exist_ok=True)
-label = f'{output_dir}/{marg_tag}_Heterodyned_IMRPhenomD_{data_source}_psd-{psd_source}_ref-{ref_params_source}'
+label = f'{output_dir}/GW15_{marg_tag}_Heterodyned_IMRPhenomD_{data_source}_psd-{psd_source}_ref-{ref_params_source}'
 
 # Analysis segment: [gps - (duration - post_trigger), gps + post_trigger]
 start = gps - (duration - post_trigger_duration)
@@ -373,8 +373,7 @@ print(f"[TIMING] Data loading: {t_data:.1f}s")
 H1, L1 = detectors
 
 WAVEFORM_MAP = {
-    'IMRPhenomD': RippleIMRPhenomD,
-    'IMRPhenomXAS': RippleIMRPhenomXAS,
+    'IMRPhenomD': RippleIMRPhenomD
 }
 waveform = WAVEFORM_MAP[waveform_tag](f_ref=20.0)
 print(f"Waveform: {waveform_tag} ({waveform})")

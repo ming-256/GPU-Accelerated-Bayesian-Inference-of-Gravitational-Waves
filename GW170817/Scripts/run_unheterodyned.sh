@@ -15,6 +15,11 @@
 set -e
 cd "$(dirname "$0")/../.."
 
+# Activate the virtual environment so jimgw (and other deps) are available
+if [ -f "venv/bin/activate" ]; then
+    source venv/bin/activate
+fi
+
 OUT_DIR="Results/gwtc1_phasemarg"
 SCRIPT="GW170817/Scripts/GW170817_unheterodyned_1.py"
 COMMON_ARGS="--phase-marginalization --data-source local --psd-source gwtc1 --output-dir $OUT_DIR"
