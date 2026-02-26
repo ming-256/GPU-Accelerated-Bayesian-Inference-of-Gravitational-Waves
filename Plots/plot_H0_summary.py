@@ -20,22 +20,22 @@ RESULTS_PHASEMARG = os.path.join(RESULTS_DIR, 'gwtc1_phasemarg')
 FILES = [
     (os.path.join(RESULTS_PHASEMARG,
         'PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_baseline.csv'),
-     'Heterodyned baseline', 'tab:orange', 'nested'),
+     'Heterodyned baseline', COLORS['imr_baseline'], 'nested'),
     (os.path.join(RESULTS_PHASEMARG,
         'PhaseMarg_Unheterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1.csv'),
-     'Unheterodyned standard', '#555555', 'nested'),
+     'Unheterodyned standard', COLORS['unhetero_imr'], 'nested'),
     (os.path.join(RESULTS_PHASEMARG,
         'PhaseMarg_Unheterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_small_h0_prior.csv'),
-     r'Unheterodyned narrow $H_0$', 'tab:red', 'nested'),
+     r'Unheterodyned narrow $H_0$', COLORS['small_h0_imr'], 'nested'),
     (os.path.join(RESULTS_PHASEMARG,
         'PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_flatZ.csv'),
-     r'Sampled flat-in-$z$', 'tab:green', 'nested'),
+     r'Sampled flat-in-$z$', COLORS['flatZ'], 'nested'),
     (os.path.join(RESULTS_PHASEMARG,
         'PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_reweighted_flatZ.csv'),
-     r'Reweighted flat-in-$z$', 'tab:cyan', 'reweighted'),
+     r'Reweighted flat-in-$z$', COLORS['reweighted'], 'reweighted'),
     (os.path.join(RESULTS_PHASEMARG,
         'PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_vp250.csv'),
-     r'$\sigma_{v_p}=250$', 'tab:red', 'nested'),
+     r'$\sigma_{v_p}=250$', COLORS['vp250'], 'nested'),
 ]
 
 runs = []

@@ -109,7 +109,6 @@ def plot_h0_comparison(csv_list, title, out_label):
         print(f"  {label}: H_0 MAP = {map_val:.1f} km/s/Mpc, median = {np.median(h0):.1f}")
 
         ax.plot(x_eval, pdf, color=color, lw=2, label=label)
-        ax.fill_between(x_eval, pdf, alpha=0.1, color=color)
         plotted += 1
 
     if plotted == 0:
@@ -126,7 +125,7 @@ def plot_h0_comparison(csv_list, title, out_label):
     ax.set_xlim(20, 250)
     ax.set_ylim(bottom=0)
     ax.set_title(title, fontsize=15)
-    ax.legend(fontsize=9, loc='upper right')
+    ax.legend(fontsize=12, loc='upper right')
     ax.tick_params(labelsize=12)
     fig.tight_layout()
 

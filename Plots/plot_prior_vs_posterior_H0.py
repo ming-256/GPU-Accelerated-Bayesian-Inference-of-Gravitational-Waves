@@ -24,7 +24,7 @@ x_eval = np.linspace(20, 250, 500)
 # p(H_0) = 1 / (H_0 * ln(250/20))
 prior_pdf = 1.0 / (x_eval * np.log(250.0 / 20.0))
 ax.plot(x_eval, prior_pdf, 'k--', lw=2, label=r'Prior: log-uniform [20, 250]')
-ax.fill_between(x_eval, prior_pdf, alpha=0.08, color='k')
+
 
 # Posteriors
 for csv_path, label, color in [
@@ -45,7 +45,6 @@ for csv_path, label, color in [
     pdf = pdf / np.trapezoid(pdf, x_eval)
 
     ax.plot(x_eval, pdf, color=color, lw=2, label=label)
-    ax.fill_between(x_eval, pdf, alpha=0.15, color=color)
 
 # Planck and SHoES
 ax.axvspan(66.93 - 0.62, 66.93 + 0.62, color=COLORS['planck_inner'],
@@ -64,7 +63,7 @@ for spine in ax.spines.values():
     spine.set_edgecolor('black')
     spine.set_linewidth(1.5)
 
-ax.legend(frameon=False)
+ax.legend(frameon=False, fontsize=12)
 fig.tight_layout()
 
 path = os.path.join(OUT_DIR, 'H0_prior_vs_posterior')

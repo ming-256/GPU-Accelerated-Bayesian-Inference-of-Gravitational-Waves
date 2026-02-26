@@ -30,10 +30,10 @@ NARROW_TF2_CSV = os.path.join(RESULTS_PHASEMARG,
     'PhaseMarg_Unheterodyned_TaylorF2_local_psd-gwtc1.csv')
 
 COLORS_SKY = {
-    'full_imr':   'tab:blue',
-    'narrow_imr': 'tab:orange',
-    'full_tf2':   'tab:cyan',
-    'narrow_tf2': 'purple',
+    'narrow_imr': COLORS['imr_baseline'],
+    'full_imr':   COLORS['unhetero_imr'],
+    'narrow_tf2': COLORS['tf2_baseline'],
+    'full_tf2':   COLORS['unhetero_tf2'],
 }
 
 plot_params = ['M_c', 'q', 'd_L', 'iota']

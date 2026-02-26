@@ -47,16 +47,18 @@ GWTC2P1_GW150914_HDF5 = 'EventData/GWOSC/GW150914/IGWN-GWTC2p1-v2-GW150914_09504
 # Consistent color scheme
 # --------------------------------------------------------------------------- #
 COLORS = {
-    'gwtc':           'b',
-    'imr_baseline':   'tab:orange',
-    'tf2_baseline':   'purple',
-    'flatZ':          'tab:green',
+    # Data lines — each source gets a unique, distinct color
+    'gwtc':           'tab:blue',
+    'imr_baseline':   'maroon',
+    'tf2_baseline':   'tab:purple',
+    'flatZ':          'teal',
     'vp250':          'tab:red',
     'reweighted':     'tab:cyan',
     'unhetero_imr':   '#555555',
-    'unhetero_tf2':   '#777777',
-    'small_h0_imr':   'tab:red',
+    'unhetero_tf2':   '#888888',
+    'small_h0_imr':   'tab:brown',
     'small_h0_tf2':   'tab:pink',
+    # Planck / SHoES reference bands — traditional colors
     'planck_inner':   '#0CDE79',
     'planck_outer':   '#6DE6AC',
     'shoes_inner':    '#E87317',
@@ -186,7 +188,6 @@ def plot_h0(runs, out_name, xlim=(20, 250), n_eval=500):
 
         # Plot
         ax.plot(x_eval, pdf_vals, color=color, lw=2, label=label)
-        ax.fill_between(x_eval, pdf_vals, alpha=0.15, color=color)
 
         # MAP
         map_val = x_eval[np.argmax(pdf_vals)]
@@ -219,7 +220,7 @@ def plot_h0(runs, out_name, xlim=(20, 250), n_eval=500):
         spine.set_edgecolor('black')
         spine.set_linewidth(1.5)
 
-    ax.legend(frameon=False)
+    ax.legend(frameon=False, fontsize=12)
     fig.tight_layout()
 
     path = os.path.join(OUT_DIR, out_name)
@@ -261,6 +262,7 @@ def make_corner(datasets, params, out_name, figsize=(10, 10)):
     axes.iloc[-1, 0].legend(
         bbox_to_anchor=(len(axes) * 0.85, len(axes) * 0.8),
         loc='lower center',
+        fontsize=14,
     )
     fig.tight_layout()
     axes.tick_params(grid_alpha=0)

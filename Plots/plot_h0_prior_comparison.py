@@ -26,10 +26,10 @@ SMALL_TF2_CSV = os.path.join(RESULTS_PHASEMARG,
     'PhaseMarg_Unheterodyned_TaylorF2_local_psd-gwtc1_small_h0_prior.csv')
 
 COLORS_PRIOR = {
-    'normal_imr':  'tab:orange',
-    'small_imr':   'tab:red',
-    'normal_tf2':  'purple',
-    'small_tf2':   'tab:pink',
+    'normal_imr':  COLORS['imr_baseline'],
+    'small_imr':   COLORS['small_h0_imr'],
+    'normal_tf2':  COLORS['tf2_baseline'],
+    'small_tf2':   COLORS['small_h0_tf2'],
 }
 
 # ----------------------------------------------------------------------- #

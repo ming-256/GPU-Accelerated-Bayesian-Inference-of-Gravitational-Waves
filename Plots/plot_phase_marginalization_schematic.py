@@ -37,8 +37,6 @@ amp = 3.0
 logL_phase = amp * np.cos(phase_c - 1.2) + 10.0
 
 ax1.plot(phase_c, logL_phase, 'k-', lw=2)
-ax1.fill_between(phase_c, logL_phase.min() - 0.5, logL_phase, alpha=0.15,
-                 color='tab:blue')
 ax1.set_xlabel(r'$\phi_c$ (rad)', fontsize=12)
 ax1.set_ylabel(r'$\ln\mathcal{L}(\phi_c \mid \theta)$', fontsize=12)
 ax1.set_title(r'(a) $\ln\mathcal{L}$ vs coalescence phase', fontsize=11)
@@ -117,7 +115,6 @@ for csv_path, label, color, loader in [
     pdf_vals = pdf_vals / np.trapezoid(pdf_vals, x_eval)
 
     ax3.plot(x_eval, pdf_vals, color=color, lw=2, label=label)
-    ax3.fill_between(x_eval, pdf_vals, alpha=0.15, color=color)
 
 # Planck / SHoES bands
 ax3.axvspan(66.93 - 0.62, 66.93 + 0.62, color=COLORS['planck_inner'],
@@ -130,7 +127,7 @@ ax3.set_ylabel(r'$P(H_0)$', fontsize=12)
 ax3.set_title(r'(c) $H_0$ posterior consistency', fontsize=11)
 ax3.set_xlim(20, 250)
 ax3.set_ylim(bottom=0)
-ax3.legend(fontsize=8, frameon=False)
+ax3.legend(fontsize=10, frameon=False)
 
 for spine in ax3.spines.values():
     spine.set_edgecolor('black')

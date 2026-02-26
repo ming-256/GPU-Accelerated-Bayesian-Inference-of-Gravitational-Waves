@@ -36,7 +36,7 @@ for csv_path, label, color in [
     (IMR_BASELINE, r'IMRPhenomD baseline ($\beta$(3,1))', COLORS['imr_baseline']),
     (TF2_BASELINE, r'TaylorF2 baseline ($\beta$(3,1))', COLORS['tf2_baseline']),
     (IMR_FLATZ, r'IMRPhenomD flat-in-$z$', COLORS['flatZ']),
-    (TF2_FLATZ, r'TaylorF2 flat-in-$z$', 'tab:green'),
+    (TF2_FLATZ, r'TaylorF2 flat-in-$z$', COLORS['flatZ']),
 ]:
     if os.path.exists(csv_path):
         s = load_nested_csv(csv_path)
@@ -60,7 +60,6 @@ for dL, w, label, color in runs:
     pdf = kde(x_eval)
     pdf = pdf / np.trapezoid(pdf, x_eval)
     ax.plot(x_eval, pdf, color=color, lw=2, label=label)
-    ax.fill_between(x_eval, pdf, alpha=0.1, color=color)
 
 # Show Beta(3,1) prior for reference
 d_lo, d_hi = 1.0, 75.0
@@ -81,7 +80,7 @@ for spine in ax.spines.values():
     spine.set_edgecolor('black')
     spine.set_linewidth(1.5)
 
-ax.legend(frameon=False, fontsize=9)
+ax.legend(frameon=False, fontsize=12)
 fig.tight_layout()
 
 path = os.path.join(OUT_DIR, 'dL_posterior')
