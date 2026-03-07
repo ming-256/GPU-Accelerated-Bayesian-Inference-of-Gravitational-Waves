@@ -62,6 +62,8 @@ parser.add_argument('--phase-marginalization', action='store_true',
                     help='Enable analytic phase marginalization (removes phase_c from sampling)')
 parser.add_argument('--output-dir', default='Results',
                     help='Directory to write output CSV files (default: Results)')
+parser.add_argument('--n-live', type=int, default=5000,
+                    help='Number of live points (default: 5000)')
 args = parser.parse_args()
 waveform_tag = args.waveform
 data_source = args.data_source
@@ -801,7 +803,7 @@ def loglikelihood_fn(x):
 # 8. NESTED SAMPLING SETUP
 # ============================================================================
 
-num_live = 5000
+num_live = args.n_live
 num_delete = int(num_live * 0.3)
 num_mcmc_steps = int(NUM_DIMS * 8)
 
