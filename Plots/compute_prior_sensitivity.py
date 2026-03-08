@@ -343,6 +343,30 @@ print("=" * 70)
 print("BAYESIAN EVIDENCE & BAYES FACTORS")
 print("=" * 70)
 
+# Serialise: convert numpy types
+def json_safe(obj):
+    if isinstance(obj, (np.integer,)):
+        return int(obj)
+    if isinstance(obj, (np.floating,)):
+        return float(obj)
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()
+    return obj
+
+full_results = {
+    'metadata': {
+        'waveform': WAVEFORM,
+        'n_eval': N_EVAL,
+        'kde_bw_factor': KDE_BW_FACTOR,
+        'H0_range': [float(x_eval[0]), float(x_eval[-1])],
+    },
+    'per_run_stats': {},
+    'comparisons': results_rows,
+    'evidence': {},
+    'bayes_factors': {},
+    'effective_sample_sizes': {},
+}
+
 evidences = {}
 for name, s in samples.items():
     if hasattr(s, 'logZ'):
@@ -367,7 +391,6 @@ if 'baseline' in evidences:
             }
             print(f"    B({name}/baseline) = exp({delta_logZ:.2f} +/- {delta_logZ_err:.2f}) = {bayes_factor:.2f}")
 
-# Write comprehensive JSON now that evidence is computed
 if results_rows:
     for name in evidences:
         logZ, logZ_err = evidences[name]
@@ -376,21 +399,6 @@ if results_rows:
             'logZ_err': float(logZ_err),
         }
     full_results['bayes_factors'] = bayes_factors
-
-    # Serialise: convert numpy types
-    def json_safe(obj):
-        if isinstance(obj, (np.integer,)):
-            return int(obj)
-        if isinstance(obj, (np.floating,)):
-            return float(obj)
-        if isinstance(obj, np.ndarray):
-            return obj.tolist()
-        return obj
-
-    out_json = os.path.join(PHASEMARG_DIR, 'prior_sensitivity_full.json')
-    with open(out_json, 'w') as f:
-        json.dump(full_results, f, indent=2, default=json_safe)
-    print(f"\nSaved comprehensive results: {out_json}")
 
 print()
 
@@ -413,19 +421,6 @@ if results_rows:
     print(f"Saved: {out_pdfs}")
 
     # --- Comprehensive JSON with all metrics ---
-    full_results = {
-        'metadata': {
-            'waveform': WAVEFORM,
-            'n_eval': N_EVAL,
-            'kde_bw_factor': KDE_BW_FACTOR,
-            'H0_range': [float(x_eval[0]), float(x_eval[-1])],
-        },
-        'per_run_stats': {},
-        'comparisons': results_rows,
-        'evidence': {},
-        'effective_sample_sizes': {},
-    }
-
     # Per-run stats
     for name in stats:
         full_results['per_run_stats'][name] = stats[name]
@@ -441,11 +436,10 @@ if results_rows:
             'efficiency': float(ess / n_total),
         }
 
-    # Evidence (added in section 5 below, but pre-populate here)
-    # Will be filled by section 5
-
     out_json = os.path.join(PHASEMARG_DIR, 'prior_sensitivity_full.json')
-    # Defer writing until after evidence section
+    with open(out_json, 'w') as f:
+        json.dump(full_results, f, indent=2, default=json_safe)
+    print(f"Saved: {out_json}")
 
     # --- LaTeX table ---
     print()

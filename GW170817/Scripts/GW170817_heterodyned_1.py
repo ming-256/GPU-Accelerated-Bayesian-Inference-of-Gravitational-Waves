@@ -814,7 +814,7 @@ def loglikelihood_fn(x):
 # ============================================================================
 
 num_live = args.n_live
-num_delete = int(num_live * 0.3)
+num_delete = int(num_live * 0.5)
 num_mcmc_steps = int(NUM_DIMS * 8)
 
 @jax.jit
