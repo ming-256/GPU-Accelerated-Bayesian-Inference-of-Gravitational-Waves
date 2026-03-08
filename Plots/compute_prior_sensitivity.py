@@ -6,25 +6,28 @@ Prior Sensitivity Analysis for H_0 Inference
 Quantifies the impact of prior choices on the H_0 posterior from GW170817:
   1. KL divergence between baseline and alternative-prior posteriors
   2. Jensen-Shannon divergence (symmetric)
-  3. MAP shift and credible interval changes
-  4. Effective sample size of reweighted vs directly sampled posteriors
-  5. Bayes factors from evidence ratios
-  6. Comparison of reweighted vs directly-sampled flat-in-z posteriors
+  3. Hellinger distance (bounded [0,1], symmetric)
+  4. 1D Wasserstein distance (earth mover's distance, in km/s/Mpc units)
+  5. MAP shift and credible interval changes
+  6. Effective sample size of reweighted vs directly sampled posteriors
+  7. Bayes factors from evidence ratios
+  8. Comparison of reweighted vs directly-sampled flat-in-z posteriors
 
 Outputs:
-  - Console summary table (LaTeX-ready)
-  - Results/gwtc1_phasemarg/prior_sensitivity.csv
+  - Results/gwtc1_phasemarg/prior_sensitivity.csv          (comparison table)
+  - Results/gwtc1_phasemarg/prior_sensitivity_full.json     (comprehensive structured output)
+  - Results/gwtc1_phasemarg/prior_sensitivity_pdfs.csv      (KDE PDFs for replotting)
   - Plots: prior_sensitivity_H0.pdf, prior_functions.pdf, dL_reweight_comparison.pdf
 """
 
 import os
 import sys
+import json
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'Plots'))
 
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.stats import gaussian_kde, entropy
-from scipy.special import rel_entr
+from scipy.stats import gaussian_kde, wasserstein_distance
 from anesthetic import read_chains, MCMCSamples
 import pandas as pd
 
@@ -49,18 +52,31 @@ PHASEMARG_DIR = os.path.join(RESULTS_DIR, 'gwtc1_phasemarg')
 # Configuration — which waveform to focus on
 # ============================================================================
 WAVEFORM = os.environ.get('WAVEFORM', 'IMRPhenomD_NRTidalv2')
+N_EVAL = int(os.environ.get('N_EVAL', '2000'))  # KDE evaluation grid resolution
+KDE_BW_FACTOR = float(os.environ.get('KDE_BW_FACTOR', '0.8'))  # Bandwidth scale (< 1 = tighter)
+
 print(f"Waveform: {WAVEFORM}")
-print(f"(Set WAVEFORM env var to change, e.g. WAVEFORM=TaylorF2)")
+print(f"KDE grid: {N_EVAL} points | Bandwidth factor: {KDE_BW_FACTOR}")
+print(f"(Set WAVEFORM, N_EVAL, KDE_BW_FACTOR env vars to change)")
 print()
 
 # ============================================================================
 # Helper functions
 # ============================================================================
 
-def weighted_kde(values, weights, x_eval):
-    """Compute area-normalised weighted KDE."""
+def weighted_kde(values, weights, x_eval, bw_factor=KDE_BW_FACTOR):
+    """Compute area-normalised weighted KDE with adjustable bandwidth.
+
+    Parameters
+    ----------
+    bw_factor : float
+        Multiplicative factor on Scott's rule bandwidth.
+        < 1 gives tighter (less smooth) KDE; > 1 gives smoother KDE.
+    """
     w = weights / weights.sum()
     kde = gaussian_kde(values, weights=w)
+    # Adjust bandwidth: Scott's rule is the default, scale it
+    kde.set_bandwidth(kde.factor * bw_factor)
     pdf = kde(x_eval)
     pdf = pdf / np.trapezoid(pdf, x_eval)
     return pdf
@@ -69,7 +85,6 @@ def weighted_kde(values, weights, x_eval):
 def kl_divergence(p, q, x_eval):
     """KL(P || Q) in nats, computed from discretised PDFs."""
     dx = x_eval[1] - x_eval[0]
-    # Avoid division by zero
     mask = (p > 1e-30) & (q > 1e-30)
     return np.sum(p[mask] * np.log(p[mask] / q[mask])) * dx
 
@@ -80,10 +95,48 @@ def js_divergence(p, q, x_eval):
     return 0.5 * kl_divergence(p, m, x_eval) + 0.5 * kl_divergence(q, m, x_eval)
 
 
+def hellinger_distance(p, q, x_eval):
+    """Hellinger distance H(P, Q) in [0, 1]."""
+    dx = x_eval[1] - x_eval[0]
+    return np.sqrt(0.5 * np.sum((np.sqrt(p) - np.sqrt(q))**2) * dx)
+
+
+def wasserstein_1d(h0_a, w_a, h0_b, w_b):
+    """1D Wasserstein (earth mover's) distance between weighted samples.
+
+    Returns distance in the same units as the samples (km/s/Mpc for H_0).
+    """
+    w_a_norm = w_a / w_a.sum()
+    w_b_norm = w_b / w_b.sum()
+    return wasserstein_distance(h0_a, h0_b, u_weights=w_a_norm, v_weights=w_b_norm)
+
+
+def overlap_integral(p, q, x_eval):
+    """Overlap coefficient OVL = integral of min(P, Q), in [0, 1]."""
+    dx = x_eval[1] - x_eval[0]
+    return np.sum(np.minimum(p, q)) * dx
+
+
 def effective_sample_size(weights):
     """ESS = 1 / sum(w_i^2) where w_i are normalised weights."""
     w = weights / weights.sum()
     return 1.0 / np.sum(w**2)
+
+
+def weighted_median(values, weights):
+    """Weighted median."""
+    idx = np.argsort(values)
+    cumw = np.cumsum(weights[idx])
+    cumw /= cumw[-1]
+    return values[idx][np.searchsorted(cumw, 0.5)]
+
+
+def weighted_quantile(values, weights, quantiles):
+    """Weighted quantiles."""
+    idx = np.argsort(values)
+    cumw = np.cumsum(weights[idx])
+    cumw /= cumw[-1]
+    return np.interp(quantiles, cumw, values[idx])
 
 
 def map_and_hpd(x_eval, pdf_vals):
@@ -141,15 +194,33 @@ print("=" * 70)
 print("COMPUTING H_0 POSTERIORS (KDE)")
 print("=" * 70)
 
-x_eval = np.linspace(20, 250, 1000)
+x_eval = np.linspace(20, 250, N_EVAL)
 pdfs = {}
+raw_h0 = {}   # Store raw H_0 values and weights for Wasserstein
+stats = {}    # Per-run summary statistics
 
 for name, s in samples.items():
     h0 = s['H_0'].to_numpy()
     w = np.asarray(s.get_weights())
+    raw_h0[name] = (h0, w)
     pdfs[name] = weighted_kde(h0, w, x_eval)
     map_val, (lo68, hi68), (lo95, hi95) = map_and_hpd(x_eval, pdfs[name])
-    print(f"  {name:20s}: MAP={map_val:6.1f}, "
+
+    w_norm = w / w.sum()
+    median_val = weighted_median(h0, w)
+    q_16, q_84 = weighted_quantile(h0, w, [0.15865, 0.84135])
+
+    stats[name] = {
+        'MAP': float(map_val),
+        'median': float(median_val),
+        'HPD_68_lo': float(lo68), 'HPD_68_hi': float(hi68),
+        'HPD_95_lo': float(lo95), 'HPD_95_hi': float(hi95),
+        'sym_68_lo': float(q_16), 'sym_68_hi': float(q_84),
+        'HPD_68_width': float(hi68 - lo68),
+        'HPD_95_width': float(hi95 - lo95),
+    }
+
+    print(f"  {name:20s}: MAP={map_val:6.1f}, median={median_val:6.1f}, "
           f"68% HPD=[{lo68:.1f}, {hi68:.1f}], "
           f"95% HPD=[{lo95:.1f}, {hi95:.1f}]")
 
@@ -164,77 +235,88 @@ print("=" * 70)
 
 results_rows = []
 
+def compute_all_metrics(name_a, name_b, p, q, x_eval, raw_a, raw_b):
+    """Compute all divergence/distance metrics between two distributions."""
+    h0_a, w_a = raw_a
+    h0_b, w_b = raw_b
+
+    kl_pq = kl_divergence(p, q, x_eval)
+    kl_qp = kl_divergence(q, p, x_eval)
+    jsd = js_divergence(p, q, x_eval)
+    hell = hellinger_distance(p, q, x_eval)
+    wass = wasserstein_1d(h0_a, w_a, h0_b, w_b)
+    ovl = overlap_integral(p, q, x_eval)
+
+    map_a = x_eval[np.argmax(p)]
+    map_b = x_eval[np.argmax(q)]
+    map_shift = map_b - map_a
+
+    _, (lo_a, hi_a), (lo95_a, hi95_a) = map_and_hpd(x_eval, p)
+    _, (lo_b, hi_b), (lo95_b, hi95_b) = map_and_hpd(x_eval, q)
+    ci68_a = hi_a - lo_a
+    ci68_b = hi_b - lo_b
+
+    # Sigma-equivalent of MAP shift (relative to baseline 68% width)
+    sigma_shift = abs(map_shift) / (ci68_a / 2) if ci68_a > 0 else float('nan')
+
+    return {
+        'comparison': f'{name_a} vs {name_b}',
+        'KL(base||alt)': kl_pq,
+        'KL(alt||base)': kl_qp,
+        'JSD': jsd,
+        'JSD_bits': jsd / np.log(2),
+        'Hellinger': hell,
+        'Wasserstein_km_s_Mpc': wass,
+        'overlap': ovl,
+        'MAP_A': map_a,
+        'MAP_B': map_b,
+        'MAP_shift': map_shift,
+        'sigma_shift': sigma_shift,
+        'CI68_width_A': ci68_a,
+        'CI68_width_B': ci68_b,
+        'CI68_ratio': ci68_b / ci68_a if ci68_a > 0 else float('nan'),
+        'CI95_width_A': hi95_a - lo95_a,
+        'CI95_width_B': hi95_b - lo95_b,
+    }
+
+
 if 'baseline' in pdfs:
     p_base = pdfs['baseline']
 
     for name in ['flatZ', 'vp250', 'reweighted_flatZ']:
         if name not in pdfs:
             continue
-        q = pdfs[name]
 
-        kl_pq = kl_divergence(p_base, q, x_eval)  # KL(baseline || alt)
-        kl_qp = kl_divergence(q, p_base, x_eval)   # KL(alt || baseline)
-        jsd = js_divergence(p_base, q, x_eval)
-
-        # MAP shift
-        map_base = x_eval[np.argmax(p_base)]
-        map_alt = x_eval[np.argmax(q)]
-        map_shift = map_alt - map_base
-
-        # 68% CI width comparison
-        _, (lo_b, hi_b), _ = map_and_hpd(x_eval, p_base)
-        _, (lo_a, hi_a), _ = map_and_hpd(x_eval, q)
-        ci_width_base = hi_b - lo_b
-        ci_width_alt = hi_a - lo_a
-
-        row = {
-            'comparison': f'baseline vs {name}',
-            'KL(base||alt)': kl_pq,
-            'KL(alt||base)': kl_qp,
-            'JSD': jsd,
-            'MAP_shift': map_shift,
-            'CI68_width_base': ci_width_base,
-            'CI68_width_alt': ci_width_alt,
-            'CI68_ratio': ci_width_alt / ci_width_base,
-        }
+        row = compute_all_metrics(
+            'baseline', name, p_base, pdfs[name], x_eval,
+            raw_h0['baseline'], raw_h0[name])
         results_rows.append(row)
 
-        print(f"  {name:20s}: KL(base||alt)={kl_pq:.4f} nats, "
-              f"KL(alt||base)={kl_qp:.4f} nats, "
-              f"JSD={jsd:.4f} nats")
-        print(f"    MAP shift: {map_shift:+.1f} km/s/Mpc, "
-              f"68% CI width: {ci_width_base:.1f} -> {ci_width_alt:.1f} "
-              f"(ratio: {ci_width_alt/ci_width_base:.2f})")
+        print(f"  {name:20s}: KL(base||alt)={row['KL(base||alt)']:.4f} nats, "
+              f"JSD={row['JSD']:.4f} nats ({row['JSD_bits']:.4f} bits)")
+        print(f"    Hellinger={row['Hellinger']:.4f}, "
+              f"Wasserstein={row['Wasserstein_km_s_Mpc']:.2f} km/s/Mpc, "
+              f"Overlap={row['overlap']:.4f}")
+        print(f"    MAP shift: {row['MAP_shift']:+.1f} km/s/Mpc "
+              f"({row['sigma_shift']:.2f}σ), "
+              f"68% CI width: {row['CI68_width_A']:.1f} -> {row['CI68_width_B']:.1f} "
+              f"(ratio: {row['CI68_ratio']:.2f})")
 
     # Special comparison: reweighted vs directly sampled flat-in-z
     if 'flatZ' in pdfs and 'reweighted_flatZ' in pdfs:
-        p_sampled = pdfs['flatZ']
-        q_reweight = pdfs['reweighted_flatZ']
-        kl_sr = kl_divergence(p_sampled, q_reweight, x_eval)
-        kl_rs = kl_divergence(q_reweight, p_sampled, x_eval)
-        jsd_sr = js_divergence(p_sampled, q_reweight, x_eval)
+        row_sr = compute_all_metrics(
+            'flatZ_sampled', 'flatZ_reweighted',
+            pdfs['flatZ'], pdfs['reweighted_flatZ'], x_eval,
+            raw_h0['flatZ'], raw_h0['reweighted_flatZ'])
+        results_rows.append(row_sr)
 
         print()
         print(f"  REWEIGHTING vs DIRECT SAMPLING (flat-in-z):")
-        print(f"    KL(sampled||reweighted) = {kl_sr:.4f} nats")
-        print(f"    KL(reweighted||sampled) = {kl_rs:.4f} nats")
-        print(f"    JSD = {jsd_sr:.4f} nats")
-
-        map_s = x_eval[np.argmax(p_sampled)]
-        map_r = x_eval[np.argmax(q_reweight)]
-        print(f"    MAP (sampled): {map_s:.1f}, MAP (reweighted): {map_r:.1f}, "
-              f"shift: {map_s - map_r:+.1f} km/s/Mpc")
-
-        results_rows.append({
-            'comparison': 'flatZ_sampled vs flatZ_reweighted',
-            'KL(base||alt)': kl_sr,
-            'KL(alt||base)': kl_rs,
-            'JSD': jsd_sr,
-            'MAP_shift': map_s - map_r,
-            'CI68_width_base': 0,
-            'CI68_width_alt': 0,
-            'CI68_ratio': 0,
-        })
+        print(f"    KL(sampled||reweighted) = {row_sr['KL(base||alt)']:.4f} nats")
+        print(f"    JSD = {row_sr['JSD']:.4f} nats ({row_sr['JSD_bits']:.4f} bits)")
+        print(f"    Hellinger = {row_sr['Hellinger']:.4f}")
+        print(f"    Wasserstein = {row_sr['Wasserstein_km_s_Mpc']:.2f} km/s/Mpc")
+        print(f"    MAP shift: {row_sr['MAP_shift']:+.1f} km/s/Mpc")
 
 print()
 
@@ -269,37 +351,114 @@ for name, s in samples.items():
         evidences[name] = (logZ, logZ_err)
         print(f"  {name:20s}: ln Z = {logZ:.2f} +/- {logZ_err:.2f}")
 
+bayes_factors = {}
 if 'baseline' in evidences:
-    logZ_base, _ = evidences['baseline']
+    logZ_base, logZ_base_err = evidences['baseline']
     for name in ['flatZ', 'vp250']:
         if name in evidences:
-            logZ_alt, _ = evidences[name]
+            logZ_alt, logZ_alt_err = evidences[name]
             delta_logZ = logZ_alt - logZ_base
+            delta_logZ_err = np.sqrt(logZ_base_err**2 + logZ_alt_err**2)
             bayes_factor = np.exp(delta_logZ)
-            print(f"    B({name}/baseline) = exp({delta_logZ:.2f}) = {bayes_factor:.2f}")
+            bayes_factors[name] = {
+                'delta_logZ': float(delta_logZ),
+                'delta_logZ_err': float(delta_logZ_err),
+                'bayes_factor': float(bayes_factor),
+            }
+            print(f"    B({name}/baseline) = exp({delta_logZ:.2f} +/- {delta_logZ_err:.2f}) = {bayes_factor:.2f}")
+
+# Write comprehensive JSON now that evidence is computed
+if results_rows:
+    for name in evidences:
+        logZ, logZ_err = evidences[name]
+        full_results['evidence'][name] = {
+            'logZ': float(logZ),
+            'logZ_err': float(logZ_err),
+        }
+    full_results['bayes_factors'] = bayes_factors
+
+    # Serialise: convert numpy types
+    def json_safe(obj):
+        if isinstance(obj, (np.integer,)):
+            return int(obj)
+        if isinstance(obj, (np.floating,)):
+            return float(obj)
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return obj
+
+    out_json = os.path.join(PHASEMARG_DIR, 'prior_sensitivity_full.json')
+    with open(out_json, 'w') as f:
+        json.dump(full_results, f, indent=2, default=json_safe)
+    print(f"\nSaved comprehensive results: {out_json}")
 
 print()
 
 # ============================================================================
-# 6. Save results
+# 6. Save results — comprehensive structured output
 # ============================================================================
 if results_rows:
+    # --- CSV comparison table (backwards compatible) ---
     df = pd.DataFrame(results_rows)
     out_csv = os.path.join(PHASEMARG_DIR, 'prior_sensitivity.csv')
-    df.to_csv(out_csv, index=False)
+    df.to_csv(out_csv, index=False, float_format='%.8f')
     print(f"Saved: {out_csv}")
 
-    # LaTeX table
+    # --- KDE PDFs for replotting / further analysis ---
+    pdf_df = pd.DataFrame({'H_0': x_eval})
+    for name, pdf_vals in pdfs.items():
+        pdf_df[name] = pdf_vals
+    out_pdfs = os.path.join(PHASEMARG_DIR, 'prior_sensitivity_pdfs.csv')
+    pdf_df.to_csv(out_pdfs, index=False, float_format='%.10g')
+    print(f"Saved: {out_pdfs}")
+
+    # --- Comprehensive JSON with all metrics ---
+    full_results = {
+        'metadata': {
+            'waveform': WAVEFORM,
+            'n_eval': N_EVAL,
+            'kde_bw_factor': KDE_BW_FACTOR,
+            'H0_range': [float(x_eval[0]), float(x_eval[-1])],
+        },
+        'per_run_stats': {},
+        'comparisons': results_rows,
+        'evidence': {},
+        'effective_sample_sizes': {},
+    }
+
+    # Per-run stats
+    for name in stats:
+        full_results['per_run_stats'][name] = stats[name]
+
+    # ESS
+    for name, s in samples.items():
+        w = np.asarray(s.get_weights())
+        ess = effective_sample_size(w)
+        n_total = len(s)
+        full_results['effective_sample_sizes'][name] = {
+            'N_total': int(n_total),
+            'N_eff': float(ess),
+            'efficiency': float(ess / n_total),
+        }
+
+    # Evidence (added in section 5 below, but pre-populate here)
+    # Will be filled by section 5
+
+    out_json = os.path.join(PHASEMARG_DIR, 'prior_sensitivity_full.json')
+    # Defer writing until after evidence section
+
+    # --- LaTeX table ---
     print()
     print("LaTeX table:")
-    print(r"\begin{tabular}{lcccccc}")
+    print(r"\begin{tabular}{lccccccc}")
     print(r"\hline")
-    print(r"Comparison & KL(base$\|$alt) & KL(alt$\|$base) & JSD & MAP shift & "
-          r"68\% CI ratio \\")
+    print(r"Comparison & KL(b$\|$a) & JSD & JSD (bits) & Hellinger & "
+          r"$W_1$ & MAP shift & 68\% CI ratio \\")
     print(r"\hline")
     for _, row in df.iterrows():
         print(f"  {row['comparison']} & {row['KL(base||alt)']:.4f} & "
-              f"{row['KL(alt||base)']:.4f} & {row['JSD']:.4f} & "
+              f"{row['JSD']:.4f} & {row['JSD_bits']:.4f} & "
+              f"{row['Hellinger']:.4f} & {row['Wasserstein_km_s_Mpc']:.1f} & "
               f"{row['MAP_shift']:+.1f} & {row['CI68_ratio']:.2f} \\\\")
     print(r"\hline")
     print(r"\end{tabular}")
@@ -339,7 +498,7 @@ if runs_for_plot:
 fig, axes = plt.subplots(1, 3, figsize=(15, 4))
 
 # Panel 1: d_L prior
-d_L = np.linspace(1, 75, 500)
+d_L = np.linspace(1, 75, 1000)
 # Volumetric: p(d_L) ∝ d_L^2
 p_vol = d_L**2
 p_vol = p_vol / np.trapezoid(p_vol, d_L)
@@ -358,7 +517,7 @@ axes[0].set_title('Distance Prior')
 axes[0].legend(fontsize=9)
 
 # Panel 2: H_0 prior
-H0 = np.linspace(20, 250, 500)
+H0 = np.linspace(20, 250, 1000)
 p_h0 = 1.0 / H0  # flat-in-log
 p_h0 = p_h0 / np.trapezoid(p_h0, H0)
 axes[1].plot(H0, p_h0, color='black', lw=2, label=r'$\pi(H_0) \propto 1/H_0$')
@@ -368,7 +527,7 @@ axes[1].set_title(r'$H_0$ Prior (log-uniform)')
 axes[1].legend(fontsize=9)
 
 # Panel 3: Peculiar velocity prior
-v_p = np.linspace(-1000, 1000, 500)
+v_p = np.linspace(-1000, 1000, 1000)
 p_vp_150 = np.exp(-0.5 * ((v_p - 310) / 150)**2)
 p_vp_150 = p_vp_150 / np.trapezoid(p_vp_150, v_p)
 p_vp_250 = np.exp(-0.5 * ((v_p - 310) / 250)**2)
@@ -415,9 +574,9 @@ if 'flatZ' in samples and 'reweighted_flatZ' in samples:
             w = w / w.sum()
 
             if param == 'd_L':
-                x_grid = np.linspace(0, 80, 500)
+                x_grid = np.linspace(0, 80, 1000)
             else:
-                x_grid = np.linspace(0, np.pi, 500)
+                x_grid = np.linspace(0, np.pi, 1000)
 
             kde = gaussian_kde(vals, weights=w)
             pdf = kde(x_grid)
@@ -453,16 +612,20 @@ if 'baseline' in pdfs and ('flatZ' in pdfs or 'vp250' in pdfs):
             continue
         ax.plot(x_eval, pdfs[name], color=color, lw=2, label=label)
 
-    # Annotate with JSD values
+    # Annotate with key metrics
     y_pos = 0.95
     for name in ['flatZ', 'vp250', 'reweighted_flatZ']:
         if name not in pdfs or 'baseline' not in pdfs:
             continue
         jsd = js_divergence(pdfs['baseline'], pdfs[name], x_eval)
+        hell = hellinger_distance(pdfs['baseline'], pdfs[name], x_eval)
+        wass = wasserstein_1d(*raw_h0['baseline'], *raw_h0[name])
         label_short = {'flatZ': 'flat-z', 'vp250': 'vp250',
                        'reweighted_flatZ': 'reweight'}[name]
-        ax.text(0.98, y_pos, f'JSD(base, {label_short}) = {jsd:.4f} nats',
-                transform=ax.transAxes, ha='right', va='top', fontsize=10)
+        ax.text(0.98, y_pos,
+                f'{label_short}: JSD={jsd:.4f} nats, H={hell:.3f}, '
+                f'$W_1$={wass:.1f}',
+                transform=ax.transAxes, ha='right', va='top', fontsize=9)
         y_pos -= 0.05
 
     ax.set_xlim(20, 200)

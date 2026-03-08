@@ -149,7 +149,7 @@ def compute_hpd(x_eval, pdf_vals, cred_level):
 # --------------------------------------------------------------------------- #
 # H_0 plot with MAP, HPD, SHoES, Planck
 # --------------------------------------------------------------------------- #
-def plot_h0(runs, out_name, xlim=(20, 250), n_eval=500):
+def plot_h0(runs, out_name, xlim=(20, 250), n_eval=2000):
     """Create an H_0 posterior plot using weighted KDE.
 
     Area-normalised KDE with MAP, HPD credible intervals, SHoES and Planck bands.

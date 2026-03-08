@@ -77,6 +77,15 @@ python Plots/compute_summary_stats.py
 echo "--- Waveform systematics ---"
 python Plots/compute_waveform_systematics.py
 
+echo "--- Prior sensitivity analysis (IMRPhenomD_NRTidalv2) ---"
+WAVEFORM=IMRPhenomD_NRTidalv2 python Plots/compute_prior_sensitivity.py
+
+echo "--- Prior sensitivity analysis (TaylorF2) ---"
+WAVEFORM=TaylorF2 python Plots/compute_prior_sensitivity.py
+
+echo "--- Scaling study ---"
+python Plots/plot_scaling_study.py
+
 echo ""
 echo "All plots saved to Results/gwtc1_phasemarg/plots/"
 echo "All tables saved to Results/gwtc1_phasemarg/"
