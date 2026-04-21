@@ -150,8 +150,14 @@ source setup_env.sh
 This will:
 1. Create a Python venv at `pbilby_venv/`
 2. `pip install` all dependencies from `requirements.txt`
-3. Clone and build PolyChord from source with MPI support
-4. Verify the installation
+3. Rebuild `mpi4py` from source against the loaded MPI stack when `mpicc` is available
+4. Clone and build PolyChord from source with MPI support
+5. Verify the installation
+6. Write environment provenance to `environment_manifest/`
+
+The manifest contains the git commit, loaded modules when available, compiler
+and MPI versions, Python/pip versions, and `pip freeze --all`.  Include this
+directory with the pBilby run outputs for paper reproducibility.
 
 ### Verify
 
@@ -163,6 +169,14 @@ import pypolychord; print('PyPolyChord OK')
 import lal; print('LALSuite OK')
 import mpi4py; print('mpi4py OK')
 "
+bash run_all.sh --preflight --primary-only
+```
+
+To refresh provenance after changing modules or rebuilding dependencies:
+
+```bash
+source pbilby_venv/bin/activate
+source setup_env.sh manifest
 ```
 
 ---
