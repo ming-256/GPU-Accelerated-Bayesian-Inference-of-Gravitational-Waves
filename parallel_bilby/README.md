@@ -8,7 +8,7 @@ to the JAX GPU analysis.
 Transfer this entire `parallel_bilby/` folder to your HPC cluster.
 
 **Sampler:** PyPolyChord (PolyChord nested sampling, MPI-parallelised)
-**Likelihood:** Relative binning (heterodyned) + analytic phase marginalisation
+**Likelihood:** Bilby relative binning by default; full likelihood available
 **Standard siren:** GW170817 includes H_0 and v_p with NGC 4993 EM counterpart
 
 ---
@@ -84,6 +84,16 @@ SLURM_EXTRA=""                 # e.g. "--qos=normal"
 # ── Sampler ──────────────────────────────────────────────────────────
 NLIVE=2000                     # live points
 NUM_REPEATS=40                 # slice-sampling repeats
+
+# ── Likelihood/model ─────────────────────────────────────────────────
+REFERENCE_FREQUENCY=20.0       # Hz, matching JAX f_ref
+PHASE_MARGINALIZATION=true
+TIME_MARGINALIZATION=false
+DISTANCE_MARGINALIZATION=false
+JITTER_TIME=false
+RELATIVE_EPSILON=0.5           # Bilby derives actual bin count from this
+RELATIVE_CHI=1.0
+JAX_HETERODYNED_BINS=501       # provenance only; JAX fixed-bin scheme
 
 # ── GW170817 data/PSD ────────────────────────────────────────────────
 DATA_SOURCE="fetch"            # fetch or local
@@ -187,6 +197,18 @@ To generate data without submitting:
 bash run_all.sh --gen-only --primary-only
 ```
 
+To add the full non-heterodyned GW170817 pBilby validation run:
+
+```bash
+bash run_all.sh --primary-only --include-full
+```
+
+To run only the full non-heterodyned validation:
+
+```bash
+bash run_all.sh --full-only
+```
+
 ### Option B: Local with MPI (testing / single node)
 
 ```bash
@@ -277,18 +299,33 @@ L_vr = N(3327 | v_p + H_0 * d_L, 72)    recession velocity of NGC 4993
 L_vp = N(310  | v_p, 150)                peculiar velocity constraint
 ```
 
-These match the JAX script terms exactly.  The GW likelihood uses relative
-binning with fiducial parameters from GWTC-1 medians.
+These match the JAX script terms exactly.  The default GW likelihood uses
+Bilby's relative-binning implementation with fiducial parameters from GWTC-1
+medians.  This is the correct pBilby CPU reference, but it is not the same bin
+constructor as the custom JAX heterodyned code.
 
 ### Likelihood settings
 
 | Setting               | Value |
 |-----------------------|-------|
-| Likelihood type       | RelativeBinningGravitationalWaveTransient |
-| epsilon               | 0.5   |
-| Phase marginalisation | Yes   |
+| Default likelihood type | RelativeBinningGravitationalWaveTransient |
+| Validation likelihood type | GravitationalWaveTransient (`--full-only`) |
+| Reference frequency | 20 Hz |
+| Bilby relative epsilon | 0.5 |
+| Bilby relative chi | 1.0 |
+| JAX heterodyned bins | 501 fixed bins |
+| Bilby relative bins | Derived at runtime; recorded in manifest |
+| Phase marginalisation | Yes |
 | Distance marginalisation | No |
 | Time marginalisation  | No    |
+| Time jitter | No |
+
+Do not describe the relative-binned pBilby run as having the same bins as JAX.
+The physical model, priors, data segment, PSD source, waveform family,
+reference frequency, and marginalisation policy are matched; the relative
+binning implementation is Bilby's own `epsilon`/`chi` scheme.  The output
+manifest records both `bilby_relative_bins` and `jax_heterodyned_reference_bins`
+so this cannot be lost during paper writing.
 
 ### Sampler settings
 

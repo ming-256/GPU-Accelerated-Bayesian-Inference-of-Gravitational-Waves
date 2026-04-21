@@ -237,11 +237,20 @@ Implementation status on 2026-04-21:
 - `parallel_bilby/GW170817/run_GW170817.py` now supports `--psd-source
   {gwtc1,self}`, `--data-source {fetch,local}`, local PSD/data paths, and JSON
   run manifests.
+- It now exposes and records reference frequency, phase/time/distance
+  marginalization flags, time jitter, Bilby relative-binning `epsilon`/`chi`,
+  the actual Bilby relative-bin count, and the JAX fixed 501-bin reference.
+- It now supports `--likelihood-mode full` for a pBilby full-likelihood
+  validation run in addition to the default Bilby relative-binning run.
 - `parallel_bilby/run_all.sh` now has `--primary-only` and `--preflight`, and
   preflight parses the GW170817 prior to verify the component-mass prior
   classes.
+- `parallel_bilby/run_all.sh` also has `--include-full` and `--full-only` for
+  non-heterodyned pBilby validation runs.
 - `parallel_bilby/README.md` and `config.sh` now describe the paper CPU
   reference workflow.
+- `paper_knowledge_base/jax_pbilby_equivalence_matrix.md` records which details
+  are matched and which are implementation differences that must be reported.
 - Static validation passes locally, but runtime preflight fails on the local
   machine because the current Python environment cannot import NumPy/Bilby and
   lacks `mpi4py`/`pypolychord`.  The production go/no-go must therefore be made

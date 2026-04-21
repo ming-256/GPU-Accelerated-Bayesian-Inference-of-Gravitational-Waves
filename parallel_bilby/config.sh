@@ -32,6 +32,19 @@ SLURM_EXTRA=""          # any extra #SBATCH lines, e.g. "--qos=normal"
 NLIVE=2000              # number of live points (PolyChord)
 NUM_REPEATS=40          # slice-sampling repeats per dead point
 
+# ── Likelihood/model settings ────────────────────────────────────────────────
+# These are set explicitly so the pBilby run manifest can be compared against
+# the JAX A100 production scripts. JAX heterodyned runs use fixed 501 bins;
+# Bilby relative binning derives the actual bin count from epsilon/chi.
+REFERENCE_FREQUENCY=20.0
+PHASE_MARGINALIZATION=true
+TIME_MARGINALIZATION=false
+DISTANCE_MARGINALIZATION=false
+JITTER_TIME=false
+RELATIVE_EPSILON=0.5
+RELATIVE_CHI=1.0
+JAX_HETERODYNED_BINS=501
+
 # ── GW170817 data/PSD settings ───────────────────────────────────────────────
 # Paper comparison default: use the same GWTC-1/BayesWave PSD source as the
 # JAX production runs.  Place GWTC1_GW170817_PSDs.dat in GW170817/ or set an

@@ -2,9 +2,9 @@
 Bilby analysis for GW170817 — BNS with standard siren (H_0, v_p)
 =================================================================
 
-Uses relative binning (heterodyned likelihood) + phase marginalization,
-matching the JAX heterodyned scripts.  Adds two standard-siren log-likelihood
-terms on top of the GW likelihood:
+Uses either Bilby's relative-binning likelihood or the full frequency-domain
+likelihood, plus the same standard-siren log-likelihood terms used by the JAX
+scripts:
 
   ll_vr = N(3327 | v_p + H_0 * d_L, 72)     recession velocity of NGC 4993
   ll_vp = N(310  | v_p,              150)     peculiar velocity constraint
@@ -40,7 +40,10 @@ import bilby
 from bilby.gw.detector import InterferometerList
 from bilby.gw.source import lal_binary_neutron_star
 from bilby.gw.waveform_generator import WaveformGenerator
-from bilby.gw.likelihood import RelativeBinningGravitationalWaveTransient
+from bilby.gw.likelihood import (
+    GravitationalWaveTransient,
+    RelativeBinningGravitationalWaveTransient,
+)
 
 # ============================================================================
 # Custom likelihood: GW + standard siren
@@ -118,6 +121,32 @@ parser.add_argument('--waveform', choices=['IMRPhenomD_NRTidalv2', 'TaylorF2'],
                     default='IMRPhenomD_NRTidalv2')
 parser.add_argument('--nlive', type=int, default=2000)
 parser.add_argument('--num-repeats', type=int, default=40)
+parser.add_argument('--likelihood-mode', choices=['relative', 'full'],
+                    default='relative',
+                    help='"relative" uses Bilby relative binning; "full" uses '
+                         'the full frequency-domain transient likelihood.')
+parser.add_argument('--reference-frequency', type=float, default=20.0,
+                    help='Waveform reference frequency in Hz. JAX scripts use 20 Hz.')
+parser.add_argument('--phase-marginalization',
+                    action=argparse.BooleanOptionalAction, default=True,
+                    help='Analytically marginalize coalescence phase.')
+parser.add_argument('--time-marginalization',
+                    action=argparse.BooleanOptionalAction, default=False,
+                    help='Use Bilby time marginalization.')
+parser.add_argument('--distance-marginalization',
+                    action=argparse.BooleanOptionalAction, default=False,
+                    help='Use Bilby distance marginalization.')
+parser.add_argument('--jitter-time',
+                    action=argparse.BooleanOptionalAction, default=False,
+                    help='Use Bilby time jitter parameter.')
+parser.add_argument('--relative-epsilon', type=float, default=0.5,
+                    help='Bilby relative-binning epsilon. Bilby derives bin '
+                         'count from epsilon; JAX uses a fixed 501-bin scheme.')
+parser.add_argument('--relative-chi', type=float, default=1.0,
+                    help='Bilby relative-binning chi.')
+parser.add_argument('--expected-jax-bins', type=int, default=501,
+                    help='JAX heterodyned reference bin count recorded for '
+                         'provenance; Bilby does not use this directly.')
 parser.add_argument('--outdir', default=None,
                     help='Output directory (default: ../results/GW170817_<waveform>)')
 parser.add_argument('--gen-only', action='store_true',
@@ -142,12 +171,25 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, '..', '..'))
 if args.outdir is None:
     args.outdir = os.path.join(SCRIPT_DIR, '..', 'results',
-                               f'GW170817_{args.waveform}')
+                               f'GW170817_{args.likelihood_mode}_{args.waveform}')
 os.makedirs(args.outdir, exist_ok=True)
 
 label = f'GW170817_{args.waveform}'
+if args.likelihood_mode == 'full':
+    label = f'GW170817_full_{args.waveform}'
 bilby.core.utils.setup_logger(outdir=args.outdir, label=label, log_level='INFO')
 logger = bilby.core.utils.logger
+
+
+def env_int(*names):
+    for name in names:
+        value = os.environ.get(name)
+        if value:
+            try:
+                return int(value)
+            except ValueError:
+                return value
+    return None
 
 
 def package_version(name):
@@ -314,6 +356,10 @@ if args.from_pickle:
         'data_source': dump.get('data_source'),
         'psd_source': dump.get('psd_source'),
         'psd_file': dump.get('psd_file'),
+        'reference_frequency': dump.get('reference_frequency'),
+        'duration': dump.get('duration'),
+        'minimum_frequency': dump.get('minimum_frequency'),
+        'maximum_frequency': dump.get('maximum_frequency'),
     }
     if loaded_metadata['data_source'] is None or loaded_metadata['psd_source'] is None:
         logger.warning('Loaded pickle has no data/PSD provenance metadata. '
@@ -328,7 +374,9 @@ else:
     if args.gen_only:
         dump = dict(ifos=ifos, waveform=args.waveform,
                     data_source=args.data_source, psd_source=args.psd_source,
-                    psd_file=resolve_psd_file() if args.psd_source == 'gwtc1' else None)
+                    psd_file=resolve_psd_file() if args.psd_source == 'gwtc1' else None,
+                    reference_frequency=args.reference_frequency,
+                    duration=DURATION, minimum_frequency=FMIN, maximum_frequency=FMAX)
         with open(PICKLE_PATH, 'wb') as f:
             pickle.dump(dump, f)
         logger.info(f'Data pickle saved to {PICKLE_PATH}')
@@ -340,6 +388,9 @@ else:
 effective_data_source = loaded_metadata.get('data_source') or args.data_source
 effective_psd_source = loaded_metadata.get('psd_source') or args.psd_source
 effective_psd_file = loaded_metadata.get('psd_file')
+effective_reference_frequency = (
+    loaded_metadata.get('reference_frequency') or args.reference_frequency
+)
 
 # ============================================================================
 # Waveform generator
@@ -351,8 +402,9 @@ wfg = WaveformGenerator(
     parameter_conversions=bilby.gw.conversion.convert_to_lal_binary_neutron_star_parameters,
     waveform_arguments=dict(
         waveform_approximant=args.waveform,
-        reference_frequency=20.0,
+        reference_frequency=effective_reference_frequency,
         minimum_frequency=FMIN,
+        maximum_frequency=FMAX,
     ),
 )
 
@@ -372,24 +424,44 @@ gw_priors = bilby.gw.prior.PriorDict({
 })
 
 # ============================================================================
-# Likelihood: relative binning + phase marg + standard siren
+# Likelihood: Bilby GW likelihood + standard siren
 # ============================================================================
-logger.info('Setting up relative binning likelihood + standard siren...')
+logger.info('Setting up %s likelihood + standard siren...', args.likelihood_mode)
 t_like0 = time.time()
 
-gw_likelihood = RelativeBinningGravitationalWaveTransient(
+common_likelihood_kwargs = dict(
     interferometers=ifos,
     waveform_generator=wfg,
     priors=gw_priors,
-    phase_marginalization=True,
-    time_marginalization=False,
-    distance_marginalization=False,
-    jitter_time=False,
-    fiducial_parameters=FIDUCIAL,
-    epsilon=0.5,
+    phase_marginalization=args.phase_marginalization,
+    time_marginalization=args.time_marginalization,
+    distance_marginalization=args.distance_marginalization,
+    jitter_time=args.jitter_time,
 )
 
+if args.likelihood_mode == 'relative':
+    gw_likelihood = RelativeBinningGravitationalWaveTransient(
+        **common_likelihood_kwargs,
+        fiducial_parameters=FIDUCIAL,
+        chi=args.relative_chi,
+        epsilon=args.relative_epsilon,
+    )
+else:
+    gw_likelihood = GravitationalWaveTransient(**common_likelihood_kwargs)
+
 likelihood = StandardSirenLikelihood(gw_likelihood)
+actual_relative_bins = getattr(gw_likelihood, 'number_of_bins', None)
+logger.info('Likelihood details: mode=%s, phase_marginalization=%s, '
+            'time_marginalization=%s, distance_marginalization=%s, '
+            'jitter_time=%s, reference_frequency=%.1f Hz',
+            args.likelihood_mode, args.phase_marginalization,
+            args.time_marginalization, args.distance_marginalization,
+            args.jitter_time, effective_reference_frequency)
+if actual_relative_bins is not None:
+    logger.info('Bilby relative-binning details: epsilon=%s, chi=%s, '
+                'actual_bins=%s, JAX_reference_bins=%s',
+                args.relative_epsilon, args.relative_chi,
+                actual_relative_bins, args.expected_jax_bins)
 
 t_like = time.time() - t_like0
 logger.info(f'Likelihood setup: {t_like:.1f}s')
@@ -446,6 +518,7 @@ manifest = {
     'run': {
         'label': label,
         'waveform': args.waveform,
+        'likelihood_mode': args.likelihood_mode,
         'nlive': args.nlive,
         'num_repeats': args.num_repeats,
         'seed': args.seed,
@@ -456,9 +529,28 @@ manifest = {
         else (resolve_psd_file() if effective_psd_source == 'gwtc1' else None),
         'from_pickle': os.path.abspath(args.from_pickle) if args.from_pickle else None,
         'sampler': 'pypolychord',
-        'likelihood': 'RelativeBinningGravitationalWaveTransient + standard siren',
-        'phase_marginalization': True,
-        'epsilon': 0.5,
+        'likelihood': f'{type(gw_likelihood).__name__} + standard siren',
+        'phase_marginalization': args.phase_marginalization,
+        'time_marginalization': args.time_marginalization,
+        'distance_marginalization': args.distance_marginalization,
+        'jitter_time': args.jitter_time,
+        'reference_frequency': effective_reference_frequency,
+        'relative_epsilon': args.relative_epsilon
+        if args.likelihood_mode == 'relative' else None,
+        'relative_chi': args.relative_chi
+        if args.likelihood_mode == 'relative' else None,
+        'bilby_relative_bins': actual_relative_bins,
+        'jax_heterodyned_reference_bins': args.expected_jax_bins,
+        'frequency_bins_full_likelihood': int(np.sum(ifos[0].frequency_mask))
+        if args.likelihood_mode == 'full' else None,
+    },
+    'hardware': {
+        'slurm_nodes': env_int('SLURM_JOB_NUM_NODES'),
+        'slurm_ntasks': env_int('SLURM_NTASKS'),
+        'slurm_cpus_per_task': env_int('SLURM_CPUS_PER_TASK'),
+        'mpi_world_size': env_int('OMPI_COMM_WORLD_SIZE', 'PMI_SIZE'),
+        'comparison_gpu_reference': 'single NVIDIA A100 for JAX production runs',
+        'comparison_cpu_reference': 'CSD3-style MPI pBilby run; see config.sh',
     },
     'prior': {
         'file': prior_file,
@@ -489,8 +581,13 @@ timing_path = os.path.join(args.outdir, 'timing.txt')
 timing_lines = [
     f'Run: {label}',
     f'Waveform: {args.waveform}',
+    f'Likelihood mode: {args.likelihood_mode}',
+    f'Reference frequency: {effective_reference_frequency:.1f} Hz',
+    f'Phase marginalization: {args.phase_marginalization}',
     f'nlive: {args.nlive}',
     f'num_repeats: {args.num_repeats}',
+    f'Bilby relative bins: {actual_relative_bins}',
+    f'JAX heterodyned reference bins: {args.expected_jax_bins}',
     f'Likelihood setup: {t_like:.1f}s',
     f'Sampling: {t_samp:.1f}s ({t_samp/3600:.2f}h)',
     f'Total: {t_total:.1f}s ({t_total/3600:.2f}h)',

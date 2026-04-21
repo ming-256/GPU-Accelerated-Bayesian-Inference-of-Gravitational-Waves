@@ -10,6 +10,8 @@
 #   bash run_all.sh --local          # generate + run locally with MPI
 #   bash run_all.sh --local-serial   # generate + run locally (no MPI, testing)
 #   bash run_all.sh --primary-only   # GW170817 IMRPhenomD_NRTidalv2 only
+#   bash run_all.sh --include-full   # also run full non-heterodyned GW170817
+#   bash run_all.sh --full-only      # full non-heterodyned GW170817 only
 #   bash run_all.sh --preflight      # environment/file checks only
 # ============================================================================
 set -euo pipefail
@@ -19,6 +21,8 @@ cd "$SCRIPT_DIR"
 
 MODE="--submit"
 PRIMARY_ONLY=false
+INCLUDE_FULL=false
+FULL_ONLY=false
 PREFLIGHT_ONLY=false
 
 for arg in "$@"; do
@@ -27,6 +31,13 @@ for arg in "$@"; do
             MODE="$arg"
             ;;
         --primary-only)
+            PRIMARY_ONLY=true
+            ;;
+        --include-full)
+            INCLUDE_FULL=true
+            ;;
+        --full-only)
+            FULL_ONLY=true
             PRIMARY_ONLY=true
             ;;
         --preflight)
@@ -48,6 +59,28 @@ fi
 source config.sh
 
 NPROCS=$(( NODES * CORES_PER_NODE ))
+
+add_gw170817_args() {
+    EXTRA_ARGS+=(--data-source "${DATA_SOURCE}" --psd-source "${PSD_SOURCE}")
+    EXTRA_ARGS+=(--reference-frequency "${REFERENCE_FREQUENCY}")
+    EXTRA_ARGS+=(--relative-epsilon "${RELATIVE_EPSILON}")
+    EXTRA_ARGS+=(--relative-chi "${RELATIVE_CHI}")
+    EXTRA_ARGS+=(--expected-jax-bins "${JAX_HETERODYNED_BINS}")
+    [[ "${PHASE_MARGINALIZATION}" == "true" ]] \
+        && EXTRA_ARGS+=(--phase-marginalization) \
+        || EXTRA_ARGS+=(--no-phase-marginalization)
+    [[ "${TIME_MARGINALIZATION}" == "true" ]] \
+        && EXTRA_ARGS+=(--time-marginalization) \
+        || EXTRA_ARGS+=(--no-time-marginalization)
+    [[ "${DISTANCE_MARGINALIZATION}" == "true" ]] \
+        && EXTRA_ARGS+=(--distance-marginalization) \
+        || EXTRA_ARGS+=(--no-distance-marginalization)
+    [[ "${JITTER_TIME}" == "true" ]] \
+        && EXTRA_ARGS+=(--jitter-time) \
+        || EXTRA_ARGS+=(--no-jitter-time)
+    [[ -n "${GW170817_PSD_FILE:-}" ]] && EXTRA_ARGS+=(--psd-file "${GW170817_PSD_FILE}")
+    [[ -n "${GW170817_DATA_DIR:-}" ]] && EXTRA_ARGS+=(--data-dir "${GW170817_DATA_DIR}")
+}
 
 preflight() {
     echo "============================================================"
@@ -130,17 +163,29 @@ PY
 }
 
 # ── Run definitions ──────────────────────────────────────────────────────────
-# Each entry: SCRIPT|WAVEFORM_ARG|WALLTIME|LABEL
-if [[ "$PRIMARY_ONLY" == "true" ]]; then
+# Each entry: SCRIPT|WAVEFORM_ARG|WALLTIME|LABEL|LIKELIHOOD_ARG
+if [[ "$FULL_ONLY" == "true" ]]; then
     declare -a RUNS=(
-        "GW170817/run_GW170817.py|--waveform IMRPhenomD_NRTidalv2|${WALLTIME_GW170817}|GW170817_IMRPhenomD_NRTidalv2"
+        "GW170817/run_GW170817.py|--waveform IMRPhenomD_NRTidalv2|${WALLTIME_GW170817}|GW170817_full_IMRPhenomD_NRTidalv2|--likelihood-mode full"
+    )
+elif [[ "$PRIMARY_ONLY" == "true" && "$INCLUDE_FULL" == "true" ]]; then
+    declare -a RUNS=(
+        "GW170817/run_GW170817.py|--waveform IMRPhenomD_NRTidalv2|${WALLTIME_GW170817}|GW170817_IMRPhenomD_NRTidalv2|--likelihood-mode relative"
+        "GW170817/run_GW170817.py|--waveform IMRPhenomD_NRTidalv2|${WALLTIME_GW170817}|GW170817_full_IMRPhenomD_NRTidalv2|--likelihood-mode full"
+    )
+elif [[ "$PRIMARY_ONLY" == "true" ]]; then
+    declare -a RUNS=(
+        "GW170817/run_GW170817.py|--waveform IMRPhenomD_NRTidalv2|${WALLTIME_GW170817}|GW170817_IMRPhenomD_NRTidalv2|--likelihood-mode relative"
     )
 else
     declare -a RUNS=(
-        "GW150914/run_GW150914.py||${WALLTIME_GW150914}|GW150914_IMRPhenomD"
-        "GW170817/run_GW170817.py|--waveform IMRPhenomD_NRTidalv2|${WALLTIME_GW170817}|GW170817_IMRPhenomD_NRTidalv2"
-        "GW170817/run_GW170817.py|--waveform TaylorF2|${WALLTIME_GW170817}|GW170817_TaylorF2"
+        "GW150914/run_GW150914.py||${WALLTIME_GW150914}|GW150914_IMRPhenomD|"
+        "GW170817/run_GW170817.py|--waveform IMRPhenomD_NRTidalv2|${WALLTIME_GW170817}|GW170817_IMRPhenomD_NRTidalv2|--likelihood-mode relative"
+        "GW170817/run_GW170817.py|--waveform TaylorF2|${WALLTIME_GW170817}|GW170817_TaylorF2|--likelihood-mode relative"
     )
+    if [[ "$INCLUDE_FULL" == "true" ]]; then
+        RUNS+=("GW170817/run_GW170817.py|--waveform IMRPhenomD_NRTidalv2|${WALLTIME_GW170817}|GW170817_full_IMRPhenomD_NRTidalv2|--likelihood-mode full")
+    fi
 fi
 
 RESULTS_DIR="${SCRIPT_DIR}/results"
@@ -190,13 +235,13 @@ TOTAL=${#RUNS[@]}
 declare -a PICKLE_PATHS=()
 
 for i in "${!RUNS[@]}"; do
-    IFS='|' read -r SCRIPT WAVEFORM_ARG WALLTIME LABEL <<< "${RUNS[$i]}"
+    IFS='|' read -r SCRIPT WAVEFORM_ARG WALLTIME LABEL LIKELIHOOD_ARG <<< "${RUNS[$i]}"
     OUTDIR="${RESULTS_DIR}/${LABEL}"
     EXTRA_ARGS=()
     if [[ "$SCRIPT" == "GW170817/run_GW170817.py" ]]; then
-        EXTRA_ARGS+=(--data-source "${DATA_SOURCE}" --psd-source "${PSD_SOURCE}")
-        [[ -n "${GW170817_PSD_FILE:-}" ]] && EXTRA_ARGS+=(--psd-file "${GW170817_PSD_FILE}")
-        [[ -n "${GW170817_DATA_DIR:-}" ]] && EXTRA_ARGS+=(--data-dir "${GW170817_DATA_DIR}")
+        # shellcheck disable=SC2206
+        EXTRA_ARGS+=(${LIKELIHOOD_ARG})
+        add_gw170817_args
     fi
 
     echo ""
@@ -237,14 +282,14 @@ echo "  Step 2: Sampling"
 echo "============================================================"
 
 for i in "${!RUNS[@]}"; do
-    IFS='|' read -r SCRIPT WAVEFORM_ARG WALLTIME LABEL <<< "${RUNS[$i]}"
+    IFS='|' read -r SCRIPT WAVEFORM_ARG WALLTIME LABEL LIKELIHOOD_ARG <<< "${RUNS[$i]}"
     PICKLE="${PICKLE_PATHS[$i]}"
     OUTDIR="${RESULTS_DIR}/${LABEL}"
     EXTRA_ARGS=()
     if [[ "$SCRIPT" == "GW170817/run_GW170817.py" ]]; then
-        EXTRA_ARGS+=(--data-source "${DATA_SOURCE}" --psd-source "${PSD_SOURCE}")
-        [[ -n "${GW170817_PSD_FILE:-}" ]] && EXTRA_ARGS+=(--psd-file "${GW170817_PSD_FILE}")
-        [[ -n "${GW170817_DATA_DIR:-}" ]] && EXTRA_ARGS+=(--data-dir "${GW170817_DATA_DIR}")
+        # shellcheck disable=SC2206
+        EXTRA_ARGS+=(${LIKELIHOOD_ARG})
+        add_gw170817_args
     fi
 
     echo ""
