@@ -6,7 +6,6 @@ ENV/
 
 # Results
 *.csv
-*.hdf5
 *.h5
 *.log
 *.out
