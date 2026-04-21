@@ -28,6 +28,11 @@ import sys
 import time
 import pickle
 import argparse
+import json
+import platform
+import socket
+from datetime import datetime, timezone
+from importlib import metadata
 import numpy as np
 from scipy import stats
 
@@ -119,10 +124,22 @@ parser.add_argument('--gen-only', action='store_true',
                     help='Generate data pickle and exit (run on login node)')
 parser.add_argument('--from-pickle', default=None,
                     help='Load data from pickle (run on compute node)')
+parser.add_argument('--data-source', choices=['fetch', 'local'], default='fetch',
+                    help='Strain data source. "fetch" uses GWOSC via gwpy; '
+                         '"local" reads GWOSC HDF5 files from --data-dir.')
+parser.add_argument('--data-dir', default=None,
+                    help='Directory containing local GWOSC HDF5 files for GW170817')
+parser.add_argument('--psd-source', choices=['gwtc1', 'self'], default='gwtc1',
+                    help='"gwtc1" loads the official GWTC-1/BayesWave PSD file; '
+                         '"self" estimates PSDs from strain data with Welch.')
+parser.add_argument('--psd-file', default=None,
+                    help='Path to GWTC1_GW170817_PSDs.dat. If omitted, common '
+                         'repo-relative and environment paths are searched.')
 parser.add_argument('--seed', type=int, default=42)
 args = parser.parse_args()
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, '..', '..'))
 if args.outdir is None:
     args.outdir = os.path.join(SCRIPT_DIR, '..', 'results',
                                f'GW170817_{args.waveform}')
@@ -131,6 +148,13 @@ os.makedirs(args.outdir, exist_ok=True)
 label = f'GW170817_{args.waveform}'
 bilby.core.utils.setup_logger(outdir=args.outdir, label=label, log_level='INFO')
 logger = bilby.core.utils.logger
+
+
+def package_version(name):
+    try:
+        return metadata.version(name)
+    except metadata.PackageNotFoundError:
+        return 'not-installed'
 
 # ============================================================================
 # Event configuration (matched to JAX scripts)
@@ -141,6 +165,12 @@ FMAX = 2048.0
 DURATION = 128
 POST_TRIGGER = 2
 ROLL_OFF = 0.4
+
+LOCAL_DATA_FILES = {
+    'H1': 'H-H1_LOSC_CLN_4_V1-1187007040-2048.hdf5',
+    'L1': 'L-L1_LOSC_CLN_4_V1-1187007040-2048.hdf5',
+    'V1': 'V-V1_LOSC_CLN_4_V1-1187007040-2048.hdf5',
+}
 
 # GWTC-1 median fiducial parameters for relative binning
 FIDUCIAL = dict(
@@ -163,8 +193,58 @@ FIDUCIAL = dict(
 # ============================================================================
 # Data loading
 # ============================================================================
+def resolve_data_dir():
+    candidates = [
+        args.data_dir,
+        os.environ.get('GW170817_DATA_DIR'),
+        os.path.join(SCRIPT_DIR, 'data'),
+        os.path.join(PROJECT_ROOT, 'EventData', 'GWOSC', 'GW170817'),
+    ]
+    for candidate in candidates:
+        if candidate and os.path.isdir(candidate):
+            return os.path.abspath(candidate)
+    raise FileNotFoundError(
+        'Could not find local GW170817 data directory. Pass --data-dir or set '
+        'GW170817_DATA_DIR.'
+    )
+
+
+def resolve_psd_file():
+    candidates = [
+        args.psd_file,
+        os.environ.get('GW170817_PSD_FILE'),
+        os.path.join(SCRIPT_DIR, 'GWTC1_GW170817_PSDs.dat'),
+        os.path.join(SCRIPT_DIR, 'data', 'GWTC1_GW170817_PSDs.dat'),
+        os.path.join(PROJECT_ROOT, 'EventData', 'GWOSC', 'GW170817',
+                     'GWTC1_GW170817_PSDs.dat'),
+    ]
+    for candidate in candidates:
+        if candidate and os.path.isfile(candidate):
+            return os.path.abspath(candidate)
+    raise FileNotFoundError(
+        'Could not find GWTC1_GW170817_PSDs.dat. Pass --psd-file, set '
+        'GW170817_PSD_FILE, or copy the file into parallel_bilby/GW170817/.'
+    )
+
+
+def load_gwtc1_psd(ifo_name):
+    psd_file = resolve_psd_file()
+    psd_data = np.loadtxt(psd_file)
+    col_map = {'H1': 1, 'L1': 2, 'V1': 3}
+    frequency_array = psd_data[:, 0]
+    psd_array = psd_data[:, col_map[ifo_name]]
+
+    # Bilby interpolates PSDs internally. Keep the native GWTC-1 grid, but
+    # replace non-finite values outside support with a large finite sentinel.
+    psd_array = np.where(np.isfinite(psd_array), psd_array, 1e300)
+    return bilby.gw.detector.PowerSpectralDensity(
+        frequency_array=frequency_array,
+        psd_array=psd_array,
+    )
+
+
 def load_data():
-    """Fetch GW170817 strain data from GWOSC and estimate PSDs."""
+    """Load GW170817 strain data and attach the requested PSDs."""
     from gwpy.timeseries import TimeSeries
 
     start_time = TRIGGER_TIME - (DURATION - POST_TRIGGER)
@@ -173,26 +253,42 @@ def load_data():
 
     ifos = InterferometerList([])
     for ifo_name in ['H1', 'L1', 'V1']:
-        logger.info(f'Loading {ifo_name} from GWOSC (version 2)...')
+        logger.info(f'Loading {ifo_name} ({args.data_source}, PSD={args.psd_source})...')
         t0 = time.time()
 
         ifo = bilby.gw.detector.get_empty_interferometer(ifo_name)
 
         # Strain data
-        strain = TimeSeries.fetch_open_data(
-            ifo_name, start_time, start_time + DURATION, version=2)
+        if args.data_source == 'local':
+            data_dir = resolve_data_dir()
+            strain_path = os.path.join(data_dir, LOCAL_DATA_FILES[ifo_name])
+            if not os.path.isfile(strain_path):
+                raise FileNotFoundError(f'Missing local strain file: {strain_path}')
+            strain = TimeSeries.read(strain_path, format='hdf5.gwosc')
+            strain = strain.crop(start_time, start_time + DURATION)
+        else:
+            strain = TimeSeries.fetch_open_data(
+                ifo_name, start_time, start_time + DURATION, version=2)
         ifo.strain_data.set_from_gwpy_timeseries(strain)
 
-        # PSD via Welch (32 s Tukey segments, 50% overlap, median averaging)
-        psd_data = TimeSeries.fetch_open_data(
-            ifo_name, psd_start, psd_end, version=2)
-        psd_alpha = 2 * ROLL_OFF / 32
-        psd_asd = psd_data.psd(
-            fftlength=32, overlap=16,
-            window=('tukey', psd_alpha), method='median')
-        ifo.power_spectral_density = bilby.gw.detector.PowerSpectralDensity(
-            frequency_array=np.array(psd_asd.frequencies.value),
-            psd_array=np.array(psd_asd.value))
+        if args.psd_source == 'gwtc1':
+            ifo.power_spectral_density = load_gwtc1_psd(ifo_name)
+        else:
+            # PSD via Welch (32 s Tukey segments, 50% overlap, median averaging)
+            if args.data_source == 'local':
+                psd_path = os.path.join(resolve_data_dir(), LOCAL_DATA_FILES[ifo_name])
+                psd_data = TimeSeries.read(psd_path, format='hdf5.gwosc')
+                psd_data = psd_data.crop(psd_start, psd_end)
+            else:
+                psd_data = TimeSeries.fetch_open_data(
+                    ifo_name, psd_start, psd_end, version=2)
+            psd_alpha = 2 * ROLL_OFF / 32
+            psd_asd = psd_data.psd(
+                fftlength=32, overlap=16,
+                window=('tukey', psd_alpha), method='median')
+            ifo.power_spectral_density = bilby.gw.detector.PowerSpectralDensity(
+                frequency_array=np.array(psd_asd.frequencies.value),
+                psd_array=np.array(psd_asd.value))
 
         ifo.minimum_frequency = FMIN
         ifo.maximum_frequency = FMAX
@@ -206,12 +302,22 @@ def load_data():
 # Pickle I/O (two-step HPC workflow)
 # ============================================================================
 PICKLE_PATH = os.path.join(args.outdir, f'{label}_data_dump.pickle')
+loaded_metadata = {}
 
 if args.from_pickle:
     logger.info(f'Loading data from {args.from_pickle}')
     with open(args.from_pickle, 'rb') as f:
         dump = pickle.load(f)
     ifos = dump['ifos']
+    loaded_metadata = {
+        'waveform': dump.get('waveform'),
+        'data_source': dump.get('data_source'),
+        'psd_source': dump.get('psd_source'),
+        'psd_file': dump.get('psd_file'),
+    }
+    if loaded_metadata['data_source'] is None or loaded_metadata['psd_source'] is None:
+        logger.warning('Loaded pickle has no data/PSD provenance metadata. '
+                       'Regenerate pickles before paper-production runs.')
     logger.info(f'  Loaded {len(ifos)} interferometers')
 else:
     t_data0 = time.time()
@@ -220,7 +326,9 @@ else:
     logger.info(f'Data loading: {t_data:.1f}s')
 
     if args.gen_only:
-        dump = dict(ifos=ifos, waveform=args.waveform)
+        dump = dict(ifos=ifos, waveform=args.waveform,
+                    data_source=args.data_source, psd_source=args.psd_source,
+                    psd_file=resolve_psd_file() if args.psd_source == 'gwtc1' else None)
         with open(PICKLE_PATH, 'wb') as f:
             pickle.dump(dump, f)
         logger.info(f'Data pickle saved to {PICKLE_PATH}')
@@ -228,6 +336,10 @@ else:
         logger.info(f'  mpirun -n $NPROCS python {__file__} '
                      f'--waveform {args.waveform} --from-pickle {PICKLE_PATH}')
         sys.exit(0)
+
+effective_data_source = loaded_metadata.get('data_source') or args.data_source
+effective_psd_source = loaded_metadata.get('psd_source') or args.psd_source
+effective_psd_file = loaded_metadata.get('psd_file')
 
 # ============================================================================
 # Waveform generator
@@ -249,6 +361,9 @@ wfg = WaveformGenerator(
 # ============================================================================
 prior_file = os.path.join(SCRIPT_DIR, 'GW170817.prior')
 full_priors = bilby.gw.prior.PriorDict(prior_file)
+logger.info('Mass priors: chirp_mass=%s, mass_ratio=%s',
+            type(full_priors['chirp_mass']).__name__,
+            type(full_priors['mass_ratio']).__name__)
 
 # GW-only priors (exclude H_0, v_p) — passed to the GW likelihood constructor
 gw_priors = bilby.gw.prior.PriorDict({
@@ -305,6 +420,69 @@ t_samp = time.time() - t_samp0
 t_total = time.time() - (t_data0 if not args.from_pickle else t_like0)
 
 # ============================================================================
+# Configuration manifest
+# ============================================================================
+manifest = {
+    'created_utc': datetime.now(timezone.utc).isoformat(),
+    'host': socket.gethostname(),
+    'platform': platform.platform(),
+    'python': sys.version,
+    'package_versions': {
+        'bilby': getattr(bilby, '__version__', package_version('bilby')),
+        'gwpy': package_version('gwpy'),
+        'lalsuite': package_version('lalsuite'),
+        'pypolychord': package_version('pypolychord'),
+        'mpi4py': package_version('mpi4py'),
+    },
+    'event': {
+        'name': 'GW170817',
+        'trigger_time': TRIGGER_TIME,
+        'duration': DURATION,
+        'post_trigger_duration': POST_TRIGGER,
+        'minimum_frequency': FMIN,
+        'maximum_frequency': FMAX,
+        'detectors': ['H1', 'L1', 'V1'],
+    },
+    'run': {
+        'label': label,
+        'waveform': args.waveform,
+        'nlive': args.nlive,
+        'num_repeats': args.num_repeats,
+        'seed': args.seed,
+        'data_source': effective_data_source,
+        'data_dir': os.path.abspath(args.data_dir) if args.data_dir else None,
+        'psd_source': effective_psd_source,
+        'psd_file': effective_psd_file if args.from_pickle
+        else (resolve_psd_file() if effective_psd_source == 'gwtc1' else None),
+        'from_pickle': os.path.abspath(args.from_pickle) if args.from_pickle else None,
+        'sampler': 'pypolychord',
+        'likelihood': 'RelativeBinningGravitationalWaveTransient + standard siren',
+        'phase_marginalization': True,
+        'epsilon': 0.5,
+    },
+    'prior': {
+        'file': prior_file,
+        'chirp_mass_prior': type(full_priors['chirp_mass']).__name__,
+        'mass_ratio_prior': type(full_priors['mass_ratio']).__name__,
+        'H_0_prior': repr(full_priors['H_0']),
+        'v_p_prior': repr(full_priors['v_p']),
+    },
+    'timing_seconds': {
+        'likelihood_setup': t_like,
+        'sampling': t_samp,
+        'total': t_total,
+    },
+    'evidence': {
+        'log_evidence': float(result.log_evidence),
+        'log_evidence_err': float(result.log_evidence_err),
+    },
+}
+
+manifest_path = os.path.join(args.outdir, f'{label}_manifest.json')
+with open(manifest_path, 'w') as f:
+    json.dump(manifest, f, indent=2, sort_keys=True)
+
+# ============================================================================
 # Timing summary
 # ============================================================================
 timing_path = os.path.join(args.outdir, 'timing.txt')
@@ -317,6 +495,7 @@ timing_lines = [
     f'Sampling: {t_samp:.1f}s ({t_samp/3600:.2f}h)',
     f'Total: {t_total:.1f}s ({t_total/3600:.2f}h)',
     f'Log evidence: {result.log_evidence:.2f} +/- {result.log_evidence_err:.2f}',
+    f'Manifest: {manifest_path}',
 ]
 with open(timing_path, 'w') as f:
     f.write('\n'.join(timing_lines) + '\n')

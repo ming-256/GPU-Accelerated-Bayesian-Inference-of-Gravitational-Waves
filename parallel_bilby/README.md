@@ -1,8 +1,9 @@
 # Bilby HPC — CPU Comparison Runs
 
-Self-contained bilby analyses for **GW150914** and **GW170817**, using the
-**same waveform models, priors, and likelihood** as our JAX GPU analysis for
-direct wall-clock comparison.
+Self-contained Bilby analyses for **GW150914** and **GW170817**.  The primary
+paper comparison is the **GW170817 IMRPhenomD_NRTidalv2** run: phase
+marginalized, relative-binned, standard-siren likelihood, with priors matched
+to the JAX GPU analysis.
 
 Transfer this entire `parallel_bilby/` folder to your HPC cluster.
 
@@ -24,8 +25,11 @@ source setup_env.sh
 # 3. Edit cluster settings
 vi config.sh          # set NODES, CORES_PER_NODE, walltime, account
 
-# 4. Run
-bash run_all.sh       # generates data (login node) then submits Slurm jobs
+# 4. Check environment and required files
+bash run_all.sh --preflight --primary-only
+
+# 5. Run the paper CPU reference
+bash run_all.sh --primary-only
 ```
 
 ---
@@ -44,7 +48,8 @@ parallel_bilby/
 │   └── GW150914_IMRPhenomD.prior
 ├── GW170817/
 │   ├── run_GW170817.py         # standalone bilby analysis (BNS + H_0, v_p)
-│   └── GW170817.prior          # includes H_0, v_p priors
+│   ├── GW170817.prior          # includes H_0, v_p priors
+│   └── GWTC1_GW170817_PSDs.dat # optional: copy here for GWTC-1 PSD runs
 └── results/                    # ← ALL outputs land here
     ├── timing_summary.txt
     ├── GW150914_IMRPhenomD/
@@ -79,7 +84,20 @@ SLURM_EXTRA=""                 # e.g. "--qos=normal"
 # ── Sampler ──────────────────────────────────────────────────────────
 NLIVE=2000                     # live points
 NUM_REPEATS=40                 # slice-sampling repeats
+
+# ── GW170817 data/PSD ────────────────────────────────────────────────
+DATA_SOURCE="fetch"            # fetch or local
+PSD_SOURCE="gwtc1"             # gwtc1 or self
+GW170817_PSD_FILE=""           # optional absolute path
+GW170817_DATA_DIR=""           # optional local GWOSC HDF5 directory
 ```
+
+For the paper comparison, keep `PSD_SOURCE="gwtc1"` so the CPU reference uses
+the same GWTC-1/BayesWave PSD source as the A100 JAX production runs.  Copy
+`GWTC1_GW170817_PSDs.dat` into `parallel_bilby/GW170817/`, or set
+`GW170817_PSD_FILE` to its absolute path.  If the login node has no internet,
+set `DATA_SOURCE="local"` and point `GW170817_DATA_DIR` at the three GWOSC HDF5
+files.
 
 ### How to find CORES_PER_NODE
 
@@ -144,25 +162,36 @@ import mpi4py; print('mpi4py OK')
 ### Option A: Slurm (standard HPC)
 
 ```bash
-bash run_all.sh              # data gen + submit 3 Slurm jobs
+bash run_all.sh --preflight --primary-only
+bash run_all.sh --primary-only
 ```
 
-This runs two steps:
+This runs the primary paper CPU reference only: GW170817 with
+`IMRPhenomD_NRTidalv2`.  The workflow has two steps:
+
 1. **Data generation** (serial, on login node): downloads GWOSC strain data,
-   estimates PSDs, saves pickles.  Requires internet access.
+   attaches the configured PSDs, saves pickles.  Requires internet access when
+   `DATA_SOURCE="fetch"`.
 2. **Sampling** (MPI, on compute nodes): loads pickle, runs PolyChord.
    Auto-generates and submits Slurm batch scripts.
 
+To submit all three available runs (GW150914, GW170817 IMRPhenomD_NRTidalv2,
+GW170817 TaylorF2):
+
+```bash
+bash run_all.sh
+```
+
 To generate data without submitting:
 ```bash
-bash run_all.sh --gen-only
+bash run_all.sh --gen-only --primary-only
 ```
 
 ### Option B: Local with MPI (testing / single node)
 
 ```bash
-bash run_all.sh --local          # uses NODES x CORES_PER_NODE MPI ranks
-bash run_all.sh --local-serial   # single process (quick sanity check)
+bash run_all.sh --local --primary-only          # uses NODES x CORES_PER_NODE MPI ranks
+bash run_all.sh --local-serial --primary-only   # single process (quick sanity check)
 ```
 
 ### Option C: Run a single analysis manually
@@ -176,7 +205,8 @@ mpirun -n 64 python GW150914/run_GW150914.py \
     --from-pickle results/GW150914_IMRPhenomD/GW150914_IMRPhenomD_data_dump.pickle
 
 # GW170817 (IMRPhenomD_NRTidalv2):
-python GW170817/run_GW170817.py --waveform IMRPhenomD_NRTidalv2 --gen-only
+python GW170817/run_GW170817.py --waveform IMRPhenomD_NRTidalv2 \
+    --psd-source gwtc1 --gen-only
 mpirun -n 128 python GW170817/run_GW170817.py \
     --waveform IMRPhenomD_NRTidalv2 \
     --from-pickle results/GW170817_IMRPhenomD_NRTidalv2/GW170817_IMRPhenomD_NRTidalv2_data_dump.pickle
@@ -222,8 +252,8 @@ All are aligned-spin, (2,2)-mode only.
 
 | Parameter     | Prior                             |
 |---------------|-----------------------------------|
-| M_c           | Uniform [1.184, 2.168] M_sun      |
-| q             | Uniform [0.125, 1]                |
+| M_c           | UniformInComponentsChirpMass [1.184, 2.168] M_sun |
+| q             | UniformInComponentsMassRatio [0.125, 1] |
 | chi_1, chi_2  | Uniform [-0.05, 0.05]             |
 | d_L           | PowerLaw(alpha=2) [1, 75] Mpc     |
 | theta_jn      | Sine [0, pi]                      |

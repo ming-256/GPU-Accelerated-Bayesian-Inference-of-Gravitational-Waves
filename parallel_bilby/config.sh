@@ -31,3 +31,12 @@ SLURM_EXTRA=""          # any extra #SBATCH lines, e.g. "--qos=normal"
 # ── Sampler settings ─────────────────────────────────────────────────────────
 NLIVE=2000              # number of live points (PolyChord)
 NUM_REPEATS=40          # slice-sampling repeats per dead point
+
+# ── GW170817 data/PSD settings ───────────────────────────────────────────────
+# Paper comparison default: use the same GWTC-1/BayesWave PSD source as the
+# JAX production runs.  Place GWTC1_GW170817_PSDs.dat in GW170817/ or set an
+# absolute path here / via the GW170817_PSD_FILE environment variable.
+DATA_SOURCE="${DATA_SOURCE:-fetch}"     # fetch or local
+PSD_SOURCE="${PSD_SOURCE:-gwtc1}"        # gwtc1 or self
+GW170817_PSD_FILE="${GW170817_PSD_FILE:-}"  # optional absolute PSD path
+GW170817_DATA_DIR="${GW170817_DATA_DIR:-}"  # optional local GWOSC HDF5 dir
