@@ -1,0 +1,41 @@
+Using HOST-LOCALISED priors: RA=[3.3962, 3.4962], Dec=[-0.4581, -0.3581]
+Data source: local, PSD source: gwtc1
+  H1: data=0.6s, PSD(gwtc1)=0.7s, total=2.3s
+  L1: data=0.5s, PSD(gwtc1)=0.3s, total=0.8s
+  V1: data=0.5s, PSD(gwtc1)=0.3s, total=0.8s
+[TIMING] Data loading: 4.0s
+Waveform: IMRPhenomD_NRTidalv2
+[TIMING] Data stacking: 0.1s
+Frequency grid: 259201 bins, df=0.007812 Hz
+Chunked init: 2500 particles in batches of 100...
+  init chunk 0-100: done
+  init chunk 100-200: done
+  init chunk 200-300: done
+  init chunk 300-400: done
+  init chunk 400-500: done
+  init chunk 500-600: done
+  init chunk 600-700: done
+  init chunk 700-800: done
+  init chunk 800-900: done
+  init chunk 900-1000: done
+  init chunk 1000-1100: done
+  init chunk 1100-1200: done
+  init chunk 1200-1300: done
+  init chunk 1300-1400: done
+  init chunk 1400-1500: done
+  init chunk 1500-1600: done
+  init chunk 1600-1700: done
+  init chunk 1700-1800: done
+  init chunk 1800-1900: done
+  init chunk 1900-2000: done
+  init chunk 2000-2100: done
+  init chunk 2100-2200: done
+  init chunk 2200-2300: done
+  init chunk 2300-2400: done
+  init chunk 2400-2500: done
+[TIMING] Prior sampling + chunked init: 18.7s
+Running nested sampling: 2500 live, 14D (phase_c marginalized, FULL likelihood)
+Checkpointing every 5 steps to Results/scaling_study/PhaseMarg_Unheterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_nlive2500_checkpoint.pkl
+JIT-compiling first step (this will be slow — ~260k freq bins)...
+[TIMING] JIT compilation (first step): 805.2s
+Dead points: 1250 dead points [00:00, ? dead points/s]Dead points: 2500 dead points [12:56,  1.61 dead points/s]Dead points: 3750 dead points [26:31,  1.56 dead points/s]

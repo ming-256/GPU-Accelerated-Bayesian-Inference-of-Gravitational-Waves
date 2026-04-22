@@ -1,0 +1,61 @@
+================================================================
+  FULL-SKY — TaylorF2
+================================================================
+Using FULL-SKY priors (narrow M_c/q/spin)
+Data source: local, PSD source: gwtc1
+  H1: data=0.6s, PSD(gwtc1)=0.7s, total=2.3s
+  L1: data=0.5s, PSD(gwtc1)=0.3s, total=0.8s
+  V1: data=0.4s, PSD(gwtc1)=0.3s, total=0.8s
+[TIMING] Data loading: 3.9s
+Waveform: TaylorF2
+[TIMING] Data stacking: 0.1s
+Frequency grid: 259201 bins, df=0.007812 Hz
+Chunked init: 1500 particles in batches of 100...
+  init chunk 0-100: done
+  init chunk 100-200: done
+  init chunk 200-300: done
+  init chunk 300-400: done
+  init chunk 400-500: done
+  init chunk 500-600: done
+  init chunk 600-700: done
+  init chunk 700-800: done
+  init chunk 800-900: done
+  init chunk 900-1000: done
+  init chunk 1000-1100: done
+  init chunk 1100-1200: done
+  init chunk 1200-1300: done
+  init chunk 1300-1400: done
+  init chunk 1400-1500: done
+[TIMING] Prior sampling + chunked init: 11.1s
+Running nested sampling: 1500 live, 14D (phase_c marginalized, FULL likelihood)
+Checkpointing every 5 steps to Results/gwtc1_phasemarg/PhaseMarg_Unheterodyned_TaylorF2_local_psd-gwtc1_full_sky_checkpoint.pkl
+JIT-compiling first step (this will be slow — ~260k freq bins)...
+[TIMING] JIT compilation (first step): 100.2s
+Dead points: 3750 dead points [06:10,  8.13 dead points/s]  [checkpoint] Saved at step 5
+Dead points: 7500 dead points [14:53,  7.11 dead points/s]  [checkpoint] Saved at step 10
+Dead points: 11250 dead points [23:44,  7.33 dead points/s]  [checkpoint] Saved at step 15
+Dead points: 15000 dead points [30:52,  8.57 dead points/s]  [checkpoint] Saved at step 20
+Dead points: 18750 dead points [37:32,  9.24 dead points/s]  [checkpoint] Saved at step 25
+Dead points: 22500 dead points [44:15,  9.28 dead points/s]  [checkpoint] Saved at step 30
+Dead points: 26250 dead points [51:13,  8.97 dead points/s]  [checkpoint] Saved at step 35
+Dead points: 30000 dead points [58:31,  8.62 dead points/s]  [checkpoint] Saved at step 40
+Dead points: 33750 dead points [1:05:49,  8.61 dead points/s]  [checkpoint] Saved at step 45
+Dead points: 37500 dead points [1:12:48,  8.96 dead points/s]  [checkpoint] Saved at step 50
+Dead points: 41250 dead points [1:19:17,  9.48 dead points/s]  [checkpoint] Saved at step 55
+Dead points: 45000 dead points [1:25:51,  9.49 dead points/s]  [checkpoint] Saved at step 60
+Dead points: 48750 dead points [1:32:24,  9.53 dead points/s]  [checkpoint] Saved at step 65
+Dead points: 51750 dead points [1:37:40,  8.70 dead points/s]
+Log Evidence: 486.74 +/- 0.19
+Saved to Results/gwtc1_phasemarg/PhaseMarg_Unheterodyned_TaylorF2_local_psd-gwtc1_full_sky.csv
+Removed checkpoint: Results/gwtc1_phasemarg/PhaseMarg_Unheterodyned_TaylorF2_local_psd-gwtc1_full_sky_checkpoint.pkl
+
+==================================================
+TIMING SUMMARY (UNHETERODYNED)
+==================================================
+  Data loading:         3.9s
+  Data stacking:        0.1s
+  Init + prior:        11.1s
+  JIT compilation:    100.2s
+  Sampling:          5860.9s
+  Total:             5981.2s
+==================================================

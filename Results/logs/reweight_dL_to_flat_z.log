@@ -1,0 +1,33 @@
+Auto-discovered 2 baseline file(s) in Results/gwtc1_phasemarg:
+  PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_baseline.csv
+  PhaseMarg_Heterodyned_TaylorF2_local_psd-gwtc1_ref-gwtc1_baseline.csv
+
+────────────────────────────────────────────────────────────
+Loaded 203000 samples from Results/gwtc1_phasemarg/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_baseline.csv
+Effective sample size after reweighting: 29683 / 203000
+Saved reweighted samples to Results/gwtc1_phasemarg/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_reweighted_flatZ.csv
+
+==================================================
+Reweighted summary (flat-in-z prior)
+==================================================
+  d_L     : mean=33.19, median=33.85, 90% CI=[19.65, 44.75]
+  H_0     : mean=96.51, median=88.95, 90% CI=[65.73, 152.02]
+  M_c     : mean=1.20, median=1.20, 90% CI=[1.20, 1.20]
+  q       : mean=0.82, median=0.83, 90% CI=[0.64, 0.98]
+  iota    : mean=2.41, median=2.38, 90% CI=[1.99, 2.92]
+==================================================
+
+────────────────────────────────────────────────────────────
+Loaded 204500 samples from Results/gwtc1_phasemarg/PhaseMarg_Heterodyned_TaylorF2_local_psd-gwtc1_ref-gwtc1_baseline.csv
+Effective sample size after reweighting: 31146 / 204500
+Saved reweighted samples to Results/gwtc1_phasemarg/PhaseMarg_Heterodyned_TaylorF2_local_psd-gwtc1_ref-gwtc1_reweighted_flatZ.csv
+
+==================================================
+Reweighted summary (flat-in-z prior)
+==================================================
+  d_L     : mean=34.11, median=34.46, 90% CI=[21.38, 45.86]
+  H_0     : mean=92.99, median=87.39, 90% CI=[64.33, 137.73]
+  M_c     : mean=1.20, median=1.20, 90% CI=[1.20, 1.20]
+  q       : mean=0.81, median=0.81, 90% CI=[0.62, 0.98]
+  iota    : mean=2.41, median=2.38, 90% CI=[2.02, 2.91]
+==================================================

@@ -1,0 +1,61 @@
+================================================================
+  FULL-SKY — IMRPhenomD_NRTidalv2
+================================================================
+Using FULL-SKY priors (narrow M_c/q/spin)
+Data source: local, PSD source: gwtc1
+  H1: data=0.6s, PSD(gwtc1)=0.7s, total=2.3s
+  L1: data=0.5s, PSD(gwtc1)=0.3s, total=0.8s
+  V1: data=0.4s, PSD(gwtc1)=0.3s, total=0.8s
+[TIMING] Data loading: 3.9s
+Waveform: IMRPhenomD_NRTidalv2
+[TIMING] Data stacking: 0.1s
+Frequency grid: 259201 bins, df=0.007812 Hz
+Chunked init: 1500 particles in batches of 100...
+  init chunk 0-100: done
+  init chunk 100-200: done
+  init chunk 200-300: done
+  init chunk 300-400: done
+  init chunk 400-500: done
+  init chunk 500-600: done
+  init chunk 600-700: done
+  init chunk 700-800: done
+  init chunk 800-900: done
+  init chunk 900-1000: done
+  init chunk 1000-1100: done
+  init chunk 1100-1200: done
+  init chunk 1200-1300: done
+  init chunk 1300-1400: done
+  init chunk 1400-1500: done
+[TIMING] Prior sampling + chunked init: 18.3s
+Running nested sampling: 1500 live, 14D (phase_c marginalized, FULL likelihood)
+Checkpointing every 5 steps to Results/gwtc1_phasemarg/PhaseMarg_Unheterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_full_sky_checkpoint.pkl
+JIT-compiling first step (this will be slow — ~260k freq bins)...
+[TIMING] JIT compilation (first step): 319.0s
+Dead points: 3750 dead points [21:13,  2.34 dead points/s]  [checkpoint] Saved at step 5
+Dead points: 7500 dead points [50:52,  2.10 dead points/s]  [checkpoint] Saved at step 10
+Dead points: 11250 dead points [1:21:17,  2.13 dead points/s]  [checkpoint] Saved at step 15
+Dead points: 15000 dead points [1:46:00,  2.47 dead points/s]  [checkpoint] Saved at step 20
+Dead points: 18750 dead points [2:09:34,  2.63 dead points/s]  [checkpoint] Saved at step 25
+Dead points: 22500 dead points [2:32:29,  2.70 dead points/s]  [checkpoint] Saved at step 30
+Dead points: 26250 dead points [2:56:23,  2.62 dead points/s]  [checkpoint] Saved at step 35
+Dead points: 30000 dead points [3:21:06,  2.53 dead points/s]  [checkpoint] Saved at step 40
+Dead points: 33750 dead points [3:45:58,  2.53 dead points/s]  [checkpoint] Saved at step 45
+Dead points: 37500 dead points [4:09:06,  2.69 dead points/s]  [checkpoint] Saved at step 50
+Dead points: 41250 dead points [4:31:38,  2.77 dead points/s]  [checkpoint] Saved at step 55
+Dead points: 45000 dead points [4:54:12,  2.77 dead points/s]  [checkpoint] Saved at step 60
+Dead points: 48750 dead points [5:17:03,  2.74 dead points/s]  [checkpoint] Saved at step 65
+Dead points: 51750 dead points [5:35:28,  2.53 dead points/s]
+Log Evidence: 485.55 +/- 0.21
+Saved to Results/gwtc1_phasemarg/PhaseMarg_Unheterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_full_sky.csv
+Removed checkpoint: Results/gwtc1_phasemarg/PhaseMarg_Unheterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_full_sky_checkpoint.pkl
+
+==================================================
+TIMING SUMMARY (UNHETERODYNED)
+==================================================
+  Data loading:         3.9s
+  Data stacking:        0.1s
+  Init + prior:        18.3s
+  JIT compilation:    319.0s
+  Sampling:         20128.1s
+  Total:            20474.4s
+==================================================

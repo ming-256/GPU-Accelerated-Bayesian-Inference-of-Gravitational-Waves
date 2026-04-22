@@ -3,14 +3,13 @@ venv/
 env/
 ENV/
 *.venv
+libraries/
+node_modules/
 
 # Results
-*.csv
 *.h5
-*.log
 *.out
 *.txt
-*.json
 *.dat
 *.pkl
 
@@ -57,3 +56,7 @@ htmlcov/
 
 # Documentation
 docs/_build/
+
+# Packages
+package-lock.json
+package.json

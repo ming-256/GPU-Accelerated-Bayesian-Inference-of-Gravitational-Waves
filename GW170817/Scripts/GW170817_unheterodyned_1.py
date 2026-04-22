@@ -77,6 +77,8 @@ parser.add_argument('--wide-prior', action='store_true',
                     help='Use wider priors (relaxed M_c, q, spin, d_L bounds)')
 parser.add_argument('--label-suffix', default='',
                     help='Suffix to append to output filename (e.g. "_narrow_prior")')
+parser.add_argument('--nlive', type=int, default=1500,
+                    help='Number of live points (default: 1500)')
 args = parser.parse_args()
 data_source = args.data_source
 psd_source = args.psd_source
@@ -436,7 +438,7 @@ def loglikelihood_fn(x):
 # 7. NESTED SAMPLING SETUP
 # ============================================================================
 
-num_live = 1500
+num_live = args.nlive
 num_delete = int(num_live * 0.5)
 num_mcmc_steps = int(NUM_DIMS * 8)
 

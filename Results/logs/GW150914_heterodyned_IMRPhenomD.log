@@ -1,0 +1,29 @@
+Data source: local, PSD source: gwtc2p1
+  H1: data=0.9s, PSD(gwtc2p1)=0.3s, total=2.2s
+  L1: data=0.9s, PSD(gwtc2p1)=0.0s, total=0.9s
+[TIMING] Data loading: 3.1s
+Waveform: IMRPhenomD (RippleIMRPhenomD(f_ref=20.0))
+Reference (gwtc1): M_c=30.4358, q=0.8454, d_L=463.0
+[TIMING] Reference params: 0.1s
+Setting up heterodyning with 501 bins...
+Heterodyning setup complete. Bin shape: (2, 383)
+[TIMING] Heterodyning setup: 15.5s
+[TIMING] Prior sampling + init: 16.1s
+Running nested sampling: 5000 live, 10D (phase_c marginalized)
+JIT-compiling first step...
+[TIMING] JIT compilation (first step): 30.2s
+Dead points: 127500 dead points [02:51, 732.89 dead points/s]
+Log Evidence: 260.95 +/- 0.08
+Saved to Results/gwtc1_phasemarg/GW15_PhaseMarg_Heterodyned_IMRPhenomD_local_psd-gwtc2p1_ref-gwtc1.csv
+
+==================================================
+TIMING SUMMARY
+==================================================
+  Data loading:         3.1s
+  Reference params:     0.1s
+  Heterodyne setup:    15.5s
+  Init + prior:        16.1s
+  JIT compilation:     30.2s
+  Sampling:           171.9s
+  Total:              247.6s
+==================================================
