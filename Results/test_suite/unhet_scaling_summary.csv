@@ -1,0 +1,2 @@
+run_id,waveform,n_live,wallclock_s,log_Z,sigma_log_Z,H0_MAP,H0_median,P_H0_gt_120
+s04__gw170817__imrphenomd_nrtidalv2__unheterodyned__nlive02500__seed0000,IMRPhenomD_NRTidalv2,2500,37240.0,490.51,0.14,71.2796763332141,78.13041927307579,0.07786251350475058

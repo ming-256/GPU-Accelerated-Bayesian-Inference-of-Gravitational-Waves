@@ -57,7 +57,7 @@ from anesthetic import NestedSamples
 from blackjax.ns.utils import finalise
 
 from jimgw.core.single_event.detector import get_H1, get_L1
-from jimgw.core.single_event.waveform import RippleIMRPhenomD
+from jimgw.core.single_event.waveform import RippleIMRPhenomD, RippleIMRPhenomXPHM
 from jimgw.core.single_event.data import Data, PowerSpectrum
 from gwpy.timeseries import TimeSeries
 
@@ -65,8 +65,11 @@ from gwpy.timeseries import TimeSeries
 # 0. COMMAND-LINE ARGUMENTS
 # ============================================================================
 parser = argparse.ArgumentParser(description='Heterodyned nested sampling for GW150914')
-parser.add_argument('--waveform', choices=['IMRPhenomD'],
-                    default='IMRPhenomD', help='Waveform approximant (IMRPhenomD or IMRPhenomXAS for BBH)')
+parser.add_argument('--waveform', choices=['IMRPhenomD', 'IMRPhenomXPHM'],
+                    default='IMRPhenomD',
+                    help='Waveform approximant. IMRPhenomD = aligned-spin BBH (10/11D); '
+                         'IMRPhenomXPHM = precessing + higher modes (LVK GWTC-2.1+ production), '
+                         '14/15D parameter set with spherical-coord sampling of in-plane spin.')
 parser.add_argument('--data-source', choices=['fetch', 'local'],
                     default='fetch',
                     help='Data source: "fetch" pulls from GWOSC via gwpy (requires internet), '
@@ -86,6 +89,10 @@ parser.add_argument('--output-dir', default='Results/gwtc1_phasemarg',
                     help='Directory to write output CSV files (default: Results)')
 parser.add_argument('--n-live', type=int, default=5000,
                     help='Number of live points (default: 5000)')
+parser.add_argument('--m-comp-lo', type=float, default=None,
+                    help='Lower bound on component masses (M_sun). Default: script-internal value (1.0).')
+parser.add_argument('--m-comp-hi', type=float, default=None,
+                    help='Upper bound on component masses (M_sun). Default: script-internal value (100.0).')
 args = parser.parse_args()
 waveform_tag = args.waveform
 data_source = args.data_source
@@ -106,49 +113,89 @@ def log_i0(x):
 # ============================================================================
 # 2. PARAMETER CONFIGURATION (static arrays, no dicts in hot path)
 # ============================================================================
-# 10 parameters when phase_c is analytically marginalized (phase_marg=True),
-# 11 parameters when phase_c is sampled (phase_marg=False).
-# All configuration is expressed as static JAX arrays for JIT-friendly access.
-#
-# BBH event: no tidal parameters (lambda_1, lambda_2), no standard siren
-# terms (H_0, v_p).
+# Aligned-spin (IMRPhenomD): 10 dims (phase-marg) / 11 dims (no marg).
+# Precessing (IMRPhenomXPHM): 14 dims (phase-marg) / 15 dims (no marg).
+# In the precessing branch, the in-plane spin is sampled in *spherical
+# coordinates* (a, cos(tilt), phi) per body — uniform marginals on each give
+# the LVK convention (uniform spin magnitude × isotropic tilt × uniform
+# azimuth), without Jacobian gymnastics in the prior. Conversion to the
+# Cartesian (s_x, s_y, s_z) the waveform expects is done inside the
+# likelihood. The on-disk CSV columns therefore expose a_1, cost_1, phi_1,
+# a_2, cost_2, phi_2 (spherical) for the precessing run.
+precessing = (waveform_tag == 'IMRPhenomXPHM')
 
 # Parameter names (used only at boundaries: init, output, jimgw API calls)
-PARAM_NAMES = [
-    "M_c", "q", "s1_z", "s2_z", "iota", "d_L", "t_c",
-    "psi", "ra", "dec",
-]
-PARAM_LABELS = [
-    r"$M_c$", r"$q$", r"$s_{1z}$", r"$s_{2z}$", r"$\iota$", r"$d_L$", r"$t_c$",
-    r"$\psi$", r"$\alpha$", r"$\delta$",
-]
+if precessing:
+    PARAM_NAMES = [
+        "M_c", "q",
+        "a_1", "cost_1", "phi_1", "a_2", "cost_2", "phi_2",
+        "iota", "d_L", "t_c",
+        "psi", "ra", "dec",
+    ]
+    PARAM_LABELS = [
+        r"$M_c$", r"$q$",
+        r"$a_1$", r"$\cos\theta_1$", r"$\phi_1$",
+        r"$a_2$", r"$\cos\theta_2$", r"$\phi_2$",
+        r"$\iota$", r"$d_L$", r"$t_c$",
+        r"$\psi$", r"$\alpha$", r"$\delta$",
+    ]
+    I_MC, I_Q = 0, 1
+    I_A1, I_COST1, I_PHI1 = 2, 3, 4
+    I_A2, I_COST2, I_PHI2 = 5, 6, 7
+    I_IOTA, I_DL, I_TC = 8, 9, 10
+    I_PSI, I_RA, I_DEC = 11, 12, 13
+    A_MAX = 0.99   # high-spin BBH magnitude cap (LVK GWTC-2.1 convention)
+    _PRIOR_LO_BASE = [
+        10.0, 0.125,                             # M_c, q
+        0.0, -1.0, 0.0, 0.0, -1.0, 0.0,           # a_1, cost_1, phi_1, a_2, cost_2, phi_2
+        0.0, 1.0, -0.05,                          # iota, d_L, t_c
+        0.0, 0.0, -jnp.pi / 2,                    # psi, ra, dec
+    ]
+    _PRIOR_HI_BASE = [
+        80.0, 1.00,                               # M_c, q
+        A_MAX, 1.0, 2 * jnp.pi, A_MAX, 1.0, 2 * jnp.pi,
+        jnp.pi, 2000.0, 0.05,                     # iota, d_L, t_c
+        jnp.pi, 2 * jnp.pi, jnp.pi / 2,           # psi, ra, dec
+    ]
+    # All spin coords are uniform (type 0); only iota (sin), d_L (power-law),
+    # dec (cos) carry non-uniform priors here.
+    _PRIOR_TYPE_BASE = [0, 0,  0, 0, 0, 0, 0, 0,  1, 5, 0,  0, 0, 2]
+else:
+    # BBH event, aligned-spin: no tidal parameters, no standard siren terms.
+    PARAM_NAMES = [
+        "M_c", "q", "s1_z", "s2_z", "iota", "d_L", "t_c",
+        "psi", "ra", "dec",
+    ]
+    PARAM_LABELS = [
+        r"$M_c$", r"$q$", r"$s_{1z}$", r"$s_{2z}$", r"$\iota$", r"$d_L$", r"$t_c$",
+        r"$\psi$", r"$\alpha$", r"$\delta$",
+    ]
+    # Static parameter indices (compile-time constants for array access)
+    I_MC, I_Q, I_S1Z, I_S2Z, I_IOTA, I_DL, I_TC = 0, 1, 2, 3, 4, 5, 6
+    I_PSI, I_RA, I_DEC = 7, 8, 9
 
-# Static parameter indices (compile-time constants for array access)
-I_MC, I_Q, I_S1Z, I_S2Z, I_IOTA, I_DL, I_TC = 0, 1, 2, 3, 4, 5, 6
-I_PSI, I_RA, I_DEC = 7, 8, 9
+    # Prior bounds: BBH parameter ranges
+    # M_c in [10, 80] M_sun (detector-frame), full spin range [-1, 1]
+    # d_L in [1, 2000] Mpc with power-law prior p(d_L) ∝ d_L^2
+    # t_c in [-0.05, 0.05] s (tighter than BNS, short BBH signal)
+    _PRIOR_LO_BASE = [
+        10.0, 0.125, -1.0, -1.0,                 # M_c, q, s1_z, s2_z
+        0.0, 1.0, -0.05,                          # iota, d_L, t_c
+        0.0, 0.0, -jnp.pi / 2,                    # psi, ra, dec
+    ]
+    _PRIOR_HI_BASE = [
+        80.0, 1.00, 1.0, 1.0,                    # M_c, q, s1_z, s2_z
+        jnp.pi, 2000.0, 0.05,                     # iota, d_L, t_c
+        jnp.pi, 2 * jnp.pi, jnp.pi / 2,          # psi, ra, dec
+    ]
+    # Prior type encoding: 0=uniform, 1=sin(iota), 2=cos(dec), 5=power-law(d_L)
+    _PRIOR_TYPE_BASE = [0, 0, 0, 0, 1, 5, 0, 0, 0, 2]
 
-# Prior bounds: BBH parameter ranges
-# M_c in [10, 80] M_sun (detector-frame), full spin range [-1, 1]
-# d_L in [1, 2000] Mpc with power-law prior p(d_L) ∝ d_L^2
-# t_c in [-0.05, 0.05] s (tighter than BNS, short BBH signal)
-_PRIOR_LO_BASE = [
-    10.0, 0.125, -1.0, -1.0,                 # M_c, q, s1_z, s2_z
-    0.0, 1.0, -0.05,                          # iota, d_L, t_c
-    0.0, 0.0, -jnp.pi / 2,                    # psi, ra, dec
-]
-_PRIOR_HI_BASE = [
-    80.0, 1.00, 1.0, 1.0,                    # M_c, q, s1_z, s2_z
-    jnp.pi, 2000.0, 0.05,                     # iota, d_L, t_c
-    jnp.pi, 2 * jnp.pi, jnp.pi / 2,          # psi, ra, dec
-]
-# Prior type encoding: 0=uniform, 1=sin(iota), 2=cos(dec), 5=power-law(d_L)
-_PRIOR_TYPE_BASE = [0, 0, 0, 0, 1, 5, 0, 0, 0, 2]
-
-# When phase_c is NOT marginalized, add it as 11th parameter (uniform [0, 2pi])
+# When phase_c is NOT marginalized, append it as one extra uniform [0, 2pi] dim.
 if not phase_marg:
     PARAM_NAMES.append("phase_c")
     PARAM_LABELS.append(r"$\phi_c$")
-    I_PHASEC = 10
+    I_PHASEC = len(PARAM_NAMES) - 1
     _PRIOR_LO_BASE.append(0.0)
     _PRIOR_HI_BASE.append(float(2 * jnp.pi))
     _PRIOR_TYPE_BASE.append(0)  # uniform
@@ -158,9 +205,10 @@ NUM_DIMS = len(PARAM_NAMES)
 PRIOR_LO = jnp.array(_PRIOR_LO_BASE)
 PRIOR_HI = jnp.array(_PRIOR_HI_BASE)
 
-# Component mass bounds (applied as hard cut in M_c-q space)
-M_COMP_LO = 1.0    # M_sun
-M_COMP_HI = 100.0  # M_sun
+# Component mass bounds (applied as hard cut in M_c-q space).
+# Override via --m-comp-lo/--m-comp-hi (e.g. LVK GWTC-2.1 BBH bounds [5, 100]).
+M_COMP_LO = args.m_comp_lo if args.m_comp_lo is not None else 1.0     # M_sun
+M_COMP_HI = args.m_comp_hi if args.m_comp_hi is not None else 100.0   # M_sun
 
 # Prior type encoding: 0=uniform, 1=sin(iota), 2=cos(dec), 5=power-law(d_L)
 PRIOR_TYPE = jnp.array(_PRIOR_TYPE_BASE)
@@ -375,7 +423,8 @@ print(f"[TIMING] Data loading: {t_data:.1f}s")
 H1, L1 = detectors
 
 WAVEFORM_MAP = {
-    'IMRPhenomD': RippleIMRPhenomD
+    'IMRPhenomD':    RippleIMRPhenomD,
+    'IMRPhenomXPHM': RippleIMRPhenomXPHM,
 }
 waveform = WAVEFORM_MAP[waveform_tag](f_ref=20.0)
 print(f"Waveform: {waveform_tag} ({waveform})")
@@ -417,6 +466,15 @@ def load_reference_params(hdf5_path, dataset='C01:IMRPhenomXPHM/posterior_sample
         'trigger_time': float(gps),
         'gmst': float(gmst),
     }
+    # For precessing waveforms, also pull the in-plane spin medians from the
+    # GWTC-2.1 IMRPhenomXPHM posterior. RippleIMRPhenomXPHM expects the full
+    # Cartesian spin vector (s1_x, s1_y, s1_z, s2_x, s2_y, s2_z).
+    if precessing:
+        for key in ('spin_1x', 'spin_1y', 'spin_2x', 'spin_2y'):
+            if key in data.dtype.names:
+                ref[key.replace('spin_', 's')] = float(np.median(data[key]))
+            else:
+                ref[key.replace('spin_', 's')] = 0.0  # fall back to aligned spin
     if np.isclose(ref['eta'], 0.25):
         ref['eta'] = 0.249995
     return ref
@@ -576,6 +634,11 @@ def optimize_reference_params(detectors, waveform, frequencies, popsize=100, n_s
         ref['eta'] = 0.249995
     return ref
 
+
+if precessing and ref_params_source == 'optimize':
+    raise NotImplementedError(
+        "--ref-params optimize with IMRPhenomXPHM is not supported (the optimizer "
+        "is hard-coded for the 10-D aligned-spin parameter set). Use --ref-params gwtc1.")
 
 t_ref0 = time.time()
 if ref_params_source == 'gwtc1':
@@ -751,15 +814,38 @@ def loglikelihood_fn(x):
     Returns ll_gw only.
     """
     # --- Build param dict for jimgw API (trace-time only) ---
-    params = {
-        'M_c': x[I_MC], 'q': x[I_Q], 's1_z': x[I_S1Z], 's2_z': x[I_S2Z],
-        'iota': x[I_IOTA], 'd_L': x[I_DL], 't_c': x[I_TC],
-        'psi': x[I_PSI], 'ra': x[I_RA], 'dec': x[I_DEC],
-        'eta': x[I_Q] / (1 + x[I_Q]) ** 2,
-        'phase_c': 0.0 if phase_marg else x[I_PHASEC],
-        'trigger_time': gps,
-        'gmst': gmst,
-    }
+    if precessing:
+        # Convert sampled spherical spin coords -> Cartesian spin components
+        # required by RippleIMRPhenomXPHM.
+        a1, cost1, phi1 = x[I_A1], x[I_COST1], x[I_PHI1]
+        a2, cost2, phi2 = x[I_A2], x[I_COST2], x[I_PHI2]
+        sint1 = jnp.sqrt(jnp.maximum(1.0 - cost1 * cost1, 0.0))
+        sint2 = jnp.sqrt(jnp.maximum(1.0 - cost2 * cost2, 0.0))
+        params = {
+            'M_c': x[I_MC], 'q': x[I_Q],
+            's1_x': a1 * sint1 * jnp.cos(phi1),
+            's1_y': a1 * sint1 * jnp.sin(phi1),
+            's1_z': a1 * cost1,
+            's2_x': a2 * sint2 * jnp.cos(phi2),
+            's2_y': a2 * sint2 * jnp.sin(phi2),
+            's2_z': a2 * cost2,
+            'iota': x[I_IOTA], 'd_L': x[I_DL], 't_c': x[I_TC],
+            'psi': x[I_PSI], 'ra': x[I_RA], 'dec': x[I_DEC],
+            'eta': x[I_Q] / (1 + x[I_Q]) ** 2,
+            'phase_c': 0.0 if phase_marg else x[I_PHASEC],
+            'trigger_time': gps,
+            'gmst': gmst,
+        }
+    else:
+        params = {
+            'M_c': x[I_MC], 'q': x[I_Q], 's1_z': x[I_S1Z], 's2_z': x[I_S2Z],
+            'iota': x[I_IOTA], 'd_L': x[I_DL], 't_c': x[I_TC],
+            'psi': x[I_PSI], 'ra': x[I_RA], 'dec': x[I_DEC],
+            'eta': x[I_Q] / (1 + x[I_Q]) ** 2,
+            'phase_c': 0.0 if phase_marg else x[I_PHASEC],
+            'trigger_time': gps,
+            'gmst': gmst,
+        }
 
     # --- Waveform at bin frequencies (jimgw API, traced once) ---
     h_sky_low = waveform(FREQ_LOW, params)
@@ -807,13 +893,14 @@ num_mcmc_steps = int(NUM_DIMS * 8)
 
 @jax.jit
 def stepper_fn(x, d, t):
-    """Linear step with periodic wrapping for psi (pi), ra (2pi), and phase_c (2pi).
-
-    Returns (new_position, is_accepted) as required by blackjax.nss API.
-    """
+    """Linear step with periodic wrapping for psi (pi), ra (2pi), phase_c (2pi),
+    and (precessing branch) phi_1, phi_2 (2pi)."""
     y = x + t * d
     y = y.at[I_PSI].set(jnp.mod(y[I_PSI], jnp.pi))
     y = y.at[I_RA].set(jnp.mod(y[I_RA], 2 * jnp.pi))
+    if precessing:
+        y = y.at[I_PHI1].set(jnp.mod(y[I_PHI1], 2 * jnp.pi))
+        y = y.at[I_PHI2].set(jnp.mod(y[I_PHI2], 2 * jnp.pi))
     if not phase_marg:
         y = y.at[I_PHASEC].set(jnp.mod(y[I_PHASEC], 2 * jnp.pi))
     return y, True

@@ -17,6 +17,7 @@ GPU-accelerated nested sampling applied to GW170817 and H_0 inference.
 | `coauthored_paper_summary.md` | Summary of Prathaban et al. (2509.04336v1), the BBH-focused co-authored paper |
 | `waveform_recommendation.md` | Waveform choice analysis: IMRPhenomD_NRTidalv2 recommended for pBilby comparison |
 | `literature_review_2024_2026.md` | Recent papers: Jim, flowMC, NRTidalv3, H_0 measurements, GPU NS comparators |
+| `result_link_index.md` | Cross-reference linking result CSVs, figures, tables, logs, and generating scripts |
 
 ## Key Facts (Quick Reference)
 

@@ -1,0 +1,117 @@
+\begin{thebibliography}{}
+\makeatletter
+\relax
+\def\mn@urlcharsother{\let\do\@makeother \do\$\do\&\do\#\do\^\do\_\do\%\do\~}
+\def\mn@doi{\begingroup\mn@urlcharsother \@ifnextchar [ {\mn@doi@}
+  {\mn@doi@[]}}
+\def\mn@doi@[#1]#2{\def\@tempa{#1}\ifx\@tempa\@empty \href
+  {http://dx.doi.org/#2} {doi:#2}\else \href {http://dx.doi.org/#2} {#1}\fi
+  \endgroup}
+\def\mn@eprint#1#2{\mn@eprint@#1:#2::\@nil}
+\def\mn@eprint@arXiv#1{\href {http://arxiv.org/abs/#1} {{\tt arXiv:#1}}}
+\def\mn@eprint@dblp#1{\href {http://dblp.uni-trier.de/rec/bibtex/#1.xml}
+  {dblp:#1}}
+\def\mn@eprint@#1:#2:#3:#4\@nil{\def\@tempa {#1}\def\@tempb {#2}\def\@tempc
+  {#3}\ifx \@tempc \@empty \let \@tempc \@tempb \let \@tempb \@tempa \fi \ifx
+  \@tempb \@empty \def\@tempb {arXiv}\fi \@ifundefined
+  {mn@eprint@\@tempb}{\@tempb:\@tempc}{\expandafter \expandafter \csname
+  mn@eprint@\@tempb\endcsname \expandafter{\@tempc}}}
+
+\bibitem[\protect\citeauthoryear{{Abbott} et~al.}{{Abbott}
+  et~al.}{2016}]{Abbott2016GW150914}
+{Abbott} B.~P.,  et~al., 2016, \mn@doi [Physical Review Letters]
+  {10.1103/PhysRevLett.116.061102}, 116, 061102
+
+\bibitem[\protect\citeauthoryear{{Abbott} et~al.}{{Abbott}
+  et~al.}{2017a}]{Abbott2017GW170817Discovery}
+{Abbott} B.~P.,  et~al., 2017a, \mn@doi [Physical Review Letters]
+  {10.1103/PhysRevLett.119.161101}, 119, 161101
+
+\bibitem[\protect\citeauthoryear{{Abbott} et~al.}{{Abbott}
+  et~al.}{2017b}]{Abbott2017H0}
+{Abbott} B.~P.,  et~al., 2017b, \mn@doi [Nature] {10.1038/nature24471}, 551, 85
+
+\bibitem[\protect\citeauthoryear{{Ashton} et~al.}{{Ashton}
+  et~al.}{2019}]{Ashton2019Bilby}
+{Ashton} G.,  et~al., 2019, \mn@doi [The Astrophysical Journal Supplement
+  Series] {10.3847/1538-4365/ab06fc}, 241, 27
+
+\bibitem[\protect\citeauthoryear{{Bradbury} et~al.}{{Bradbury}
+  et~al.}{2018}]{Bradbury2018JAX}
+{Bradbury} J.,  et~al., 2018, {JAX: composable transformations of Python+NumPy
+  programs}, \url{https://github.com/jax-ml/jax}
+
+\bibitem[\protect\citeauthoryear{{Cabezas} et~al.}{{Cabezas}
+  et~al.}{2024}]{BlackJAX}
+{Cabezas} A.,  et~al., 2024, {BlackJAX: Composable Bayesian inference in JAX}
+
+\bibitem[\protect\citeauthoryear{{Cornish}}{{Cornish}}{2013}]{Cornish2013}
+{Cornish} N.~J.,  2013, TODO
+
+\bibitem[\protect\citeauthoryear{{Edwards} et~al.}{{Edwards}
+  et~al.}{2023}]{Edwards2023Ripple}
+{Edwards} T. D.~P.,  et~al., 2023, {Ripple: Differentiable and
+  hardware-accelerated gravitational waveforms}
+
+\bibitem[\protect\citeauthoryear{{Hu} \& {Veitch}}{{Hu} \&
+  {Veitch}}{2025}]{HuVeitch2025}
+{Hu} Q.,  {Veitch} J.,  2025, {Computational costs of gravitational-wave
+  parameter estimation in the third-generation detector era}
+
+\bibitem[\protect\citeauthoryear{{Krishna} et~al.}{{Krishna}
+  et~al.}{2023}]{Krishna2023RelativeBinningBilby}
+{Krishna} K.,  et~al., 2023, {Accelerated parameter estimation with relative
+  binning in Bilby} (\mn@eprint {arXiv} {2312.06009})
+
+\bibitem[\protect\citeauthoryear{{Planck Collaboration}}{{Planck
+  Collaboration}}{2016}]{Planck2016}
+{Planck Collaboration} 2016, \mn@doi [Astronomy and Astrophysics]
+  {10.1051/0004-6361/201525830}, 594, A13
+
+\bibitem[\protect\citeauthoryear{{Prathaban} et~al.}{{Prathaban}
+  et~al.}{2025}]{Prathaban2025GPUSpeed}
+{Prathaban} M.,  et~al., 2025, {Gravitational-wave inference at GPU speed: A
+  bilby-like nested sampling kernel within blackjax-ns} (\mn@eprint {arXiv}
+  {2509.04336})
+
+\bibitem[\protect\citeauthoryear{{Riess} et~al.}{{Riess}
+  et~al.}{2016}]{Riess2016}
+{Riess} A.~G.,  et~al., 2016, \mn@doi [The Astrophysical Journal]
+  {10.3847/0004-637X/826/1/56}, 826, 56
+
+\bibitem[\protect\citeauthoryear{{Riess} et~al.}{{Riess}
+  et~al.}{2022}]{Riess2022}
+{Riess} A.~G.,  et~al., 2022, \mn@doi [The Astrophysical Journal Letters]
+  {10.3847/2041-8213/ac5c5b}, 934, L7
+
+\bibitem[\protect\citeauthoryear{{Schutz}}{{Schutz}}{1986}]{Schutz1986}
+{Schutz} B.~F.,  1986, \mn@doi [Nature] {10.1038/323310a0}, 323, 310
+
+\bibitem[\protect\citeauthoryear{{Skilling}}{{Skilling}}{2006}]{Skilling2006Nested}
+{Skilling} J.,  2006, \mn@doi [Bayesian Analysis] {10.1214/06-BA127}, 1, 833
+
+\bibitem[\protect\citeauthoryear{{Speagle}}{{Speagle}}{2020}]{Speagle2020Dynesty}
+{Speagle} J.~S.,  2020, \mn@doi [Monthly Notices of the Royal Astronomical
+  Society] {10.1093/mnras/staa278}, 493, 3132
+
+\bibitem[\protect\citeauthoryear{{Wong} et~al.}{{Wong}
+  et~al.}{2023}]{Wong2023Jim}
+{Wong} K.,  et~al., 2023, {Jim: A JAX-based gravitational-wave inference
+  library}
+
+\bibitem[\protect\citeauthoryear{{Wouters} et~al.}{{Wouters}
+  et~al.}{2024}]{Wouters2024JimBNS}
+{Wouters} T.,  et~al., 2024, {Accelerated gravitational-wave inference for
+  binary neutron stars with Jim} (\mn@eprint {arXiv} {2404.11397})
+
+\bibitem[\protect\citeauthoryear{{Yallup} et~al.}{{Yallup}
+  et~al.}{2025}]{Yallup2025BlackJAXNS}
+{Yallup} D.,  et~al., 2025, {GPU nested slice sampling for gravitational-wave
+  inference} (\mn@eprint {arXiv} {2509.24949})
+
+\bibitem[\protect\citeauthoryear{{Zackay} et~al.}{{Zackay}
+  et~al.}{2018}]{Zackay2018RelativeBinning}
+{Zackay} B.,  et~al., 2018, TODO
+
+\makeatother
+\end{thebibliography}
