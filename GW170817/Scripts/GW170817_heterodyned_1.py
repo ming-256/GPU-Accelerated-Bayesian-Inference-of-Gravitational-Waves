@@ -96,6 +96,11 @@ parser.add_argument('--n-bins', type=int, default=501,
                     help='Number of heterodyne bins (default: 501).')
 parser.add_argument('--tolerance', type=float, default=float(np.exp(-3)),
                     help='Fractional evidence termination tolerance: stop when (logZ_live - logZ) < log(tol). Default: e^-3 ≈ 0.0498 (matches the historical hard-coded behavior). Pass a smaller value (e.g. 1e-4) for a tighter termination.')
+parser.add_argument('--gw-only', action='store_true',
+                    help='Pure GW-only analysis: drop H_0 and v_p from the parameter space, '
+                         'remove the standard-siren velocity likelihood terms, and use a '
+                         'volumetric d_L prior p(d_L) ∝ d_L^2 over [10, 300] Mpc. '
+                         'Reduces dimensionality by 2 and removes host-galaxy information.')
 args = parser.parse_args()
 waveform_tag = args.waveform
 data_source = args.data_source
@@ -103,6 +108,7 @@ psd_source = args.psd_source
 ref_params_source = args.ref_params
 phase_marg = args.phase_marginalization
 output_dir = args.output_dir
+gw_only = args.gw_only
 
 # Numerically stable log I_0 for phase marginalization:
 # log(I_0(x)) = log(i0e(x)) + x, where i0e(x) = exp(-|x|) * I_0(x)
@@ -130,7 +136,6 @@ if precessing:
         "a_1", "cost_1", "phi_1", "a_2", "cost_2", "phi_2",
         "iota", "d_L", "t_c",
         "psi", "ra", "dec",
-        "H_0", "v_p",
     ]
     PARAM_LABELS = [
         r"$M_c$", r"$q$",
@@ -138,61 +143,74 @@ if precessing:
         r"$a_2$", r"$\cos\theta_2$", r"$\phi_2$",
         r"$\iota$", r"$d_L$", r"$t_c$",
         r"$\psi$", r"$\alpha$", r"$\delta$",
-        r"$H_0$", r"$v_p$",
     ]
     I_MC, I_Q = 0, 1
     I_A1, I_COST1, I_PHI1 = 2, 3, 4
     I_A2, I_COST2, I_PHI2 = 5, 6, 7
     I_IOTA, I_DL, I_TC = 8, 9, 10
     I_PSI, I_RA, I_DEC = 11, 12, 13
-    I_H0, I_VP = 14, 15
     A_MAX = 0.05   # LVK low-spin cap for GW170817 (Abbott 2017b H0)
+    _dl_lo = 10.0 if gw_only else 1.0
+    _dl_hi = 300.0 if gw_only else 75.0
+    _dl_type = 5 if gw_only else 3   # power-law ∝ d_L^2 vs Beta(3,1)
     _PRIOR_LO_BASE = [
         1.184, 0.125,                                # M_c, q
         0.0, -1.0, 0.0, 0.0, -1.0, 0.0,              # a_1, cost_1, phi_1, a_2, cost_2, phi_2
-        0.0, 1.0, -0.1,                              # iota, d_L, t_c
+        0.0, _dl_lo, -0.1,                           # iota, d_L, t_c
         0.0, 0.0, -jnp.pi / 2,                       # psi, ra, dec
-        20.0, -1000.0,                               # H_0, v_p
     ]
     _PRIOR_HI_BASE = [
         2.168, 1.00,                                 # M_c, q
         A_MAX, 1.0, 2 * jnp.pi, A_MAX, 1.0, 2 * jnp.pi,
-        jnp.pi, 75.0, 0.1,                           # iota, d_L, t_c
+        jnp.pi, _dl_hi, 0.1,                         # iota, d_L, t_c
         jnp.pi, 2 * jnp.pi, jnp.pi / 2,              # psi, ra, dec
-        250.0, 1000.0,                               # H_0, v_p
     ]
-    # Spin coords all uniform; iota=sin, d_L=Beta(3,1), dec=cos, H_0=log-uniform, others=uniform.
-    _PRIOR_TYPE_BASE = [0, 0,  0, 0, 0, 0, 0, 0,  1, 3, 0,  0, 0, 2,  4, 0]
+    _PRIOR_TYPE_BASE = [0, 0,  0, 0, 0, 0, 0, 0,  1, _dl_type, 0,  0, 0, 2]
+    if not gw_only:
+        PARAM_NAMES += ["H_0", "v_p"]
+        PARAM_LABELS += [r"$H_0$", r"$v_p$"]
+        I_H0, I_VP = 14, 15
+        _PRIOR_LO_BASE += [20.0, -1000.0]
+        _PRIOR_HI_BASE += [250.0, 1000.0]
+        _PRIOR_TYPE_BASE += [4, 0]
 else:
     # Aligned-spin tidal: keeps the original 14-D layout.
     PARAM_NAMES = [
         "M_c", "q", "s1_z", "s2_z", "iota", "d_L", "t_c",
-        "psi", "ra", "dec", "lambda_1", "lambda_2", "H_0", "v_p",
+        "psi", "ra", "dec", "lambda_1", "lambda_2",
     ]
     PARAM_LABELS = [
         r"$M_c$", r"$q$", r"$s_{1z}$", r"$s_{2z}$", r"$\iota$", r"$d_L$", r"$t_c$",
-        r"$\psi$", r"$\alpha$", r"$\delta$", r"$\Lambda_1$", r"$\Lambda_2$", r"$H_0$", r"$v_p$",
+        r"$\psi$", r"$\alpha$", r"$\delta$", r"$\Lambda_1$", r"$\Lambda_2$",
     ]
 
-    # Static parameter indices (compile-time constants for array access)
+    # Static parameter indices
     I_MC, I_Q, I_S1Z, I_S2Z, I_IOTA, I_DL, I_TC = 0, 1, 2, 3, 4, 5, 6
-    I_PSI, I_RA, I_DEC, I_L1, I_L2, I_H0, I_VP = 7, 8, 9, 10, 11, 12, 13
+    I_PSI, I_RA, I_DEC, I_L1, I_L2 = 7, 8, 9, 10, 11
 
-    # Prior bounds: M_c^det range from Abbott et al., PhysRevX 9, 011001, Sec. II.D
-    # NGC 4993 host galaxy at z=0.0099
+    _dl_lo = 10.0 if gw_only else 1.0
+    _dl_hi = 300.0 if gw_only else 75.0
+    _dl_type = 5 if gw_only else 3   # power-law ∝ d_L^2 vs Beta(3,1)
     _PRIOR_LO_BASE = [
         1.184, 0.125, -0.05, -0.05,             # M_c, q, s1_z, s2_z
-        0.0, 1.0, -0.1,                          # iota, d_L, t_c
+        0.0, _dl_lo, -0.1,                       # iota, d_L, t_c
         0.0, 0.0, -jnp.pi / 2,                   # psi, ra, dec
-        0.0, 0.0, 20.0, -1000.0,                 # lambda_1, lambda_2, H_0, v_p
+        0.0, 0.0,                                # lambda_1, lambda_2
     ]
     _PRIOR_HI_BASE = [
         2.168, 1.00, 0.05, 0.05,                # M_c, q, s1_z, s2_z
-        jnp.pi, 75.0, 0.1,                       # iota, d_L, t_c
+        jnp.pi, _dl_hi, 0.1,                     # iota, d_L, t_c
         jnp.pi, 2 * jnp.pi, jnp.pi / 2,         # psi, ra, dec
-        5000.0, 5000.0, 250.0, 1000.0,           # lambda_1, lambda_2, H_0, v_p
+        5000.0, 5000.0,                          # lambda_1, lambda_2
     ]
-    _PRIOR_TYPE_BASE = [0, 0, 0, 0, 1, 3, 0, 0, 0, 2, 0, 0, 4, 0]
+    _PRIOR_TYPE_BASE = [0, 0, 0, 0, 1, _dl_type, 0, 0, 0, 2, 0, 0]
+    if not gw_only:
+        PARAM_NAMES += ["H_0", "v_p"]
+        PARAM_LABELS += [r"$H_0$", r"$v_p$"]
+        I_H0, I_VP = 12, 13
+        _PRIOR_LO_BASE += [20.0, -1000.0]
+        _PRIOR_HI_BASE += [250.0, 1000.0]
+        _PRIOR_TYPE_BASE += [4, 0]
 
 # When phase_c is NOT marginalized, append it as one extra uniform [0, 2pi] dim.
 if not phase_marg:
@@ -221,6 +239,8 @@ _PRIOR_RANGE = PRIOR_HI - PRIOR_LO
 _PRIOR_LOG_RANGE = jnp.log(_PRIOR_RANGE)
 _PRIOR_LOG_LOG_RATIO = jnp.log(jnp.log(PRIOR_HI / PRIOR_LO))
 _BETA_LN = jax.scipy.special.betaln(3.0, 1.0)
+# Power-law ∝ x^2 (volumetric d_L): normalisation constant log(3 / (hi^3 - lo^3))
+_POWERLAW2_LOG_NORM = jnp.log(3.0) - jnp.log(PRIOR_HI ** 3 - PRIOR_LO ** 3)
 
 
 # ============================================================================
@@ -253,12 +273,16 @@ def logprior_fn(x):
     # Log-uniform (Jeffreys) prior (H_0): -log(log(hi/lo)) - log(x)
     lp_log = jnp.where(in_bounds, -_PRIOR_LOG_LOG_RATIO - jnp.log(jnp.abs(x) + 1e-300), -jnp.inf)
 
+    # Power-law ∝ x^2 (volumetric d_L): log(3 x^2 / (hi^3 - lo^3))
+    lp_powerlaw2 = jnp.where(in_bounds, _POWERLAW2_LOG_NORM + 2.0 * jnp.log(jnp.abs(x) + 1e-300), -jnp.inf)
+
     # Select per-parameter prior using type index
     lp = jnp.where(PRIOR_TYPE == 0, lp_uniform,
          jnp.where(PRIOR_TYPE == 1, lp_sin,
          jnp.where(PRIOR_TYPE == 2, lp_cos,
          jnp.where(PRIOR_TYPE == 3, lp_beta,
-                    lp_log))))
+         jnp.where(PRIOR_TYPE == 4, lp_log,
+                    lp_powerlaw2)))))
 
     total = jnp.sum(lp)
 
@@ -297,7 +321,8 @@ psd_duration = 1024
 
 marg_tag = 'PhaseMarg' if phase_marg else 'NoMarg'
 import os; os.makedirs(output_dir, exist_ok=True)
-label = f'{output_dir}/{marg_tag}_Heterodyned_{waveform_tag}_{data_source}_psd-{psd_source}_ref-{ref_params_source}_baseline'
+_siren_tag = '_gw_only' if gw_only else '_baseline'
+label = f'{output_dir}/{marg_tag}_Heterodyned_{waveform_tag}_{data_source}_psd-{psd_source}_ref-{ref_params_source}{_siren_tag}'
 
 # Analysis segment: [gps - (duration - post_trigger), gps + post_trigger]
 start = gps - (duration - post_trigger_duration)
@@ -502,7 +527,8 @@ def load_reference_params(hdf5_path, dataset='IMRPhenomPv2NRT_lowSpin_posterior'
 
 
 def optimize_reference_params(detectors, waveform, frequencies, popsize=100, n_steps=1500,
-                              learning_rate=3e-3, noise_level=0.5, freq_downsample=8):
+                              learning_rate=3e-3, noise_level=0.5, freq_downsample=8,
+                              warm_start_phys=None, warm_frac=0.8, warm_scatter=0.05):
     """Find reference parameters by maximizing the phase-marginalized likelihood.
 
     Uses optax Adam with cosine-decayed learning rate and multiplicative
@@ -624,6 +650,20 @@ def optimize_reference_params(detectors, waveform, frequencies, popsize=100, n_s
     key, init_key = jax.random.split(key)
     initial_positions = jax.random.uniform(init_key, (popsize, OPT_NDIM))
 
+    # Warm-start: concentrate most walkers near a known-good physical point.
+    # This prevents the optimizer from converging to spurious peaks on the
+    # downsampled frequency grid far from the true signal.
+    if warm_start_phys is not None:
+        n_warm = int(popsize * warm_frac)
+        warm_unit = jnp.clip(
+            jnp.array([(warm_start_phys.get(n, float(opt_lo[i] + opt_hi[i]) / 2) - float(opt_lo[i]))
+                       / (float(opt_hi[i]) - float(opt_lo[i])) for i, n in enumerate(OPT_NAMES)]),
+            0.0, 1.0)
+        key, scatter_key = jax.random.split(key)
+        scatter = jax.random.normal(scatter_key, (n_warm, OPT_NDIM)) * warm_scatter
+        warm_positions = jnp.clip(warm_unit[None, :] + scatter, 0.0, 1.0)
+        initial_positions = initial_positions.at[:n_warm].set(warm_positions)
+
     print(f"  Optimizing reference parameters: {popsize} walkers x {n_steps} steps...")
     print("  JIT-compiling optimizer (optax + lax.scan)...")
     key, opt_key = jax.random.split(key)
@@ -668,7 +708,11 @@ if ref_params_source == 'gwtc1':
     ref_params = load_reference_params('Results/GW170817_GWTC-1.hdf5')
     print(f"Reference (gwtc1): M_c={ref_params['M_c']:.4f}, q={ref_params['q']:.4f}, d_L={ref_params['d_L']:.1f}")
 else:
-    ref_params = optimize_reference_params(detectors, waveform, frequencies)
+    # Warm-start the optimizer near the GWTC-1 maximum to avoid spurious peaks
+    # on the downsampled frequency grid (especially at high M_c).
+    _gwtc1_hint = load_reference_params('Results/GW170817_GWTC-1.hdf5')
+    ref_params = optimize_reference_params(detectors, waveform, frequencies,
+                                           warm_start_phys=_gwtc1_hint)
     print(f"Reference (optimized): M_c={ref_params['M_c']:.4f}, q={ref_params['q']:.4f}, d_L={ref_params['d_L']:.1f}")
 
 # For precessing waveforms (IMRPhenomPv2), populate the in-plane spin keys.
@@ -919,6 +963,9 @@ def loglikelihood_fn(x):
         # jimgw: HeterodynedTransientLikelihoodFD
         ll_gw = (complex_match - optimal_SNR / 2).real
 
+    if gw_only:
+        return ll_gw
+
     # --- Standard siren velocity terms (Abbott et al. 2017, arXiv:1710.05832) ---
     ll_vr = stats.norm.logpdf(3327.0, x[I_VP] + x[I_H0] * x[I_DL], 72.0)
     ll_vp = stats.norm.logpdf(310.0, x[I_VP], 150.0)
@@ -988,6 +1035,11 @@ def sample_from_prior(key, n):
                 col = jax.random.beta(keys[i], 3.0, 1.0, (n_try,)) * (hi - lo) + lo
             elif ptype == 4:  # log-uniform: x = lo * (hi/lo)^u
                 col = lo * (hi / lo) ** jax.random.uniform(keys[i], (n_try,))
+            elif ptype == 5:  # power-law ∝ x^2: inverse CDF x = (lo^3 + u*(hi^3-lo^3))^(1/3)
+                u = jax.random.uniform(keys[i], (n_try,))
+                col = (lo ** 3 + u * (hi ** 3 - lo ** 3)) ** (1.0 / 3.0)
+            else:
+                col = jax.random.uniform(keys[i], (n_try,), minval=lo, maxval=hi)
             batch = batch.at[:, i].set(col)
 
         # Filter by component mass constraint

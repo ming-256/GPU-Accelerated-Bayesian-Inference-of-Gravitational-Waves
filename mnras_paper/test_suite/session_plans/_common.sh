@@ -10,10 +10,11 @@ TEST_SUITE_ROOT="${REPO_ROOT}/mnras_paper/test_suite"
 RESULTS_ROOT="${REPO_ROOT}/Results/test_suite"
 CATALOG="${TEST_SUITE_ROOT}/run_catalog.csv"
 
-# Python interpreter: prefer the project's `jax` conda env (known-working),
-# fall back to whatever `python3` resolves to. Override with PYTHON=... env var.
+# Override with PYTHON=... env var; otherwise resolved in priority order below.
 if [[ -z "${PYTHON:-}" ]]; then
-    if [[ -x "/opt/miniconda3/envs/jax/bin/python" ]]; then
+    if [[ -x "${REPO_ROOT}/venv/bin/python" ]]; then
+        PYTHON="${REPO_ROOT}/venv/bin/python"
+    elif [[ -x "/opt/miniconda3/envs/jax/bin/python" ]]; then
         PYTHON="/opt/miniconda3/envs/jax/bin/python"
     else
         PYTHON="$(command -v python3)"

@@ -1,0 +1,4 @@
+=== session_11_scaling_20k_diagnostic start: 2026-04-26T14:50:37Z  git c0d5c3ccedded8c0904640ad5d6f7d5f360b8970 ===
+--- [s11__gw170817__imrphenomd_nrtidalv2__baseline__nlive20000__tol1e-4__seed0000] n_live=20000 tol=1e-4 --- 14:50:37
+  -> canonicalised CSV: /home/user/GPU-Accelerated-Bayesian-Inference-of-Gravitational-Waves/Results/test_suite/s11__gw170817__imrphenomd_nrtidalv2__baseline__nlive20000__tol1e-4__seed0000/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_baseline.csv -> /home/user/GPU-Accelerated-Bayesian-Inference-of-Gravitational-Waves/Results/test_suite/s11__gw170817__imrphenomd_nrtidalv2__baseline__nlive20000__tol1e-4__seed0000/samples.csv
+=== session_11_scaling_20k_diagnostic end: 2026-04-26T15:30:52Z  elapsed: 2415s ===

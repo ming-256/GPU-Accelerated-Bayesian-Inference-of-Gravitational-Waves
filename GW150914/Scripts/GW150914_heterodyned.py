@@ -293,7 +293,7 @@ psd_duration = 1024
 
 marg_tag = 'PhaseMarg' if phase_marg else 'NoMarg'
 os.makedirs(output_dir, exist_ok=True)
-label = f'{output_dir}/GW15_{marg_tag}_Heterodyned_IMRPhenomD_{data_source}_psd-{psd_source}_ref-{ref_params_source}'
+label = f'{output_dir}/GW15_{marg_tag}_Heterodyned_{waveform_tag}_{data_source}_psd-{psd_source}_ref-{ref_params_source}'
 
 # Analysis segment: [gps - (duration - post_trigger), gps + post_trigger]
 start = gps - (duration - post_trigger_duration)
@@ -470,11 +470,12 @@ def load_reference_params(hdf5_path, dataset='C01:IMRPhenomXPHM/posterior_sample
     # GWTC-2.1 IMRPhenomXPHM posterior. RippleIMRPhenomXPHM expects the full
     # Cartesian spin vector (s1_x, s1_y, s1_z, s2_x, s2_y, s2_z).
     if precessing:
-        for key in ('spin_1x', 'spin_1y', 'spin_2x', 'spin_2y'):
-            if key in data.dtype.names:
-                ref[key.replace('spin_', 's')] = float(np.median(data[key]))
+        _spin_map = {'spin_1x': 's1_x', 'spin_1y': 's1_y', 'spin_2x': 's2_x', 'spin_2y': 's2_y'}
+        for hdf_key, param_key in _spin_map.items():
+            if hdf_key in data.dtype.names:
+                ref[param_key] = float(np.median(data[hdf_key]))
             else:
-                ref[key.replace('spin_', 's')] = 0.0  # fall back to aligned spin
+                ref[param_key] = 0.0  # fall back to aligned spin
     if np.isclose(ref['eta'], 0.25):
         ref['eta'] = 0.249995
     return ref

@@ -12,6 +12,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _helpers import (
     REPO_ROOT, RESULTS_ROOT, load_catalog, load_run,
     weighted_median, weighted_tail_prob, read_log_evidence_from_log,
+    read_nested_samples_csv,
 )
 
 
@@ -29,9 +30,7 @@ def main() -> int:
         "PhaseMarg_Heterodyned_TaylorF2_local_psd-gwtc1_ref-gwtc1_baseline.csv",
     )
     rows = []
-    gwtc1 = pd.read_csv(gwtc1_csv)
-    w1 = gwtc1.get("weight", pd.Series([1.0] * len(gwtc1))).to_numpy()
-    w1 = w1 / w1.sum()
+    gwtc1, w1 = read_nested_samples_csv(gwtc1_csv)
     rows.append({
         "psd_source": "gwtc1",
         "H0_median": weighted_median(gwtc1["H_0"].to_numpy(), w1),

@@ -1,0 +1,4 @@
+=== session_05_unhet_imr_nrt_500_plus start: 2026-04-26T15:59:35Z  git c0d5c3ccedded8c0904640ad5d6f7d5f360b8970 ===
+--- [s05__gw170817__imrphenomd_nrtidalv2__unheterodyned__nlive00500__seed0000] unhet IMR_NRT n_live=500 --- 15:59:35
+  -> canonicalised CSV: /home/user/GPU-Accelerated-Bayesian-Inference-of-Gravitational-Waves/Results/test_suite/s05__gw170817__imrphenomd_nrtidalv2__unheterodyned__nlive00500__seed0000/PhaseMarg_Unheterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1.csv -> /home/user/GPU-Accelerated-Bayesian-Inference-of-Gravitational-Waves/Results/test_suite/s05__gw170817__imrphenomd_nrtidalv2__unheterodyned__nlive00500__seed0000/samples.csv
+--- [s05__gw170817__imrphenomd_nrtidalv2__baseline__refOptimize__seed0000] heterodyned IMR baseline ref-params=optimize --- 18:01:32

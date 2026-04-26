@@ -20,8 +20,8 @@ write_config_json "${RUN_ID}" "${UNHET_SCRIPT}" "IMRPhenomD_NRTidalv2" "unhetero
 bank_check "${BUDGET_SECONDS}" || exit 1
 ${PYTHON} "${UNHET_SCRIPT}" \
     --waveform IMRPhenomD_NRTidalv2 \
-    --data-source local --psd-source gwtc1 --ref-params gwtc1 \
-    --phase-marginalization --n-live 500 \
+    --data-source local --psd-source gwtc1 \
+    --phase-marginalization --nlive 500 \
     --output-dir "${RUN_DIR}" >> "${RUN_DIR}/sampler.log" 2>&1
 RC=$?
 canonicalise_csv "${RUN_ID}" "${RUN_DIR}/PhaseMarg_Unheterodyned_*IMRPhenomD_NRTidalv2*.csv" || RC=1

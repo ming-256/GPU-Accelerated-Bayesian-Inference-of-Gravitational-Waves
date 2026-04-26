@@ -146,7 +146,7 @@ def weighted_wasserstein1(x1: np.ndarray, w1: np.ndarray, x2: np.ndarray, w2: np
     grid = np.linspace(lo, hi, grid_n)
     cdf1 = np.interp(grid, np.sort(x1), np.cumsum(w1[np.argsort(x1)]) / w1.sum())
     cdf2 = np.interp(grid, np.sort(x2), np.cumsum(w2[np.argsort(x2)]) / w2.sum())
-    return float(np.trapz(np.abs(cdf1 - cdf2), grid))
+    return float(np.trapezoid(np.abs(cdf1 - cdf2), grid))
 
 
 # ----- Evidence extraction -----

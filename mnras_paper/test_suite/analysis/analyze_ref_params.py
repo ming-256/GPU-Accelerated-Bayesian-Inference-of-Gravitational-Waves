@@ -14,6 +14,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _helpers import (
     REPO_ROOT, RESULTS_ROOT, load_catalog, load_run,
     weighted_median, weighted_tail_prob, weighted_wasserstein1,
+    read_nested_samples_csv,
 )
 
 
@@ -30,9 +31,7 @@ def main() -> int:
         REPO_ROOT, "Results", "gwtc1_phasemarg",
         "PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_baseline.csv",
     )
-    baseline = pd.read_csv(baseline_csv)
-    w_b = baseline.get("weight", pd.Series([1.0] * len(baseline))).to_numpy()
-    w_b = w_b / w_b.sum()
+    baseline, w_b = read_nested_samples_csv(baseline_csv)
 
     x_o = opt_run.param("H_0"); w_o = opt_run.weights
     x_b = baseline["H_0"].to_numpy()

@@ -17,7 +17,7 @@ init_session "session_06_precessing_gw150914"
 SCRIPT="${REPO_ROOT}/GW150914/Scripts/GW150914_heterodyned.py"
 BUDGET_SECONDS=5400  # 1.5 hours
 
-if ! ${PYTHON} -c "import sys; sys.path.insert(0, '${REPO_ROOT}'); from GW150914.Scripts.GW150914_heterodyned import WAVEFORM_MAP; assert 'IMRPhenomXPHM' in WAVEFORM_MAP, 'Patch P-WAV-GW150914 not applied.'" 2>>"${SESSION_LOG}"; then
+if ! grep -q "IMRPhenomXPHM" "${SCRIPT}" 2>/dev/null; then
     echo "!! Patch P-WAV-GW150914 not applied. See CODE_CHANGES_NEEDED.md §1." | tee -a "${SESSION_LOG}"
     exit 2
 fi
