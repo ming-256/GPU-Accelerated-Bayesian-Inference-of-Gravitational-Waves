@@ -1,0 +1,9 @@
+# Nested-sampling runs with n_live >= 10000 produce raw CSVs > 100 MB which
+# exceed GitHub's hard file-size limit.  Keep the metadata and logs; exclude
+# the large sample tables.
+s11__*/PhaseMarg_*.csv
+s11__*/samples.csv
+s13__*nlive10000*/PhaseMarg_*.csv
+s13__*nlive10000*/samples.csv
+s13__*nlive20000*/PhaseMarg_*.csv
+s13__*nlive20000*/samples.csv
