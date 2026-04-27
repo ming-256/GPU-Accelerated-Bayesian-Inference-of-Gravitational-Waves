@@ -101,6 +101,11 @@ parser.add_argument('--gw-only', action='store_true',
                          'remove the standard-siren velocity likelihood terms, and use a '
                          'volumetric d_L prior p(d_L) ∝ d_L^2 over [10, 300] Mpc. '
                          'Reduces dimensionality by 2 and removes host-galaxy information.')
+parser.add_argument('--narrow-sky', action='store_true',
+                    help='Restrict the (RA, dec) prior to a ±0.05 rad box around NGC 4993 '
+                         '(matches the LVK Abbott+2017 EM-counterpart-localised analysis). '
+                         'Default: full-sky (uniform RA on [0, 2π], cos(dec) on the sphere). '
+                         'Used for runtime comparison of full-sky vs sky-restricted nested sampling.')
 args = parser.parse_args()
 waveform_tag = args.waveform
 data_source = args.data_source
@@ -222,6 +227,25 @@ if not phase_marg:
     _PRIOR_TYPE_BASE.append(0)  # uniform
 
 NUM_DIMS = len(PARAM_NAMES)
+
+# Sky-prior selection — applied after I_RA / I_DEC are bound by the
+# precessing/aligned-spin branch above. Default is full-sky; --narrow-sky
+# matches the LVK Abbott+2017 EM-counterpart-localised analysis (±0.05 rad
+# of NGC 4993). We leave PRIOR_TYPE[I_DEC] = 2 (cos prior) unchanged — over
+# ±0.05 rad of declination it is effectively uniform and the Jacobian
+# cancels cleanly.
+_NGC4993_RA  = 3.4462    # rad — RA  = 197.4508 deg
+_NGC4993_DEC = -0.4081   # rad — Dec = -23.3815 deg
+if args.narrow_sky:
+    _PRIOR_LO_BASE[I_RA]  = _NGC4993_RA  - 0.05
+    _PRIOR_HI_BASE[I_RA]  = _NGC4993_RA  + 0.05
+    _PRIOR_LO_BASE[I_DEC] = _NGC4993_DEC - 0.05
+    _PRIOR_HI_BASE[I_DEC] = _NGC4993_DEC + 0.05
+    print(f"Sky prior: NARROW (±0.05 rad of NGC 4993) — "
+          f"RA=[{_PRIOR_LO_BASE[I_RA]:.4f}, {_PRIOR_HI_BASE[I_RA]:.4f}], "
+          f"Dec=[{_PRIOR_LO_BASE[I_DEC]:.4f}, {_PRIOR_HI_BASE[I_DEC]:.4f}]")
+else:
+    print("Sky prior: FULL-SKY (uniform RA on [0, 2π], cos-prior dec on full sphere)")
 
 PRIOR_LO = jnp.array(_PRIOR_LO_BASE)
 PRIOR_HI = jnp.array(_PRIOR_HI_BASE)

@@ -94,6 +94,10 @@ parser.add_argument('--ref-dl', type=float, default=None,
                     help='Override reference-waveform d_L (Mpc). Use for reference-swap test (e.g. anchor heterodyne in Mode B).')
 parser.add_argument('--ref-iota', type=float, default=None,
                     help='Override reference-waveform inclination (rad). Use for reference-swap test.')
+parser.add_argument('--narrow-sky', action='store_true',
+                    help='Restrict the (RA, dec) prior to a ±0.05 rad box around NGC 4993 '
+                         '(matches the LVK Abbott+2017 EM-counterpart-localised analysis). '
+                         'Default: full-sky. Used for runtime comparison studies.')
 args = parser.parse_args()
 waveform_tag = args.waveform
 data_source = args.data_source
@@ -203,6 +207,21 @@ if not phase_marg:
     _PRIOR_TYPE_BASE.append(0)  # uniform
 
 NUM_DIMS = len(PARAM_NAMES)
+
+# Sky-prior selection — see GW170817_heterodyned_1.py for the full rationale.
+# Default full-sky; --narrow-sky restricts to ±0.05 rad of NGC 4993.
+_NGC4993_RA  = 3.4462
+_NGC4993_DEC = -0.4081
+if args.narrow_sky:
+    _PRIOR_LO_BASE[I_RA]  = _NGC4993_RA  - 0.05
+    _PRIOR_HI_BASE[I_RA]  = _NGC4993_RA  + 0.05
+    _PRIOR_LO_BASE[I_DEC] = _NGC4993_DEC - 0.05
+    _PRIOR_HI_BASE[I_DEC] = _NGC4993_DEC + 0.05
+    print(f"Sky prior: NARROW (±0.05 rad of NGC 4993) — "
+          f"RA=[{_PRIOR_LO_BASE[I_RA]:.4f}, {_PRIOR_HI_BASE[I_RA]:.4f}], "
+          f"Dec=[{_PRIOR_LO_BASE[I_DEC]:.4f}, {_PRIOR_HI_BASE[I_DEC]:.4f}]")
+else:
+    print("Sky prior: FULL-SKY (uniform RA on [0, 2π], cos-prior dec on full sphere)")
 
 PRIOR_LO = jnp.array(_PRIOR_LO_BASE)
 PRIOR_HI = jnp.array(_PRIOR_HI_BASE)

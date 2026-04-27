@@ -169,6 +169,35 @@ if os.path.exists(d):
         'total_s': _runtime(d),
     })
 
+# 6) s15 narrow-sky heterodyned baseline runs (matched to s07 LVK-bounds full-sky).
+s15_runs = [
+    ('s15__gw170817__imrphenomd_nrtidalv2__baseline_lvkbounds_narrow__seed0000',  'IMRPhenomD_NRTidalv2'),
+    ('s15__gw170817__imrphenomxas_nrtidalv3__baseline_lvkbounds_narrow__seed0000', 'IMRPhenomXAS_NRTidalv3'),
+]
+for rid, wf in s15_runs:
+    d = os.path.join(TS_ROOT, rid)
+    if not os.path.exists(d):
+        print(f"  skip missing {rid} (s15 narrow-sky pending GPU run)")
+        continue
+    lz, sig = read_log_evidence_from_log(d)
+    try:
+        run = load_run(rid)
+        dead = int(len(run.samples))
+    except Exception:
+        dead = -1
+    rows.append({
+        'source': 's15',
+        'waveform': wf,
+        'kind': 'heterodyned',
+        'priors': 'lvk-bounds, narrow-sky',
+        'n_live': 5000,
+        'dead_points': dead,
+        'log_evidence': lz,
+        'sigma_log_z': sig,
+        'sampling_s': float('nan'),
+        'total_s': _runtime(d),
+    })
+
 out = pd.DataFrame(rows)
 out = out.sort_values(['kind', 'waveform', 'priors', 'n_live']).reset_index(drop=True)
 out.to_csv(OUT, index=False)
