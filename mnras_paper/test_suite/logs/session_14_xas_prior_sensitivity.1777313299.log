@@ -1,0 +1,8 @@
+=== session_14_xas_prior_sensitivity start: 2026-04-27T18:08:19Z  git b33300ffa91ed37a883e679242771878de10d322 ===
+--- [s14__gw170817__imrphenomxas_nrtidalv3__baseline__seed0000] 18:08:19
+  -> canonicalised CSV: /home/user/GPU-Accelerated-Bayesian-Inference-of-Gravitational-Waves/Results/test_suite/s14__gw170817__imrphenomxas_nrtidalv3__baseline__seed0000/PhaseMarg_Heterodyned_IMRPhenomXAS_NRTidalv3_local_psd-gwtc1_ref-gwtc1_baseline.csv -> /home/user/GPU-Accelerated-Bayesian-Inference-of-Gravitational-Waves/Results/test_suite/s14__gw170817__imrphenomxas_nrtidalv3__baseline__seed0000/samples.csv
+--- [s14__gw170817__imrphenomxas_nrtidalv3__flatz__seed0000] 18:21:48
+  -> canonicalised CSV: /home/user/GPU-Accelerated-Bayesian-Inference-of-Gravitational-Waves/Results/test_suite/s14__gw170817__imrphenomxas_nrtidalv3__flatz__seed0000/PhaseMarg_Heterodyned_IMRPhenomXAS_NRTidalv3_local_psd-gwtc1_ref-gwtc1_flatZ.csv -> /home/user/GPU-Accelerated-Bayesian-Inference-of-Gravitational-Waves/Results/test_suite/s14__gw170817__imrphenomxas_nrtidalv3__flatz__seed0000/samples.csv
+--- [s14__gw170817__imrphenomxas_nrtidalv3__vp250__seed0000] 18:41:00
+  -> canonicalised CSV: /home/user/GPU-Accelerated-Bayesian-Inference-of-Gravitational-Waves/Results/test_suite/s14__gw170817__imrphenomxas_nrtidalv3__vp250__seed0000/PhaseMarg_Heterodyned_IMRPhenomXAS_NRTidalv3_local_psd-gwtc1_ref-gwtc1_vp250.csv -> /home/user/GPU-Accelerated-Bayesian-Inference-of-Gravitational-Waves/Results/test_suite/s14__gw170817__imrphenomxas_nrtidalv3__vp250__seed0000/samples.csv
+=== session_14_xas_prior_sensitivity end: 2026-04-27T19:00:34Z  elapsed: 3135s ===
