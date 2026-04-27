@@ -135,7 +135,7 @@ def load_gwtc2p1_gw150914():
 # HPD interval computation
 # --------------------------------------------------------------------------- #
 def compute_hpd(x_eval, pdf_vals, cred_level):
-    """Compute HPD (highest posterior density) interval boundaries."""
+    """Compute HPD (highest posterior density) interval boundaries from a pdf grid."""
     dx = x_eval[1] - x_eval[0]
     total_area = np.sum(pdf_vals) * dx
     sorted_pdf = np.sort(pdf_vals)[::-1]
@@ -144,6 +144,79 @@ def compute_hpd(x_eval, pdf_vals, cred_level):
     above = pdf_vals >= threshold
     indices = np.where(above)[0]
     return x_eval[indices[0]], x_eval[indices[-1]]
+
+
+def compute_hpd_samples(x, w, cred_level):
+    """HPD interval computed directly from weighted samples — no KDE smoothing.
+
+    Returns the shortest interval [lo, hi] that contains `cred_level` of the
+    cumulative weight. Robust to multimodality: returns the convex hull of
+    the highest-density region implied by the empirical CDF, which is the
+    correct frequentist construction for a single-mode or unimodal-dominated
+    posterior. For genuinely multimodal posteriors prefer a histogram-based
+    level-set, but for H_0 in this paper the empirical-CDF version is what
+    the user asked for.
+    """
+    x = np.asarray(x); w = np.asarray(w, dtype=float)
+    w = w / w.sum()
+    order = np.argsort(x)
+    xs = x[order]; ws = w[order]
+    cdf = np.cumsum(ws)
+    target = cred_level
+    n = len(xs)
+    # Slide a window of cumulative weight `target` across the sorted samples
+    # and return the narrowest one. O(n) after sort.
+    j = 0
+    best = (np.inf, xs[0], xs[-1])
+    for i in range(n):
+        while j < n and cdf[j] - (cdf[i-1] if i > 0 else 0.0) < target:
+            j += 1
+        if j >= n:
+            break
+        width = xs[j] - xs[i]
+        if width < best[0]:
+            best = (width, xs[i], xs[j])
+    return best[1], best[2]
+
+
+def map_from_hist(x, w, bins):
+    """MAP estimate from a weighted histogram (bin centre with max density)."""
+    counts, edges = np.histogram(x, bins=bins, weights=w)
+    centres = 0.5 * (edges[:-1] + edges[1:])
+    return float(centres[int(np.argmax(counts))])
+
+
+# --------------------------------------------------------------------------- #
+# LVK H_0 derivation from luminosity-distance samples
+# --------------------------------------------------------------------------- #
+# Standard-siren constants matching GW170817_heterodyned_*.py:
+#   v_obs ~ N(v_p + H_0 * d_L, sigma_v),  v_obs = 3327 km/s,  sigma_v = 72 km/s
+#   v_p   ~ N(310, 150) km/s
+# Marginalising v_p analytically: v_obs | H_0, d_L ~ N(310 + H_0 * d_L, sqrt(72^2 + 150^2))
+V_OBS_NGC4993       = 3327.0   # km/s — observed recession velocity (NGC 4993, helio-frame)
+V_P_PRIOR_MEAN      =  310.0   # km/s — peculiar velocity prior mean
+V_P_PRIOR_SIGMA     =  150.0   # km/s — peculiar velocity prior sigma
+SIGMA_V_OBS         =   72.0   # km/s — measurement sigma on v_r
+SIGMA_V_MARG        = float(np.sqrt(SIGMA_V_OBS**2 + V_P_PRIOR_SIGMA**2))
+
+
+def derive_lvk_h0_samples(d_L_mpc, rng=None):
+    """Map LVK d_L posterior samples to H_0 samples using our standard-siren model.
+
+    For each input d_L (Mpc) draw one H_0 sample from
+        H_0 | d_L  ~  N((V_OBS - V_P_MEAN) / d_L,  SIGMA_V_MARG / d_L)
+    which is what the user's likelihood reduces to once v_p is marginalised
+    out under the prior in GW170817_heterodyned_1.py. This is the right way
+    to plot 'LVK posterior samples' against this work in H_0 space — it uses
+    LVK's d_L distribution but our recession-velocity model, so any H_0
+    difference between LVK and this work is purely the d_L difference.
+    """
+    if rng is None:
+        rng = np.random.default_rng(0)
+    d_L_mpc = np.asarray(d_L_mpc, dtype=float)
+    mu = (V_OBS_NGC4993 - V_P_PRIOR_MEAN) / d_L_mpc
+    sd = SIGMA_V_MARG / d_L_mpc
+    return mu + sd * rng.standard_normal(d_L_mpc.shape)
 
 
 # --------------------------------------------------------------------------- #
@@ -223,6 +296,88 @@ def plot_h0(runs, out_name, xlim=(20, 250), n_eval=2000):
     ax.legend(frameon=False, fontsize=12)
     fig.tight_layout()
 
+    path = os.path.join(OUT_DIR, out_name)
+    plt.savefig(f'{path}.pdf', bbox_inches='tight')
+    plt.savefig(f'{path}.png', dpi=150, bbox_inches='tight')
+    print(f"  -> Saved {path}.pdf / .png")
+    plt.close(fig)
+
+
+# --------------------------------------------------------------------------- #
+# H_0 plot — weighted-histogram version (no KDE smoothing on 1-D marginals)
+# --------------------------------------------------------------------------- #
+def plot_h0_hist(runs, out_name, xlim=(40, 180), bins=80,
+                 add_planck_shoes=True, lvk_band=False, hpd_lines=True,
+                 figsize=(10, 6)):
+    """H_0 posterior plot using weighted step-histograms with sample-derived HPDs.
+
+    Parameters
+    ----------
+    runs : list of (samples_or_dict, label, color)
+        Each entry is (anesthetic samples / dict with 'H_0','weights' / tuple of (h0,w), label, color).
+    out_name : str
+        Output filename stem (saved to OUT_DIR; .pdf and .png written).
+    xlim : (lo, hi)
+    bins : int or array
+        Number of histogram bins or bin edges. If int, uniform bins on xlim.
+    add_planck_shoes : bool
+    lvk_band : bool
+        If True, also draw the Abbott+2017 70 [62,82] band (legacy compatibility;
+        prefer adding LVK as a real run in `runs` instead).
+    hpd_lines : bool
+        Draw vertical dashed/dotted lines at 68% and 95% sample-HPD endpoints per run.
+    """
+    fig, ax = plt.subplots(figsize=figsize)
+    if isinstance(bins, int):
+        bins = np.linspace(xlim[0], xlim[1], bins + 1)
+    centres = 0.5 * (bins[:-1] + bins[1:])
+
+    for entry in runs:
+        samples, label, color = entry
+        if isinstance(samples, dict):
+            h0 = np.asarray(samples['H_0'], dtype=float)
+            w = np.asarray(samples['weights'], dtype=float)
+        elif isinstance(samples, tuple):
+            h0, w = (np.asarray(a, dtype=float) for a in samples)
+        else:
+            h0 = samples['H_0'].to_numpy().astype(float)
+            w = np.asarray(samples.get_weights(), dtype=float)
+        w = w / w.sum()
+
+        counts, _ = np.histogram(h0, bins=bins, weights=w, density=True)
+        # Step plot — pre-/post-end zeros so the line closes at the baseline.
+        x_step = np.r_[bins[0], np.repeat(bins[1:-1], 2), bins[-1]]
+        y_step = np.r_[np.repeat(counts, 2)]
+        ax.plot(x_step, y_step, color=color, lw=2.0, label=label, drawstyle='default')
+
+        map_ = float(centres[int(np.argmax(counts))])
+        lo68, hi68 = compute_hpd_samples(h0, w, 0.68269)
+        lo95, hi95 = compute_hpd_samples(h0, w, 0.95450)
+        print(f"  {label}: MAP={map_:.1f}; 68% HPD=[{lo68:.1f},{hi68:.1f}]; 95% HPD=[{lo95:.1f},{hi95:.1f}]")
+        if hpd_lines:
+            for v, ls in [(lo68, '--'), (hi68, '--'), (lo95, ':'), (hi95, ':')]:
+                ax.axvline(v, color=color, ls=ls, lw=1.0, alpha=0.6)
+
+    if lvk_band:
+        ax.axvspan(62, 82, color='0.55', alpha=0.18, zorder=0,
+                   label=r'LVK GW170817 (Abbott+2017, 68\% HPD)')
+        ax.axvline(70.0, color='0.4', ls='-.', lw=1.0, zorder=0)
+
+    if add_planck_shoes:
+        ax.axvspan(65.7, 68.2, color=COLORS['planck_outer'], alpha=0.3, zorder=0)
+        ax.axvspan(66.93 - 0.62, 66.93 + 0.62, color=COLORS['planck_inner'],
+                   alpha=0.3, zorder=0, label='Planck')
+        ax.axvspan(69.76, 76.72, color=COLORS['shoes_outer'], alpha=0.3, zorder=0)
+        ax.axvspan(73.24 - 1.74, 73.24 + 1.74, color=COLORS['shoes_inner'],
+                   alpha=0.3, zorder=0, label='SH0ES')
+
+    ax.set_xlim(xlim); ax.set_ylim(bottom=0)
+    ax.set_xlabel(r'$H_0$ (km s$^{-1}$ Mpc$^{-1}$)')
+    ax.set_ylabel(r'$P(H_0)$ (km$^{-1}$ s Mpc)')
+    for spine in ax.spines.values():
+        spine.set_edgecolor('black'); spine.set_linewidth(1.5)
+    ax.legend(frameon=False, fontsize=11)
+    fig.tight_layout()
     path = os.path.join(OUT_DIR, out_name)
     plt.savefig(f'{path}.pdf', bbox_inches='tight')
     plt.savefig(f'{path}.png', dpi=150, bbox_inches='tight')

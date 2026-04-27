@@ -1,0 +1,94 @@
+"""
+GW170817 d_L–iota bimodality figure (existing Plots/ style).
+
+Two panels:
+  (a) The unrestricted flat-in-redshift run shown in (d_L, iota) plane,
+      with the prior-restricted Mode-A and Mode-B contours overlaid.
+  (b) 1D H_0 marginal under each variant (showing why direct flat-z
+      sampling places ~28 per cent of the posterior mass at H_0 > 120,
+      which the volumetric prior suppresses).
+
+Output: Results/gwtc1_phasemarg/plots/bimodality.{pdf,png}
+"""
+import sys, os
+sys.path.insert(0, os.path.dirname(__file__))
+from _plot_utils import *
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import gaussian_kde
+
+CSV_A    = 'Results/test_suite/s10__gw170817__imrphenomd_nrtidalv2__flatz__dL30-75__refGWTC1__seed0000/samples.csv'
+CSV_B    = 'Results/test_suite/s10__gw170817__imrphenomd_nrtidalv2__flatz__dL10-30__refGWTC1__seed0000/samples.csv'
+CSV_FULL = 'Results/test_suite/s10__gw170817__imrphenomd_nrtidalv2__flatz__dL10-75__refModeB__seed0000/samples.csv'
+
+def load_dl_iota_h0(csv):
+    s = load_nested_csv(csv)
+    return (s['d_L'].to_numpy(), s['iota'].to_numpy(),
+            s['H_0'].to_numpy() if 'H_0' in s.columns else None,
+            np.asarray(s.get_weights()))
+
+dlA, iA, h0A, wA = load_dl_iota_h0(CSV_A)
+dlB, iB, h0B, wB = load_dl_iota_h0(CSV_B)
+dlF, iF, h0F, wF = load_dl_iota_h0(CSV_FULL)
+
+fig, axes = plt.subplots(1, 2, figsize=(14, 5.5))
+
+# ----- Panel (a): d_L vs iota -----
+ax = axes[0]
+# Combined run as a heatmap
+xi = np.linspace(8, 80, 200)
+yi = np.linspace(0, np.pi, 200)
+XX, YY = np.meshgrid(xi, yi)
+kde_full = gaussian_kde(np.vstack([dlF, iF]), weights=wF/wF.sum())
+ZZ = kde_full(np.vstack([XX.ravel(), YY.ravel()])).reshape(XX.shape)
+ax.contourf(XX, YY, ZZ, levels=10, cmap='Blues', alpha=0.6)
+# Mode A contour (orange)
+ZA = gaussian_kde(np.vstack([dlA, iA]), weights=wA/wA.sum())(
+    np.vstack([XX.ravel(), YY.ravel()])).reshape(XX.shape)
+ax.contour(XX, YY, ZA, levels=4, colors='maroon', linewidths=1.2)
+# Mode B contour (teal)
+ZB = gaussian_kde(np.vstack([dlB, iB]), weights=wB/wB.sum())(
+    np.vstack([XX.ravel(), YY.ravel()])).reshape(XX.shape)
+ax.contour(XX, YY, ZB, levels=4, colors='teal', linewidths=1.2)
+ax.set_xlim(8, 80); ax.set_ylim(0, np.pi)
+ax.set_xlabel(r'$d_L$ (Mpc)', fontsize=13)
+ax.set_ylabel(r'$\iota$ (rad)', fontsize=13)
+ax.set_title(r'(a) Joint $(d_L,\iota)$ posterior, flat-in-$z$')
+# Annotate modes
+ax.text(20, 1.95, 'Mode B', color='teal', fontsize=11,
+        weight='bold', ha='center')
+ax.text(38, 2.65, 'Mode A', color='maroon', fontsize=11,
+        weight='bold', ha='center')
+
+# ----- Panel (b): H_0 1D marginals -----
+ax = axes[1]
+xg = np.linspace(40, 230, 4000)
+for x, w, label, col, ls in [
+    (h0A, wA, r'Mode A ($d_L\in[30,75]\,\rm Mpc$)', 'maroon', '--'),
+    (h0B, wB, r'Mode B ($d_L\in[10,30]\,\rm Mpc$)', 'teal',   ':'),
+    (h0F, wF, r'Combined ($d_L\in[10,75]\,\rm Mpc$)', COLORS['flatZ'], '-'),
+]:
+    if x is None: continue
+    w = w / w.sum()
+    pdf = gaussian_kde(x, weights=w)(xg); pdf /= np.trapz(pdf, xg)
+    ax.plot(xg, pdf, color=col, lw=2.0, ls=ls, label=label)
+# LVK reference
+ax.axvspan(62, 82, color='0.55', alpha=0.18, zorder=0,
+           label=r'LVK GW170817 (Abbott+2017, 68\% HPD)')
+ax.axvline(70.0, color='0.4', ls='-.', lw=1.0, zorder=0)
+ax.set_xlim(40, 230); ax.set_ylim(bottom=0)
+ax.set_xlabel(r'$H_0$ (km s$^{-1}$ Mpc$^{-1}$)', fontsize=13)
+ax.set_ylabel(r'$P(H_0)$ (km$^{-1}$ s Mpc)', fontsize=13)
+ax.set_title(r'(b) $H_0$ marginal by mode')
+ax.legend(frameon=False, fontsize=10, loc='upper right')
+
+for a in axes:
+    for sp in a.spines.values():
+        sp.set_edgecolor('black'); sp.set_linewidth(1.5)
+
+fig.tight_layout()
+p = os.path.join(OUT_DIR, 'bimodality')
+plt.savefig(f'{p}.pdf', bbox_inches='tight')
+plt.savefig(f'{p}.png', dpi=150, bbox_inches='tight')
+print(f"  -> Saved {p}.pdf / .png")
+plt.close(fig)

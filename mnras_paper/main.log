@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.9.17)  24 APR 2026 10:00
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.9.17)  27 APR 2026 07:33
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -493,13 +493,13 @@ Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
 Package: xspace 2014/10/28 v1.13 Space after command names (DPC,MH)
 )
 LaTeX Font Info:    Trying to load font information for T1+ntxtlf on input line
- 59.
+ 65.
 
 (/usr/local/texlive/2023/texmf-dist/tex/latex/newtx/t1ntxtlf.fd
 File: t1ntxtlf.fd 2021/05/24 v1.1 font definition file for T1/ntx/tlf
 )
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 9.0pt on input line 59.
+(Font)              scaled to size 9.0pt on input line 65.
 
 (/usr/local/texlive/2023/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2023-01-16 L3 backend support: PDF output (pdfTeX)
@@ -509,51 +509,51 @@ File: l3backend-pdftex.def 2023-01-16 L3 backend support: PDF output (pdfTeX)
 (./main.aux)
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/ntxmi/m/it on input line 59.
+LaTeX Font Info:    Checking defaults for OML/ntxmi/m/it on input line 65.
 LaTeX Font Info:    Trying to load font information for OML+ntxmi on input line
- 59.
+ 65.
  (/usr/local/texlive/2023/texmf-dist/tex/latex/newtx/omlntxmi.fd
 File: omlntxmi.fd 2015/08/25 Fontinst v1.933 font definitions for OML/ntxmi.
 )
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for U/ntxexa/m/n on input line 59.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for U/ntxexa/m/n on input line 65.
 LaTeX Font Info:    Trying to load font information for U+ntxexa on input line 
-59.
+65.
 
 (/usr/local/texlive/2023/texmf-dist/tex/latex/newtx/untxexa.fd
 File: untxexa.fd 2012/04/16 Fontinst v1.933 font definitions for U/ntxexa.
 )
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for LMS/ntxsy/m/n on input line 59.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for LMS/ntxsy/m/n on input line 65.
 LaTeX Font Info:    Trying to load font information for LMS+ntxsy on input line
- 59.
+ 65.
 
 (/usr/local/texlive/2023/texmf-dist/tex/latex/newtx/lmsntxsy.fd
 File: lmsntxsy.fd 2016/07/02 Fontinst v1.933 font definitions for LMS/ntxsy.
 )
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for LMX/ntxexx/m/n on input line 59.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for LMX/ntxexx/m/n on input line 65.
 LaTeX Font Info:    Trying to load font information for LMX+ntxexx on input lin
-e 59.
+e 65.
 
 (/usr/local/texlive/2023/texmf-dist/tex/latex/newtx/lmxntxexx.fd
 File: lmxntxexx.fd 2016/07/03 Fontinst v1.933 font definitions for LMX/ntxexx.
 )
-LaTeX Font Info:    ... okay on input line 59.
+LaTeX Font Info:    ... okay on input line 65.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -598,7 +598,7 @@ File: color.cfg 2016/01/02 v1.6 sample color configuration
 Package color Info: Driver file: pdftex.def on input line 149.
 
 (/usr/local/texlive/2023/texmf-dist/tex/latex/graphics/mathcolor.ltx))
-Package hyperref Info: Link coloring ON on input line 59.
+Package hyperref Info: Link coloring ON on input line 65.
 
 (./main.out) (./main.out)
 \@outlinefile=\write3
@@ -606,8 +606,8 @@ Package hyperref Info: Link coloring ON on input line 59.
 
 \c@mv@tabular=\count299
 \c@mv@boldtabular=\count300
-LaTeX Info: Command `\dddot' is already robust on input line 59.
-LaTeX Info: Command `\ddddot' is already robust on input line 59.
+LaTeX Info: Command `\dddot' is already robust on input line 65.
+LaTeX Info: Command `\ddddot' is already robust on input line 65.
 
 (/usr/local/texlive/2023/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
@@ -632,75 +632,75 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 16.0pt on input line 62.
+(Font)              scaled to size 16.0pt on input line 68.
 LaTeX Font Info:    Font shape `T1/ntxtlf/b/n' will be
-(Font)              scaled to size 16.0pt on input line 62.
+(Font)              scaled to size 16.0pt on input line 68.
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 12.0pt on input line 62.
+(Font)              scaled to size 12.0pt on input line 68.
 LaTeX Font Info:    Trying to load font information for OT1+minntx on input lin
-e 62.
+e 68.
 
 (/usr/local/texlive/2023/texmf-dist/tex/latex/newtx/ot1minntx.fd
 File: ot1minntx.fd 2022/01/20 v1.0 font definition file for OT1/minntx
 )
 LaTeX Font Info:    Trying to load font information for U+ntxmia on input line 
-62.
+68.
 
 (/usr/local/texlive/2023/texmf-dist/tex/latex/newtx/untxmia.fd
 File: untxmia.fd 2018/04/14 Fontinst v1.933 font definitions for U/ntxmia.
 )
 LaTeX Font Info:    Trying to load font information for U+ntxsym on input line 
-62.
+68.
 
 (/usr/local/texlive/2023/texmf-dist/tex/latex/newtx/untxsym.fd
 File: untxsym.fd 2015/03/20 Fontinst v1.933 font definitions for U/ntxsym.
 )
 LaTeX Font Info:    Trying to load font information for U+ntxsyc on input line 
-62.
+68.
 
 (/usr/local/texlive/2023/texmf-dist/tex/latex/newtx/untxsyc.fd
 File: untxsyc.fd 2012/04/12 Fontinst v1.933 font definitions for U/ntxsyc.
 )
 LaTeX Font Info:    Trying to load font information for T1+ntxsups on input lin
-e 62.
+e 68.
 
 (/usr/local/texlive/2023/texmf-dist/tex/latex/newtx/t1ntxsups.fd
 File: t1ntxsups.fd 2015/01/17 v1.0
 )
 LaTeX Font Info:    Font shape `T1/ntxsups/m/n' will be
-(Font)              scaled to size 12.0pt on input line 62.
+(Font)              scaled to size 12.0pt on input line 68.
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 8.0pt on input line 62.
+(Font)              scaled to size 8.0pt on input line 68.
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/it' will be
-(Font)              scaled to size 8.0pt on input line 62.
+(Font)              scaled to size 8.0pt on input line 68.
 
 
 LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <5.5> not available
-(Font)              size <5> substituted on input line 62.
+(Font)              size <5> substituted on input line 68.
 
 LaTeX Font Info:    Font shape `T1/ntxtlf/b/n' will be
-(Font)              scaled to size 9.0pt on input line 65.
+(Font)              scaled to size 9.0pt on input line 71.
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 10.0pt on input line 65.
+(Font)              scaled to size 10.0pt on input line 71.
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/sc' will be
-(Font)              scaled to size 10.0pt on input line 66.
+(Font)              scaled to size 10.0pt on input line 72.
 LaTeX Font Info:    Font shape `T1/ntxtlf/b/n' will be
-(Font)              scaled to size 10.0pt on input line 69.
+(Font)              scaled to size 10.0pt on input line 75.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
 LaTeX Font Info:    Font shape `T1/ntxtlf/b/n' will be
-(Font)              scaled to size 8.0pt on input line 84.
+(Font)              scaled to size 8.0pt on input line 88.
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 6.2pt on input line 84.
+(Font)              scaled to size 6.2pt on input line 88.
 LaTeX Font Info:    Trying to load font information for TS1+ntxtlf on input lin
-e 84.
+e 88.
 
 (/usr/local/texlive/2023/texmf-dist/tex/latex/newtx/ts1ntxtlf.fd
 File: ts1ntxtlf.fd 2015/01/18 v1.0 fd file for TS1/ntxtlf
 )
 LaTeX Font Info:    Font shape `TS1/ntxtlf/m/n' will be
-(Font)              scaled to size 8.0pt on input line 84.
+(Font)              scaled to size 8.0pt on input line 88.
  [1{/usr/local/texlive/2023/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/usr/
 local/texlive/2023/texmf-dist/fonts/enc/dvips/newtx/ntx-ec-tlf.enc}{/usr/local/
 texlive/2023/texmf-dist/fonts/enc/dvips/newtx/ntx-ot1-tlf.enc}{/usr/local/texli
@@ -709,71 +709,73 @@ ve/2023/texmf-dist/fonts/enc/dvips/newtx/ntx-ec-tlf-pc.enc}
 
 {/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/tex-gyre/q-ts1.enc}]
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/sc' will be
-(Font)              scaled to size 9.0pt on input line 85.
+(Font)              scaled to size 9.0pt on input line 91.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
 LaTeX Font Info:    Trying to load font information for T1+ntxtt on input line 
-106.
+112.
 
 (/usr/local/texlive/2023/texmf-dist/tex/latex/newtx/t1ntxtt.fd
 File: t1ntxtt.fd 2012/04/20 v3.1
 )
 LaTeX Font Info:    Font shape `T1/ntxtt/m/n' will be
-(Font)              scaled to size 9.0pt on input line 106.
+(Font)              scaled to size 9.0pt on input line 112.
 
-Underfull \hbox (badness 7759) in paragraph at lines 106--107
+Underfull \hbox (badness 7759) in paragraph at lines 112--113
 []\T1/ntxtlf/m/n/9 All het-ero-dyned GW170817 runs in this pa-per use
  []
 
 
-Underfull \hbox (badness 1005) in paragraph at lines 106--107
+Underfull \hbox (badness 1005) in paragraph at lines 112--113
 \OML/ntxmi/m/it/9 n[] \U/ntxmia/m/it/9 = \OT1/minntx/m/n/9 5000$\T1/ntxtlf/m/n/
 9 , $\OML/ntxmi/m/it/9 n[] \U/ntxmia/m/it/9 = \OT1/minntx/m/n/9 2500$ \T1/ntxtl
 f/m/n/9 points re-moved per it-er-a-tion
  []
 
 
-Underfull \hbox (badness 2970) in paragraph at lines 106--107
+Underfull \hbox (badness 2970) in paragraph at lines 112--113
 \T1/ntxtlf/m/n/9 ($[] \OML/ntxmi/m/it/9 n[]$\T1/ntxtlf/m/n/9 ), and $\OT1/minnt
 x/m/n/9 5 \OML/ntxmi/m/it/9 n[]$ \T1/ntxtlf/m/n/9 MCMC steps per slice; runs te
 r-mi-
  []
 
 
-Underfull \hbox (badness 1117) in paragraph at lines 106--107
+Underfull \hbox (badness 1117) in paragraph at lines 112--113
 \T1/ntxtlf/m/n/9 nate when the frac-tional ev-i-dence in-cre-ment is be-low $\O
 T1/minntx/m/n/9 10[]$
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 106--107
+Underfull \hbox (badness 10000) in paragraph at lines 112--113
 \T1/ntxtlf/m/n/9 [Source: \T1/ntxtt/m/n/9 paper_knowledge_base/a100_run_data.md
 \T1/ntxtlf/m/n/9 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 106--107
+Underfull \hbox (badness 10000) in paragraph at lines 112--113
 \T1/ntxtt/m/n/9 paper_knowledge_base/codebase_reference.md\T1/ntxtlf/m/n/9 ]. S
 cal-
  []
 
 
-Underfull \hbox (badness 1496) in paragraph at lines 110--111
+Underfull \hbox (badness 1496) in paragraph at lines 116--117
 \T1/ntxtlf/m/n/9 domain like-li-hood uses $\OT1/minntx/m/n/9 259 201$ \T1/ntxtl
 f/m/n/9 bins over $\OT1/minntx/m/n/9 20$\T1/ntxtlf/m/n/9 --$\OT1/minntx/m/n/9 2
 048 Hz$ \T1/ntxtlf/m/n/9 with
  []
 
 
-Underfull \hbox (badness 4120) in paragraph at lines 110--111
+Underfull \hbox (badness 4120) in paragraph at lines 116--117
 \U/ntxmia/m/it/9 ^^A\OML/ntxmi/m/it/9 f \U/ntxmia/m/it/9 = \OT1/minntx/m/n/9 1\
 LMS/ntxsy/m/n/9 ù\OT1/minntx/m/n/9 128 Hz$ \T1/ntxtlf/m/n/9 for the $\OT1/minnt
 x/m/n/9 128 s$ \T1/ntxtlf/m/n/9 strain seg-ment [Source:
  []
 
-
-Overfull \hbox (27.08566pt too wide) detected at line 120
+LaTeX Font Info:    Font shape `T1/ntxtlf/m/it' will be
+(Font)              scaled to size 12.0pt on input line 119.
+[2]
+Overfull \hbox (27.08566pt too wide) detected at line 126
 $[] \LMS/ntxsy/m/n/9 L[]π\OML/ntxmi/m/it/9 ^^R; H[]; v[]\LMS/ntxsy/m/n/9 ∫ \U/n
 txmia/m/it/9 = [] \LMS/ntxsy/m/n/9 L[]π\OML/ntxmi/m/it/9 d \LMS/ntxsy/m/n/9 j \
 OML/ntxmi/m/it/9 ^^R\LMS/ntxsy/m/n/9 ∫ œ [] \OML/ntxmi/m/it/9 p\LMS/ntxsy/m/n/9
@@ -783,10 +785,8 @@ txsy/m/n/9 πh\OML/ntxmi/m/it/9 v[]\LMS/ntxsy/m/n/9 i j \OML/ntxmi/m/it/9 v[]\LM
 S/ntxsy/m/n/9 ∫\OML/ntxmi/m/it/9 ;$  
  []
 
-LaTeX Font Info:    Font shape `T1/ntxtlf/m/it' will be
-(Font)              scaled to size 12.0pt on input line 120.
-[2]
-Underfull \hbox (badness 1776) in paragraph at lines 125--126
+
+Underfull \hbox (badness 1776) in paragraph at lines 131--132
 \T1/ntxtlf/m/n/9 siren anal-y-sis: $\OML/ntxmi/m/it/9 ^^Y\LMS/ntxsy/m/n/9 π\OML
 /ntxmi/m/it/9 d[]\LMS/ntxsy/m/n/9 ∫ / \OML/ntxmi/m/it/9 d[]$ \T1/ntxtlf/m/n/9 o
 ver $\LMS/ntxsy/m/n/9 ª\OT1/minntx/m/n/9 10\OML/ntxmi/m/it/9 ; \OT1/minntx/m/n/
@@ -795,7 +795,7 @@ t/9 ^^Y\LMS/ntxsy/m/n/9 π\OML/ntxmi/m/it/9 H[]\LMS/ntxsy/m/n/9 ∫ /
  []
 
 
-Underfull \hbox (badness 1728) in paragraph at lines 125--126
+Underfull \hbox (badness 1728) in paragraph at lines 131--132
 \OML/ntxmi/m/it/9 H[]$ \T1/ntxtlf/m/n/9 over $\LMS/ntxsy/m/n/9 ª\OT1/minntx/m/n
 /9 45\OML/ntxmi/m/it/9 ; \OT1/minntx/m/n/9 250\LMS/ntxsy/m/n/9 º \OT1/minntx/m/
 n/9 km s[] Mpc[]$\T1/ntxtlf/m/n/9 , and $\OML/ntxmi/m/it/9 ^^Y\LMS/ntxsy/m/n/9 
@@ -803,325 +803,458 @@ n/9 km s[] Mpc[]$\T1/ntxtlf/m/n/9 , and $\OML/ntxmi/m/it/9 ^^Y\LMS/ntxsy/m/n/9
  []
 
 
-Underfull \hbox (badness 1762) in paragraph at lines 125--126
+Underfull \hbox (badness 1762) in paragraph at lines 131--132
 \OT1/minntx/m/n/9 150 km s[]$ \T1/ntxtlf/m/n/9 in the peculiar-velocity like-li
 -hood term. Source-
  []
 
 
-Underfull \hbox (badness 1024) in paragraph at lines 125--126
+Underfull \hbox (badness 1024) in paragraph at lines 131--132
 \T1/ntxtlf/m/n/9 parameter pri-ors are the con-strained ``host-localised'' set 
 im-
  []
 
 
-Underfull \hbox (badness 2384) in paragraph at lines 125--126
+Underfull \hbox (badness 2384) in paragraph at lines 131--132
 \T1/ntxtlf/m/n/9 the GWTC-1 ref-er-ence val-ues, a uni-form tidal prior, and
  []
 
 
-Underfull \hbox (badness 1082) in paragraph at lines 125--126
+Underfull \hbox (badness 1082) in paragraph at lines 131--132
 \T1/ntxtlf/m/n/9 a nar-row sky-location prior cen-tred on NGC 4993 [Source:
  []
 
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/it' will be
-(Font)              scaled to size 9.0pt on input line 129.
+(Font)              scaled to size 9.0pt on input line 135.
 
-Underfull \hbox (badness 10000) in paragraph at lines 137--138
+Underfull \hbox (badness 10000) in paragraph at lines 144--145
 \T1/ntxtlf/m/n/9 Our pri-mary gravitational-wave model is IM-R-Phe-
  []
 
 
-Underfull \hbox (badness 2781) in paragraph at lines 137--138
+Underfull \hbox (badness 2781) in paragraph at lines 144--145
 \T1/ntxtlf/m/n/9 nomD_NRTidalv2, an aligned-spin tidal wave-form avail-able
  []
 
+
+Underfull \hbox (badness 1902) in paragraph at lines 146--147
+\T1/ntxtlf/m/n/9 nomPv2_NRTidal, which in-cludes both pre-ces-sion and NR-
+ []
+
+
+Overfull \hbox (2.22153pt too wide) in paragraph at lines 156--157
+\T1/ntxtt/m/n/9 Results/test_suite/gw150914_waveform_comparison.csv\T1/ntxtlf/m
+/n/9 ]. 
+ []
+
 LaTeX Font Info:    Font shape `T1/ntxtt/m/n' will be
-(Font)              scaled to size 8.0pt on input line 161.
-<../Results/gwtc1_phasemarg/plots//corner_GW150914.pdf, id=232, 728.02011pt x 7
-20.25919pt>
-File: ../Results/gwtc1_phasemarg/plots//corner_GW150914.pdf Graphic file (type 
-pdf)
-<use ../Results/gwtc1_phasemarg/plots//corner_GW150914.pdf>
-Package pdftex.def Info: ../Results/gwtc1_phasemarg/plots//corner_GW150914.pdf 
- used on input line 166.
-(pdftex.def)             Requested size: 244.0pt x 241.38998pt.
+(Font)              scaled to size 8.0pt on input line 174.
+<figures/output//fig07_gw150914_corner.pdf, id=257, 340.11255pt x 358.55302pt>
+File: figures/output//fig07_gw150914_corner.pdf Graphic file (type pdf)
+<use figures/output//fig07_gw150914_corner.pdf>
+Package pdftex.def Info: figures/output//fig07_gw150914_corner.pdf  used on inp
+ut line 179.
+(pdftex.def)             Requested size: 244.0pt x 257.22789pt.
 
-Underfull \hbox (badness 1776) in paragraph at lines 167--167
-\T1/ntxtlf/m/n/8 lic GWTC-2.1 sam-ples for the prin-ci-pal source pa-ram-e-ters
-. Pri-ors
+Underfull \hbox (badness 1783) in paragraph at lines 180--180
+[]\T1/ntxtlf/b/n/8 Figure 1. []\T1/ntxtlf/m/n/8 GW150914 val-i-da-tion: heterod
+yned-pipeline pos-te-rior un-
  []
 
 
-Overfull \hbox (148.59972pt too wide) in paragraph at lines 167--167
-\T1/ntxtt/m/n/8 Results/gwtc1_phasemarg/GW15_PhaseMarg_Heterodyned_IMRPhenomD_l
-ocal_psd-gwtc2p1_ref-gwtc1.csv\T1/ntxtlf/m/n/8 . 
+Underfull \hbox (badness 3547) in paragraph at lines 180--180
+\T1/ntxtlf/m/n/8 der IM-R-Phe-nomX-PHM for the prin-ci-pal source pa-ram-e-ters
+. Run
  []
 
 
-Underfull \hbox (badness 3240) in paragraph at lines 173--174
+Underfull \hbox (badness 1817) in paragraph at lines 180--180
+\T1/ntxtt/m/n/8 s06__gw150914__imrphenomxphm__lvkbounds__seed0000\T1/ntxtlf/m/n
+/8 ; pro-duced
+ []
+
+
+Underfull \hbox (badness 5050) in paragraph at lines 186--187
+\T1/ntxtlf/m/n/9 to ver-ify that the com-par-i-son is not live-point lim-ited
+ []
+
+
+Underfull \hbox (badness 3240) in paragraph at lines 186--187
 \T1/ntxtt/m/n/9 paper_knowledge_base/codebase_reference.md\T1/ntxtlf/m/n/9 ]. T
 a-ble [][]2[][]
  []
 
-[3
+
+Underfull \vbox (badness 1067) has occurred while \output is active []
+
+ [3
 pdfTeX warning (ext4): destination with the same identifier (name{table.1}) has
  been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.174 
-      
-pdfTeX warning (ext4): destination with the same identifier (name{figure.1}) ha
-s been already used, duplicate ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  \__shipout_drop_firstpage_...
-l.174 
-       <../Results/gwtc1_phasemarg/plots//corner_GW150914.pdf>]
-Overfull \hbox (29.4638pt too wide) in paragraph at lines 190--191
+l.187 
+      ]
+Overfull \hbox (29.4638pt too wide) in paragraph at lines 203--204
  \T1/ntxtt/m/n/8 PhaseMarg_Unheterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1.c
 sv\T1/ntxtlf/m/n/8 .] 
  []
 
 <../Results/gwtc1_phasemarg/plots//corner_IMRPhenomD_hetero_vs_unhetero.pdf, id
-=290, 639.32216pt x 613.48337pt>
+=274, 639.32216pt x 613.48337pt>
 File: ../Results/gwtc1_phasemarg/plots//corner_IMRPhenomD_hetero_vs_unhetero.pd
 f Graphic file (type pdf)
 <use ../Results/gwtc1_phasemarg/plots//corner_IMRPhenomD_hetero_vs_unhetero.pdf
 >
 Package pdftex.def Info: ../Results/gwtc1_phasemarg/plots//corner_IMRPhenomD_he
-tero_vs_unhetero.pdf  used on input line 195.
+tero_vs_unhetero.pdf  used on input line 208.
 (pdftex.def)             Requested size: 244.0pt x 234.13708pt.
-
-Underfull \hbox (badness 1253) in paragraph at lines 202--203
-\T1/ntxtlf/m/n/9 het-ero-dyned pos-te-ri-ors with the GWTC-1 ref-er-ence sam-pl
-es.
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 202--203
-\T1/ntxtt/m/n/9 Results/gwtc1_phasemarg/waveform_systematics.csv\T1/ntxtlf/m/n/
-9 ],
- []
-
-<../Results/gwtc1_phasemarg/plots//corner_combined_waveforms.pdf, id=293, 627.9
+[4
+pdfTeX warning (ext4): destination with the same identifier (name{figure.1}) ha
+s been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.219 
+      
+pdfTeX warning (ext4): destination with the same identifier (name{table.2}) has
+ been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.219 
+      
+pdfTeX warning (ext4): destination with the same identifier (name{figure.2}) ha
+s been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.219 
+       <./figures/output//fig07_gw150914_corner.pdf> <../Results/gwtc1_phasemar
+g/plots//corner_IMRPhenomD_hetero_vs_unhetero.pdf>]
+<../Results/gwtc1_phasemarg/plots//corner_combined_waveforms.pdf, id=358, 627.9
 3672pt x 613.48337pt>
 File: ../Results/gwtc1_phasemarg/plots//corner_combined_waveforms.pdf Graphic f
 ile (type pdf)
 <use ../Results/gwtc1_phasemarg/plots//corner_combined_waveforms.pdf>
 Package pdftex.def Info: ../Results/gwtc1_phasemarg/plots//corner_combined_wave
-forms.pdf  used on input line 206.
+forms.pdf  used on input line 222.
 (pdftex.def)             Requested size: 467.35907pt x 456.61975pt.
+<figures/output//fig02_h0_waveform_comparison.pdf, id=359, 345.4506pt x 225.482
+4pt>
+File: figures/output//fig02_h0_waveform_comparison.pdf Graphic file (type pdf)
+<use figures/output//fig02_h0_waveform_comparison.pdf>
+Package pdftex.def Info: figures/output//fig02_h0_waveform_comparison.pdf  used
+ on input line 229.
+(pdftex.def)             Requested size: 244.0pt x 159.26787pt.
 
-Underfull \hbox (badness 1831) in paragraph at lines 218--219
+Overfull \hbox (102.8293pt too wide) in paragraph at lines 238--248
+ [][] 
+ []
+
+
+Underfull \hbox (badness 1831) in paragraph at lines 259--260
 \T1/ntxtlf/m/n/9 Under the base-line vol-u-met-ric dis-tance prior, the IM-R-Ph
 e-
  []
 
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 7.3pt on input line 224.
+(Font)              scaled to size 7.3pt on input line 265.
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 5.5pt on input line 224.
+(Font)              scaled to size 5.5pt on input line 265.
 
-Underfull \hbox (badness 10000) in paragraph at lines 225--227
+Underfull \hbox (badness 10000) in paragraph at lines 266--268
 \T1/ntxtlf/m/n/9 and weighted me-dian $\OT1/minntx/m/n/9 79\OML/ntxmi/m/it/9 :\
 OT1/minntx/m/n/9 1 km s[] Mpc[]$ \T1/ntxtlf/m/n/9 [Source:
  []
 
 
-Underfull \hbox (badness 1337) in paragraph at lines 225--227
+Underfull \hbox (badness 1337) in paragraph at lines 266--268
 \T1/ntxtt/m/n/9 Results/gwtc1_phasemarg/summary_stats.csv\T1/ntxtlf/m/n/9 ]. A 
 kernel-
  []
 
-<../Results/gwtc1_phasemarg/plots//H0_baseline_IMRPhenomD.pdf, id=295, 715.4729
+<../Results/gwtc1_phasemarg/plots//H0_baseline_IMRPhenomD.pdf, id=367, 715.4729
 9pt x 426.39299pt>
 File: ../Results/gwtc1_phasemarg/plots//H0_baseline_IMRPhenomD.pdf Graphic file
  (type pdf)
 <use ../Results/gwtc1_phasemarg/plots//H0_baseline_IMRPhenomD.pdf>
 Package pdftex.def Info: ../Results/gwtc1_phasemarg/plots//H0_baseline_IMRPheno
-mD.pdf  used on input line 230.
+mD.pdf  used on input line 271.
 (pdftex.def)             Requested size: 244.0pt x 145.41411pt.
 
-Underfull \hbox (badness 1776) in paragraph at lines 231--231
-[]\T1/ntxtlf/b/n/8 Figure 4. []\T1/ntxtlf/m/n/8 Baseline GW170817 $\OML/ntxmi/m
-/it/8 H[]$ \T1/ntxtlf/m/n/8 pos-te-rior un-der the vol-u-met-ric
+Underfull \hbox (badness 2903) in paragraph at lines 272--272
+[]\T1/ntxtlf/b/n/8 Figure 5. []\T1/ntxtlf/m/n/8 Baseline GW170817 $\OML/ntxmi/m
+/it/8 H[]$ \T1/ntxtlf/m/n/8 pos-te-rior un-der the vol-u-met-
  []
 
 
-Underfull \hbox (badness 1354) in paragraph at lines 231--231
-\T1/ntxtlf/m/n/8 dis-tance prior with IM-R-Phe-nomD_NRTidalv2 and 5000 live poi
-nts.
+Underfull \hbox (badness 4429) in paragraph at lines 272--272
+\T1/ntxtlf/m/n/8 ric dis-tance prior with IM-R-Phe-nomD_NRTidalv2 and 5000 live
+
  []
 
 
-Underfull \hbox (badness 1122) in paragraph at lines 231--231
-\T1/ntxtlf/m/n/8 Shaded bands mark ref-er-ence CMB and distance-ladder val-ues 
-(see
+Underfull \hbox (badness 2426) in paragraph at lines 272--272
+\T1/ntxtlf/m/n/8 points. The shaded band marks the LVK 68 per cent ref-er-ence
  []
 
 
-Underfull \hbox (badness 1253) in paragraph at lines 231--231
-\T1/ntxtlf/m/n/8 text). Pro-duced by \T1/ntxtt/m/n/8 Plots/plot_H0_baseline_IMR
-PhenomD.py \T1/ntxtlf/m/n/8 from
+Underfull \hbox (badness 6157) in paragraph at lines 272--272
+\T1/ntxtlf/m/n/8 in-ter-val $\OML/ntxmi/m/it/8 H[] \U/ntxmia/m/it/8 = \OT1/minn
+tx/m/n/8 70\OML/ntxmi/m/it/8 :\OT1/minntx/m/n/8 0[] km s[] Mpc[]$ \T1/ntxtlf/m/
+n/8 ([][]Ab-bott et al.[][] [][]2017b[][]).
  []
 
 
-Overfull \hbox (198.99968pt too wide) in paragraph at lines 231--231
+Underfull \hbox (badness 10000) in paragraph at lines 272--272
+\T1/ntxtlf/m/n/8 Pro-duced by \T1/ntxtt/m/n/8 Plots/plot_H0_baseline_IMRPhenomD
+.py \T1/ntxtlf/m/n/8 from
+ []
+
+
+Overfull \hbox (198.99968pt too wide) in paragraph at lines 272--272
 \T1/ntxtt/m/n/8 Results/gwtc1_phasemarg/PhaseMarg_Heterodyned_IMRPhenomD_NRTida
 lv2_local_psd-gwtc1_ref-gwtc1_baseline.csv\T1/ntxtlf/m/n/8 . 
  []
 
-<../Results/gwtc1_phasemarg/plots//H0_IMRPhenomD_reweighted.pdf, id=300, 715.47
+<figures/output//fig10_h0_summary.pdf, id=372, 345.4506pt x 201.48875pt>
+File: figures/output//fig10_h0_summary.pdf Graphic file (type pdf)
+<use figures/output//fig10_h0_summary.pdf>
+Package pdftex.def Info: figures/output//fig10_h0_summary.pdf  used on input li
+ne 278.
+(pdftex.def)             Requested size: 244.0pt x 142.32013pt.
+
+Underfull \hbox (badness 2970) in paragraph at lines 279--279
+\T1/ntxtlf/m/n/8 and IM-R-Phe-nomXAS_NRTidalv3 standard-siren pos-te-ri-ors, th
+e IM-
+ []
+
+
+Underfull \hbox (badness 3668) in paragraph at lines 279--279
+\T1/ntxtlf/m/n/8 R-Phe-nomPv2 (no tides) pre-cess-ing sys-tem-atic, and the IM-
+R-Phe-
+ []
+
+<../Results/gwtc1_phasemarg/plots//H0_IMRPhenomD_reweighted.pdf, id=381, 715.47
 299pt x 426.39299pt>
 File: ../Results/gwtc1_phasemarg/plots//H0_IMRPhenomD_reweighted.pdf Graphic fi
 le (type pdf)
 <use ../Results/gwtc1_phasemarg/plots//H0_IMRPhenomD_reweighted.pdf>
 Package pdftex.def Info: ../Results/gwtc1_phasemarg/plots//H0_IMRPhenomD_reweig
-hted.pdf  used on input line 261.
+hted.pdf  used on input line 309.
 (pdftex.def)             Requested size: 244.0pt x 145.41411pt.
 
-Underfull \hbox (badness 1515) in paragraph at lines 262--262
+Underfull \hbox (badness 1515) in paragraph at lines 310--310
 \T1/ntxtlf/m/n/8 in-dis-tin-guish-able from the base-line in this pro-jec-tion.
  Pro-duced by
  []
 
 
-Underfull \hbox (badness 6300) in paragraph at lines 269--271
+Underfull \hbox (badness 6300) in paragraph at lines 317--319
 \T1/ntxtlf/m/n/9 for the base-line, reweighted and di-rectly sam-pled pos-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 269--271
+Underfull \hbox (badness 10000) in paragraph at lines 317--319
 \T1/ntxtlf/m/n/9 te-ri-ors re-spec-tively; $\OML/ntxmi/m/it/9 P\LMS/ntxsy/m/n/9
  π\OML/ntxmi/m/it/9 H[] > \OT1/minntx/m/n/9 150 km s[] Mpc[]\LMS/ntxsy/m/n/9 ∫$
  \T1/ntxtlf/m/n/9 rises
  []
 
 
-Underfull \hbox (badness 3536) in paragraph at lines 269--271
+Underfull \hbox (badness 3536) in paragraph at lines 317--319
 \T1/ntxtlf/m/n/9 from $\OT1/minntx/m/n/9 0\OML/ntxmi/m/it/9 :\OT1/minntx/m/n/9 
 016$ \T1/ntxtlf/m/n/9 in the base-line to $\OT1/minntx/m/n/9 0\OML/ntxmi/m/it/9
  :\OT1/minntx/m/n/9 056$ \T1/ntxtlf/m/n/9 in the reweighted
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 269--271
+Underfull \hbox (badness 10000) in paragraph at lines 317--319
 \T1/ntxtlf/m/n/9 pos-te-rior and $\OT1/minntx/m/n/9 0\OML/ntxmi/m/it/9 :\OT1/mi
 nntx/m/n/9 147$ \T1/ntxtlf/m/n/9 in the di-rect pos-te-rior [Source:
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 269--271
+Underfull \hbox (badness 10000) in paragraph at lines 317--319
 \T1/ntxtt/m/n/9 Results/gwtc1_phasemarg/prior_sensitivity.csv\T1/ntxtlf/m/n/9 ]
 .
  []
 
 
-Underfull \hbox (badness 2486) in paragraph at lines 269--271
+Underfull \hbox (badness 2486) in paragraph at lines 317--319
 \T1/ntxtlf/m/n/9 The earth-mover (Wasserstein-1) dis-tance of each pos-te-rior
  []
 
 
-Underfull \hbox (badness 1082) in paragraph at lines 269--271
+Underfull \hbox (badness 1082) in paragraph at lines 317--319
 \T1/ntxtlf/m/n/9 from the base-line is $\OT1/minntx/m/n/9 11\OML/ntxmi/m/it/9 :
 \OT1/minntx/m/n/9 2 km s[] Mpc[]$ \T1/ntxtlf/m/n/9 for reweight-ing and
  []
 
-[4
-pdfTeX warning (ext4): destination with the same identifier (name{table.2}) has
- been already used, duplicate ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  \__shipout_drop_firstpage_...
-l.272 T
-       he mechanism is directly visible in the luminosity-distance marginal,...
 
-pdfTeX warning (ext4): destination with the same identifier (name{figure.2}) ha
-s been already used, duplicate ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  \__shipout_drop_firstpage_...
-l.272 T
-       he mechanism is directly visible in the luminosity-distance marginal,...
- <../Results/gwtc1_phasemarg/plots//corner_IMRPhenomD_hetero_vs_unhetero.pdf>]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [5
-pdfTeX warning (ext4): destination with the same identifier (name{figure.3}) ha
-s been already used, duplicate ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  \__shipout_drop_firstpage_...
-l.272 T
-       he mechanism is directly visible in the luminosity-distance marginal,...
-
-pdfTeX warning (ext4): destination with the same identifier (name{table.3}) has
- been already used, duplicate ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  \__shipout_drop_firstpage_...
-l.272 T
-       he mechanism is directly visible in the luminosity-distance marginal,...
- <../Results/gwtc1_phasemarg/plots//corner_combined_waveforms.pdf>]
-Underfull \hbox (badness 1048) in paragraph at lines 272--273
+Underfull \hbox (badness 1048) in paragraph at lines 320--321
 \T1/ntxtlf/m/n/9 and, as a con-se-quence, under-represents the high-$\OML/ntxmi
 /m/it/9 H[]$ \T1/ntxtlf/m/n/9 re-gion.
  []
 
 
-Overfull \hbox (131.52428pt too wide) in paragraph at lines 272--273
+Overfull \hbox (131.52428pt too wide) in paragraph at lines 320--321
 \T1/ntxtt/m/n/9 Results/gwtc1_phasemarg/plots/corner_reweighted_vs_sampled_flat
 Z_IMRPhenomD.pdf\T1/ntxtlf/m/n/9 ,
  []
 
 
-Overfull \hbox (32.96544pt too wide) in paragraph at lines 272--273
+Overfull \hbox (32.96544pt too wide) in paragraph at lines 320--321
 \T1/ntxtlf/m/n/9 pro-duced by \T1/ntxtt/m/n/9 Plots/plot_corner_reweighted_vs_s
 ampled_flatZ.py\T1/ntxtlf/m/n/9 ]. 
  []
 
 <../Results/gwtc1_phasemarg/plots//dL_reweight_comparison_IMRPhenomD_NRTidalv2.
-pdf, id=362, 860.01299pt x 357.7365pt>
+pdf, id=384, 860.01299pt x 357.7365pt>
 File: ../Results/gwtc1_phasemarg/plots//dL_reweight_comparison_IMRPhenomD_NRTid
 alv2.pdf Graphic file (type pdf)
 <use ../Results/gwtc1_phasemarg/plots//dL_reweight_comparison_IMRPhenomD_NRTida
 lv2.pdf>
 Package pdftex.def Info: ../Results/gwtc1_phasemarg/plots//dL_reweight_comparis
-on_IMRPhenomD_NRTidalv2.pdf  used on input line 276.
+on_IMRPhenomD_NRTidalv2.pdf  used on input line 324.
 (pdftex.def)             Requested size: 244.0pt x 101.49197pt.
 
-Underfull \hbox (badness 1436) in paragraph at lines 277--277
+Underfull \hbox (badness 1436) in paragraph at lines 325--325
 \T1/ntxtlf/m/n/8 The di-rect run places sub-stan-tially more mass at $\OML/ntxm
 i/m/it/8 d[] \U/ntxsym/m/n/8 Æ \OT1/minntx/m/n/8 30 Mpc$\T1/ntxtlf/m/n/8 ,
  []
 
 
-Underfull \hbox (badness 3396) in paragraph at lines 277--277
+Underfull \hbox (badness 3396) in paragraph at lines 325--325
 \T1/ntxtlf/m/n/8 which maps to higher $\OML/ntxmi/m/it/8 H[]$ \T1/ntxtlf/m/n/8 
 through the host-galaxy ve-loc-ity re-
  []
 
 
-Underfull \hbox (badness 3417) in paragraph at lines 277--277
+Underfull \hbox (badness 3417) in paragraph at lines 325--325
 \T1/ntxtlf/m/n/8 la-tion. Pro-duced by \T1/ntxtt/m/n/8 Plots/compute_prior_sens
 itivity.py \T1/ntxtlf/m/n/8 with
  []
 
 
-Underfull \hbox (badness 6559) in paragraph at lines 288--289
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 333.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `subscript' on input line 333.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 333.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 333.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\iota' on input line 333.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 333.
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [5
+pdfTeX warning (ext4): destination with the same identifier (name{table.3}) has
+ been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.337 
+      ]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [6
+pdfTeX warning (ext4): destination with the same identifier (name{figure.3}) ha
+s been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.337 
+      
+pdfTeX warning (ext4): destination with the same identifier (name{table.4}) has
+ been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.337 
+       <../Results/gwtc1_phasemarg/plots//corner_combined_waveforms.pdf>]
+<figures/output//fig05_bimodality.pdf, id=428, 489.2679pt x 187.9022pt>
+File: figures/output//fig05_bimodality.pdf Graphic file (type pdf)
+<use figures/output//fig05_bimodality.pdf>
+Package pdftex.def Info: figures/output//fig05_bimodality.pdf  used on input li
+ne 342.
+(pdftex.def)             Requested size: 467.35907pt x 179.49237pt.
+
+Overfull \hbox (66.10732pt too wide) in paragraph at lines 351--361
+ [][] 
+ []
+
+[7
+pdfTeX warning (ext4): destination with the same identifier (name{figure.4}) ha
+s been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.369 
+      
+pdfTeX warning (ext4): destination with the same identifier (name{figure.5}) ha
+s been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.369 
+      
+pdfTeX warning (ext4): destination with the same identifier (name{figure.6}) ha
+s been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.369 
+      
+pdfTeX warning (ext4): destination with the same identifier (name{figure.7}) ha
+s been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.369 
+       <./figures/output//fig02_h0_waveform_comparison.pdf> <../Results/gwtc1_p
+hasemarg/plots//H0_baseline_IMRPhenomD.pdf> <./figures/output//fig10_h0_summary
+.pdf> <../Results/gwtc1_phasemarg/plots//H0_IMRPhenomD_reweighted.pdf>]
+Underfull \hbox (badness 1558) in paragraph at lines 373--374
+\T1/ntxtlf/m/n/9 To check that the standard-siren pos-te-rior is dom-i-nated by
+
+ []
+
+
+Underfull \hbox (badness 3281) in paragraph at lines 373--374
+\T1/ntxtlf/m/n/9 the gravitational-wave like-li-hood rather than by the host-
+ []
+
+<figures/output//fig06_gw_only_vs_siren.pdf, id=531, 489.2679pt x 172.33635pt>
+File: figures/output//fig06_gw_only_vs_siren.pdf Graphic file (type pdf)
+<use figures/output//fig06_gw_only_vs_siren.pdf>
+Package pdftex.def Info: figures/output//fig06_gw_only_vs_siren.pdf  used on in
+put line 377.
+(pdftex.def)             Requested size: 244.0pt x 85.94443pt.
+
+Underfull \hbox (badness 6559) in paragraph at lines 385--386
 \T1/ntxtlf/m/n/9 Repeating the same four anal-y-ses with Tay-lorF2 gives
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 288--289
+Underfull \hbox (badness 10000) in paragraph at lines 385--386
 \T1/ntxtlf/m/n/9 qual-i-ta-tively iden-ti-cal prior de-pen-dence. The Tay-lorF2
 
  []
 
 
-Underfull \hbox (badness 5064) in paragraph at lines 288--289
+Underfull \hbox (badness 5064) in paragraph at lines 385--386
 \T1/ntxtlf/m/n/9 base-line weighted me-dian is $\OT1/minntx/m/n/9 77\OML/ntxmi/
 m/it/9 :\OT1/minntx/m/n/9 7 km s[] Mpc[]$ \T1/ntxtlf/m/n/9 with 68
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 288--289
+Underfull \hbox (badness 10000) in paragraph at lines 385--386
 \T1/ntxtlf/m/n/9 per cent quan-tile in-ter-val $\LMS/ntxsy/m/n/9 ª\OT1/minntx/m
 /n/9 66\OML/ntxmi/m/it/9 :\OT1/minntx/m/n/9 8\OML/ntxmi/m/it/9 ; \OT1/minntx/m/
 n/9 101\OML/ntxmi/m/it/9 :\OT1/minntx/m/n/9 9\LMS/ntxsy/m/n/9 º \OT1/minntx/m/n
@@ -1129,12 +1262,12 @@ n/9 101\OML/ntxmi/m/it/9 :\OT1/minntx/m/n/9 9\LMS/ntxsy/m/n/9 º \OT1/minntx/m/n
  []
 
 
-Underfull \hbox (badness 5652) in paragraph at lines 288--289
+Underfull \hbox (badness 5652) in paragraph at lines 385--386
 \T1/ntxtlf/m/n/9 and the di-rect flat-in-redshift run has weighted me-dian
  []
 
 
-Underfull \hbox (badness 5431) in paragraph at lines 288--289
+Underfull \hbox (badness 5431) in paragraph at lines 385--386
 \OT1/minntx/m/n/9 87\OML/ntxmi/m/it/9 :\OT1/minntx/m/n/9 8 km s[] Mpc[]$ \T1/nt
 xtlf/m/n/9 with in-ter-val $\LMS/ntxsy/m/n/9 ª\OT1/minntx/m/n/9 70\OML/ntxmi/m/
 it/9 :\OT1/minntx/m/n/9 0\OML/ntxmi/m/it/9 ; \OT1/minntx/m/n/9 127\OML/ntxmi/m/
@@ -1142,215 +1275,363 @@ it/9 :\OT1/minntx/m/n/9 1\LMS/ntxsy/m/n/9 º \OT1/minntx/m/n/9 km s[] Mpc[]$
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 288--289
+Underfull \hbox (badness 10000) in paragraph at lines 385--386
 \T1/ntxtlf/m/n/9 [Source: \T1/ntxtt/m/n/9 Results/gwtc1_phasemarg/summary_stats
 .csv\T1/ntxtlf/m/n/9 ].
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 288--289
+Underfull \hbox (badness 10000) in paragraph at lines 385--386
 \T1/ntxtlf/m/n/9 Jensen--Shannon di-ver-gences be-tween IMR and TF2
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 288--289
+Underfull \hbox (badness 10000) in paragraph at lines 385--386
 \T1/ntxtlf/m/n/9 are $\OT1/minntx/m/n/9 0\OML/ntxmi/m/it/9 :\OT1/minntx/m/n/9 0
 05$ \T1/ntxtlf/m/n/9 and $\OT1/minntx/m/n/9 0\OML/ntxmi/m/it/9 :\OT1/minntx/m/n
 /9 014 nats$ \T1/ntxtlf/m/n/9 for the base-line and
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 288--289
+Underfull \hbox (badness 10000) in paragraph at lines 385--386
 \T1/ntxtlf/m/n/9 flat-in-redshift $\OML/ntxmi/m/it/9 H[]$ \T1/ntxtlf/m/n/9 pos-
 te-ri-ors, re-spec-tively [Source:
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 288--289
+Underfull \hbox (badness 10000) in paragraph at lines 385--386
 \T1/ntxtt/m/n/9 Results/gwtc1_phasemarg/waveform_systematics.csv\T1/ntxtlf/m/n/
 9 ].
  []
 
 
-Underfull \hbox (badness 1721) in paragraph at lines 288--289
+Underfull \hbox (badness 1721) in paragraph at lines 385--386
 \T1/ntxtlf/m/n/9 ta-tion and the IM-R-Phe-nomD_NRTidalv2 fam-ily in-cor-po-rate
 s
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 288--289
+Underfull \hbox (badness 10000) in paragraph at lines 385--386
 \T1/ntxtlf/m/n/9 NR-calibrated tides. The reweighting-versus-direct-sampling
  []
 
-[6
-pdfTeX warning (ext4): destination with the same identifier (name{figure.4}) ha
-s been already used, duplicate ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  \__shipout_drop_firstpage_...
-l.290 \subsection
-                 {Evidence}
-pdfTeX warning (ext4): destination with the same identifier (name{figure.5}) ha
-s been already used, duplicate ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  \__shipout_drop_firstpage_...
-l.290 \subsection
-                 {Evidence}
-pdfTeX warning (ext4): destination with the same identifier (name{figure.6}) ha
-s been already used, duplicate ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  \__shipout_drop_firstpage_...
-l.290 \subsection
-                 {Evidence} <../Results/gwtc1_phasemarg/plots//H0_baseline_IMRP
-henomD.pdf> <../Results/gwtc1_phasemarg/plots//H0_IMRPhenomD_reweighted.pdf> <.
-./Results/gwtc1_phasemarg/plots//dL_reweight_comparison_IMRPhenomD_NRTidalv2.pd
-f>]
-Underfull \hbox (badness 10000) in paragraph at lines 297--297
-[]\T1/ntxtlf/b/n/8 Table 4. []\T1/ntxtlf/m/n/8 Nested-sampling ev-i-dences for 
+
+Underfull \hbox (badness 10000) in paragraph at lines 394--394
+[]\T1/ntxtlf/b/n/8 Table 6. []\T1/ntxtlf/m/n/8 Nested-sampling ev-i-dences for 
 the six het-ero-dyned
  []
 
 
-Underfull \hbox (badness 1655) in paragraph at lines 297--297
+Underfull \hbox (badness 1655) in paragraph at lines 394--394
 \T1/ntxtlf/m/n/8 GW170817 runs. Quoted un-cer-tain-ties are the BlackJAX-NS sta
 -tis-
  []
 
 
-Underfull \hbox (badness 1472) in paragraph at lines 297--297
+Underfull \hbox (badness 1472) in paragraph at lines 394--394
 \T1/ntxtlf/m/n/8 ti-cal es-ti-mates on a sin-gle run; in-trin-sic run-to-run va
 ri-a-tion from
  []
 
 
-Underfull \hbox (badness 6825) in paragraph at lines 318--319
-\T1/ntxtlf/m/n/9 The science-enabling claim of this pa-per is that fast
- []
-
-
-Underfull \hbox (badness 4686) in paragraph at lines 318--319
-\T1/ntxtlf/m/n/9 nested sam-pling makes the prior-sensitivity test of Sec-
- []
-
-
-Underfull \hbox (badness 2644) in paragraph at lines 318--319
-\T1/ntxtlf/m/n/9 tion [][]4.2[][] prac-ti-cal. This sec-tion quan-ti-fies the r
-un-time on
- []
-
-
-Underfull \hbox (badness 1472) in paragraph at lines 318--319
-\T1/ntxtlf/m/n/9 a sin-gle A100 GPU (Google Cloud a2-highgpu-1g in-stance
- []
-
-
-Underfull \hbox (badness 1629) in paragraph at lines 318--319
+Underfull \hbox (badness 1629) in paragraph at lines 415--416
 \T1/ntxtlf/m/n/9 [Source: \T1/ntxtt/m/n/9 paper_knowledge_base/hardware_platfor
 ms.md\T1/ntxtlf/m/n/9 ]),
  []
 
-
-Underfull \hbox (badness 1248) in paragraph at lines 322--323
-\T1/ntxtlf/m/n/9 45s of wall-clock time, of which 12min 52s is the sam-
- []
-
-<../Results/gwtc1_phasemarg/plots//scaling_study.pdf, id=441, 1148.57353pt x 35
-4.12299pt>
-File: ../Results/gwtc1_phasemarg/plots//scaling_study.pdf Graphic file (type pd
-f)
-<use ../Results/gwtc1_phasemarg/plots//scaling_study.pdf>
-Package pdftex.def Info: ../Results/gwtc1_phasemarg/plots//scaling_study.pdf  u
-sed on input line 330.
-(pdftex.def)             Requested size: 244.0pt x 75.22716pt.
-
-Underfull \hbox (badness 10000) in paragraph at lines 331--331
-[]\T1/ntxtlf/b/n/8 Figure 7. []\T1/ntxtlf/m/n/8 Wall-clock run-time of the het-
-ero-dyned IM-R-Phe-
- []
-
-
-Underfull \hbox (badness 5119) in paragraph at lines 331--331
-\T1/ntxtlf/m/n/8 nomD_NRTidalv2 GW170817 anal-y-sis as a func-tion of nested-
- []
-
-
-Underfull \hbox (badness 1668) in paragraph at lines 331--331
-\T1/ntxtlf/m/n/8 shown; data load-ing, het-ero-dyne setup, ini-tial-i-sa-tion a
-nd JIT com-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 331--331
-\T1/ntxtlf/m/n/8 pi-la-tion con-tribute an ap-prox-i-mately live-point-independ
-ent over-
- []
-
-[7
-pdfTeX warning (ext4): destination with the same identifier (name{table.4}) has
- been already used, duplicate ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  \__shipout_drop_firstpage_...
-l.360 \subsection
-                 {Scope of the performance claim}
-pdfTeX warning (ext4): destination with the same identifier (name{figure.7}) ha
+[8
+pdfTeX warning (ext4): destination with the same identifier (name{figure.8}) ha
 s been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.360 \subsection
-                 {Scope of the performance claim}
+l.416 
+      
 pdfTeX warning (ext4): destination with the same identifier (name{table.5}) has
  been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.360 \subsection
-                 {Scope of the performance claim} <../Results/gwtc1_phasemarg/p
-lots//scaling_study.pdf>]
-Underfull \hbox (badness 3724) in paragraph at lines 386--387
-[]\T1/ntxtlf/m/n/9 First, the pri-mary wave-form in our anal-y-sis, IM-R-Phe-
+l.416 
+      
+pdfTeX warning (ext4): destination with the same identifier (name{table.6}) has
+ been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.416 
+       <../Results/gwtc1_phasemarg/plots//dL_reweight_comparison_IMRPhenomD_NRT
+idalv2.pdf>]
+Underfull \hbox (badness 1694) in paragraph at lines 420--421
+\T1/ntxtlf/m/n/9 het-ero-dyne setup, sam-pler ini-tial-i-sa-tion and JIT com-pi
+-la-tion
  []
 
 
-Underfull \hbox (badness 1178) in paragraph at lines 394--395
+Underfull \hbox (badness 7133) in paragraph at lines 420--421
+\T1/ntxtlf/m/n/9 [Source: \T1/ntxtt/m/n/9 paper_knowledge_base/a100_run_data.md
+\T1/ntxtlf/m/n/9 ]. The
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 420--421
+\T1/ntxtlf/m/n/9 anal-y-sis runs in $\OT1/minntx/m/n/9 14 min 18 s$\T1/ntxtlf/m
+/n/9 , IM-R-Phe-nomXAS_NRTidalv3
+ []
+
+
+Underfull \hbox (badness 2189) in paragraph at lines 420--421
+\T1/ntxtlf/m/n/9 in $\OT1/minntx/m/n/9 13 min 30 s$\T1/ntxtlf/m/n/9 , and IM-R-
+Phe-nomPv2 in $\OT1/minntx/m/n/9 11 min 34 s$ \T1/ntxtlf/m/n/9 [Source:
+ []
+
+
+Overfull \hbox (87.52336pt too wide) in paragraph at lines 420--421
+\T1/ntxtt/m/n/9 Results/test_suite/s06__gw150914__imrphenomxphm__lvkbounds__see
+d0000/\T1/ntxtlf/m/n/9 ];
+ []
+
+
+Underfull \hbox (badness 4479) in paragraph at lines 425--426
+\T1/ntxtlf/m/n/9 and $\LMS/ntxsy/m/n/9 ^^X$$\OT1/minntx/m/n/9 28$\T1/ntxtlf/m/n
+/9 --$\OT1/minntx/m/n/9 53\LMS/ntxsy/m/n/9 ^^B$ \T1/ntxtlf/m/n/9 for Tay-lorF2 
+are recorded in the repos-i-
+ []
+
+<figures/output//fig09_speedup.pdf, id=564, 321.45697pt x 225.4824pt>
+File: figures/output//fig09_speedup.pdf Graphic file (type pdf)
+<use figures/output//fig09_speedup.pdf>
+Package pdftex.def Info: figures/output//fig09_speedup.pdf  used on input line 
+429.
+(pdftex.def)             Requested size: 244.0pt x 171.15164pt.
+
+Underfull \hbox (badness 1365) in paragraph at lines 430--430
+\T1/ntxtlf/m/n/8 on GW170817, sin-gle A100 GPU. Het-ero-dyned runs use $\OML/nt
+xmi/m/it/8 N[] \U/ntxmia/m/it/8 =
+ []
+
+
+Underfull \hbox (badness 2762) in paragraph at lines 430--430
+\LMS/ntxsy/m/n/8 f\OT1/minntx/m/n/8 500\OML/ntxmi/m/it/8 ; \OT1/minntx/m/n/8 25
+00\LMS/ntxsy/m/n/8 g$\T1/ntxtlf/m/n/8 . Speedup fac-tors an-no-tated at the mat
+ched live-point
+ []
+
+
+Underfull \hbox (badness 1776) in paragraph at lines 430--430
+\T1/ntxtlf/m/n/8 counts. Run sets \T1/ntxtt/m/n/8 s04__*\T1/ntxtlf/m/n/8 , \T1/
+ntxtt/m/n/8 s05__*\T1/ntxtlf/m/n/8 , \T1/ntxtt/m/n/8 s07__*\T1/ntxtlf/m/n/8 , \
+T1/ntxtt/m/n/8 s13__*\T1/ntxtlf/m/n/8 ; pro-duced by
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 437--438
+\T1/ntxtlf/m/n/9 We char-ac-terise the de-pen-dence of the sci-ence out-
+ []
+
+
+Underfull \hbox (badness 4872) in paragraph at lines 437--438
+\T1/ntxtlf/m/n/9 put on the live-point count with a ded-i-cated $\OML/ntxmi/m/i
+t/9 n[] \LMS/ntxsy/m/n/9 2
+ []
+
+[9
+pdfTeX warning (ext4): destination with the same identifier (name{figure.9}) ha
+s been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.438 
+      
+pdfTeX warning (ext4): destination with the same identifier (name{figure.10}) h
+as been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.438 
+       <./figures/output//fig05_bimodality.pdf> <./figures/output//fig06_gw_onl
+y_vs_siren.pdf>]
+<figures/output//fig03_nlive_convergence.pdf, id=614, 489.2679pt x 203.46806pt>
+
+File: figures/output//fig03_nlive_convergence.pdf Graphic file (type pdf)
+<use figures/output//fig03_nlive_convergence.pdf>
+Package pdftex.def Info: figures/output//fig03_nlive_convergence.pdf  used on i
+nput line 441.
+(pdftex.def)             Requested size: 467.35907pt x 194.36156pt.
+
+Underfull \hbox (badness 7397) in paragraph at lines 446--447
+\T1/ntxtlf/m/n/9 [Source: \T1/ntxtt/m/n/9 Results/test_suite/scaling_20k_anomal
+y.csv\T1/ntxtlf/m/n/9 ].
+ []
+
+
+Underfull \hbox (badness 1789) in paragraph at lines 450--450
+[]\T1/ntxtlf/b/n/8 Table 7. []\T1/ntxtlf/m/n/8 Extended live-point scal-ing of 
+the het-ero-dyned IM-R-Phe-
+ []
+
+
+Underfull \hbox (badness 1509) in paragraph at lines 477--478
+[]\T1/ntxtlf/m/n/9 In the $\OML/ntxmi/m/it/9 n[]$ \T1/ntxtlf/m/n/9 sweep the we
+ighted $\OML/ntxmi/m/it/9 H[]$ \T1/ntxtlf/m/n/9 me-dian varies by
+ []
+
+
+Underfull \hbox (badness 1264) in paragraph at lines 477--478
+\T1/ntxtlf/m/n/9 well be-low the prior-induced shifts of Sec-tion [][]4.2[][] [
+Source:
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 477--478
+\T1/ntxtt/m/n/9 Results/test_suite/het_bins_sweep_summary.csv\T1/ntxtlf/m/n/9 ,
+
+ []
+
+<figures/output//fig04_robustness.pdf, id=624, 489.2679pt x 312.96523pt>
+File: figures/output//fig04_robustness.pdf Graphic file (type pdf)
+<use figures/output//fig04_robustness.pdf>
+Package pdftex.def Info: figures/output//fig04_robustness.pdf  used on input li
+ne 481.
+(pdftex.def)             Requested size: 467.35907pt x 298.95802pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 489--490
+\T1/ntxtt/m/n/9 Results/test_suite/psd_sensitivity_summary.csv\T1/ntxtlf/m/n/9 
+]; the
+ []
+
+<figures/output//fig08_psd_refparams.pdf, id=631, 489.2679pt x 172.33635pt>
+File: figures/output//fig08_psd_refparams.pdf Graphic file (type pdf)
+<use figures/output//fig08_psd_refparams.pdf>
+Package pdftex.def Info: figures/output//fig08_psd_refparams.pdf  used on input
+ line 495.
+(pdftex.def)             Requested size: 467.35907pt x 164.62318pt.
+LaTeX Font Info:    Font shape `T1/ntxtlf/m/sc' will be
+(Font)              scaled to size 8.0pt on input line 496.
+[10
+pdfTeX warning (ext4): destination with the same identifier (name{figure.11}) h
+as been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.504 
+      
+pdfTeX warning (ext4): destination with the same identifier (name{table.7}) has
+ been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.504 
+       <./figures/output//fig09_speedup.pdf>]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [11
+pdfTeX warning (ext4): destination with the same identifier (name{figure.12}) h
+as been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.512 
+      
+pdfTeX warning (ext4): destination with the same identifier (name{figure.13}) h
+as been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.512 
+       <./figures/output//fig03_nlive_convergence.pdf> <./figures/output//fig04
+_robustness.pdf>]
+Underfull \hbox (badness 3209) in paragraph at lines 522--523
+\T1/ntxtlf/m/n/9 base-line pos-te-rior has $\OML/ntxmi/m/it/9 P\LMS/ntxsy/m/n/9
+ π\OML/ntxmi/m/it/9 q > \OT1/minntx/m/n/9 0\OML/ntxmi/m/it/9 :\OT1/minntx/m/n/9
+ 95\LMS/ntxsy/m/n/9 ∫ \U/ntxmia/m/it/9 = \OT1/minntx/m/n/9 0\OML/ntxmi/m/it/9 :
+\OT1/minntx/m/n/9 139$ \T1/ntxtlf/m/n/9 [Source:
+ []
+
+
+Overfull \hbox (117.3493pt too wide) in paragraph at lines 522--523
+\T1/ntxtt/m/n/9 Results/test_suite/sH__gw170817__prior_only_q__seed0000/prior_c
+omparison.csv\T1/ntxtlf/m/n/9 ,
+ []
+
+
+Overfull \hbox (257.37103pt too wide) in paragraph at lines 522--523
+\T1/ntxtt/m/n/9 Results/gwtc1_phasemarg/PhaseMarg_Heterodyned_IMRPhenomD_NRTida
+lv2_local_psd-gwtc1_ref-gwtc1_baseline.csv\T1/ntxtlf/m/n/9 ].
+ []
+
+
+Underfull \hbox (badness 1715) in paragraph at lines 522--523
+\T1/ntxtlf/m/n/9 in-her-ited from the uniform-in-$\LMS/ntxsy/m/n/9 πM[]\OML/ntx
+mi/m/it/9 ; q\LMS/ntxsy/m/n/9 ∫$ \T1/ntxtlf/m/n/9 pa-ram-e-ter-i-sa-tion. The
+ []
+
+[12
+pdfTeX warning (ext4): destination with the same identifier (name{figure.14}) h
+as been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.527 
+       <./figures/output//fig08_psd_refparams.pdf>]
+Underfull \hbox (badness 1178) in paragraph at lines 540--541
 []\T1/ntxtlf/m/n/9 Finally, sev-eral reference-sample cross-comparisons, no-tab
 ly
  []
 
-[8]
-Underfull \hbox (badness 2875) in paragraph at lines 405--406
+
+Underfull \hbox (badness 2717) in paragraph at lines 546--547
+\T1/ntxtlf/m/n/9 GW170817. The base-line IM-R-Phe-nomD_NRTidalv2 anal-y-sis
+ []
+
+
+Underfull \hbox (badness 1701) in paragraph at lines 546--547
+\T1/ntxtlf/m/n/9 yields a broad $\OML/ntxmi/m/it/9 H[]$ \T1/ntxtlf/m/n/9 pos-te
+-rior with maximum-posterior value
+ []
+
+
+Underfull \hbox (badness 2875) in paragraph at lines 551--552
 \T1/ntxtlf/m/n/9 Cloud A100), and fund-ing ac-knowl-edge-ments; ac-knowl-edge
  []
 
 
-Underfull \hbox (badness 4279) in paragraph at lines 410--411
-\T1/ntxtlf/m/n/9 strain data and GWTC-1 and GWTC-2.1 ref-er-ence pos-
+Underfull \hbox (badness 1014) in paragraph at lines 556--557
+\T1/ntxtlf/m/n/9 the Grav-i-ta-tional Wave Open Sci-ence Cen-ter (GWOSC). All
  []
 
 
-Underfull \hbox (badness 2781) in paragraph at lines 410--411
-\T1/ntxtlf/m/n/9 te-ri-ors from the Grav-i-ta-tional Wave Open Sci-ence Cen-ter
+Underfull \hbox (badness 10000) in paragraph at lines 556--557
+\T1/ntxtt/m/n/9 DOI$[][]\T1/ntxtlf/m/n/9 , and are cat-a-logued by prove-nance 
+in
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 556--557
+\T1/ntxtt/m/n/9 paper_knowledge_base/result_link_index.md \T1/ntxtlf/m/n/9 (pri
+-
+ []
+
+
+Underfull \hbox (badness 3965) in paragraph at lines 556--557
+\T1/ntxtlf/m/n/9 mary re-sults) and \T1/ntxtt/m/n/9 mnras_paper/test_suite/MANI
+FEST.md
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 556--557
+\T1/ntxtlf/m/n/9 (multi-axis ro-bust-ness, bi-modal-ity, and waveform-
+ []
+
+
+Underfull \hbox (badness 3428) in paragraph at lines 556--557
+\T1/ntxtlf/m/n/9 systematic runs). The ag-gre-gate test-suite cat-a-logue is in
 
  []
 
 
-Underfull \hbox (badness 1057) in paragraph at lines 410--411
-\T1/ntxtlf/m/n/9 (GWOSC). All de-rived posterior-sample CSV files, sum-mary
+Underfull \hbox (badness 10000) in paragraph at lines 556--557
+\T1/ntxtt/m/n/9 mnras_paper/test_suite/run_catalog.csv\T1/ntxtlf/m/n/9 . Large 
+CSVs
  []
 
 
-Underfull \hbox (badness 2150) in paragraph at lines 410--411
-\T1/ntxtlf/m/n/9 ta-bles, scal-ing logs, and plot-ting scripts used in this pa-
-
- []
-
-
-Underfull \hbox (badness 3291) in paragraph at lines 410--411
-\T1/ntxtlf/m/n/9 per are dis-tributed with the project repos-i-tory at [][]$\T1
-/ntxtt/m/n/9 TODO :
- []
-
-
-Underfull \hbox (badness 8019) in paragraph at lines 410--411
-\T1/ntxtlf/m/n/9 nance in \T1/ntxtt/m/n/9 paper_knowledge_base/result_link_inde
-x.md\T1/ntxtlf/m/n/9 .
+Underfull \hbox (badness 1540) in paragraph at lines 556--557
+\T1/ntxtlf/m/n/9 primary-table re-gen-er-a-tion is via \T1/ntxtt/m/n/9 Plots/ru
+n_all_plots.sh\T1/ntxtlf/m/n/9 .
  []
 
 (./main.bbl
@@ -1359,37 +1640,42 @@ Underfull \hbox (badness 4505) in paragraph at lines 41--43
 ons of
  []
 
-
-Underfull \hbox (badness 2884) in paragraph at lines 73--76
+[13]
+Underfull \hbox (badness 2884) in paragraph at lines 74--77
 []\T1/ntxtlf/m/n/8 Prathaban M., et al., 2025, Gravitational-wave in-fer-ence a
 t GPU
  []
 
 
-Underfull \hbox (badness 2547) in paragraph at lines 73--76
+Underfull \hbox (badness 2547) in paragraph at lines 74--77
 \T1/ntxtlf/m/n/8 speed: A bilby-like nested sam-pling ker-nel within blackjax-n
 s
  []
 
-) [9] (./main.aux)
+
+Underfull \hbox (badness 2065) in paragraph at lines 115--118
+\T1/ntxtlf/m/n/8 like-li-hood eval-u-a-tion for gravitational-wave pa-ram-e-ter
+ es-ti-ma-tion
+ []
+
+) [14
+
+] (./main.aux)
 
 LaTeX Font Warning: Size substitutions with differences
 (Font)              up to 0.5pt have occurred.
 
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 7CC0B5F0AC0551975358A69D916AA886;4372.
+(rerunfilecheck)             Checksum: 9526BB31D6A989A2C86B7926453E9E72;6133.
  ) 
 Here is how much of TeX's memory you used:
- 14669 strings out of 476025
- 219940 string characters out of 5790017
- 1878388 words of memory out of 5000000
- 34764 multiletter control sequences out of 15000+600000
- 619133 words of font info for 180 fonts, out of 8000000 for 9000
+ 14784 strings out of 476025
+ 223078 string characters out of 5790017
+ 1887388 words of memory out of 5000000
+ 34850 multiletter control sequences out of 15000+600000
+ 622388 words of font info for 182 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 90i,15n,90p,2063b,425s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 90i,15n,90p,2845b,517s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
 pdfTeX warning (dest): name{Hfootnote.1} has been referenced but does not exist
 , replaced by a fixed one
@@ -1409,18 +1695,21 @@ dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2023/texmf-dis
 t/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2023/texmf-dist/f
 onts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2023/texmf-dist/fo
 nts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2023/texmf-dist/font
-s/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2023/texmf-dist/fonts/
+s/type1/public/amsfonts/cm/cmtt8.pfb></usr/local/texlive/2023/texmf-dist/fonts/
 type1/public/tex-gyre/qtmr.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/
-public/txfonts/t1xtt.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public
-/newtx/txmiaX.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/txfont
-s/txsya.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/newtx/txsys.
-pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/newtx/ztmb.pfb></usr
-/local/texlive/2023/texmf-dist/fonts/type1/public/newtx/ztmr.pfb></usr/local/te
-xlive/2023/texmf-dist/fonts/type1/public/newtx/ztmri.pfb>
-Output written on main.pdf (9 pages, 845175 bytes).
+public/rsfs/rsfs10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/t
+xfonts/t1xtt.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/newtx/t
+xmiaX.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/txfonts/txsya.
+pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/newtx/txsys.pfb></us
+r/local/texlive/2023/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/te
+xlive/2023/texmf-dist/fonts/type1/urw/times/utmri8a.pfb></usr/local/texlive/202
+3/texmf-dist/fonts/type1/public/newtx/ztmb.pfb></usr/local/texlive/2023/texmf-d
+ist/fonts/type1/public/newtx/ztmr.pfb></usr/local/texlive/2023/texmf-dist/fonts
+/type1/public/newtx/ztmri.pfb>
+Output written on main.pdf (14 pages, 1083707 bytes).
 PDF statistics:
- 608 PDF objects out of 1000 (max. 8388607)
- 542 compressed objects within 6 object streams
- 77 named destinations out of 1000 (max. 500000)
- 244 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 874 PDF objects out of 1000 (max. 8388607)
+ 778 compressed objects within 8 object streams
+ 97 named destinations out of 1000 (max. 500000)
+ 327 words of extra memory for PDF output out of 10000 (max. 10000000)
 

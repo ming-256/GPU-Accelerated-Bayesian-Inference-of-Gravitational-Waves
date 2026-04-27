@@ -46,7 +46,8 @@
 {Cabezas} A.,  et~al., 2024, {BlackJAX: Composable Bayesian inference in JAX}
 
 \bibitem[\protect\citeauthoryear{{Cornish}}{{Cornish}}{2013}]{Cornish2013}
-{Cornish} N.~J.,  2013, TODO
+{Cornish} N.~J.,  2013, {Heterodyned likelihood for rapid gravitational-wave
+  parameter estimation} (\mn@eprint {arXiv} {1007.4820})
 
 \bibitem[\protect\citeauthoryear{{Edwards} et~al.}{{Edwards}
   et~al.}{2023}]{Edwards2023Ripple}
@@ -109,9 +110,11 @@
 {Yallup} D.,  et~al., 2025, {GPU nested slice sampling for gravitational-wave
   inference} (\mn@eprint {arXiv} {2509.24949})
 
-\bibitem[\protect\citeauthoryear{{Zackay} et~al.}{{Zackay}
+\bibitem[\protect\citeauthoryear{{Zackay}, {Dai}  \& {Venumadhav}}{{Zackay}
   et~al.}{2018}]{Zackay2018RelativeBinning}
-{Zackay} B.,  et~al., 2018, TODO
+{Zackay} B.,  {Dai} L.,   {Venumadhav} T.,  2018, {Relative binning and fast
+  likelihood evaluation for gravitational-wave parameter estimation}
+  (\mn@eprint {arXiv} {1806.08792})
 
 \makeatother
 \end{thebibliography}

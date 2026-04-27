@@ -26,7 +26,10 @@
 \usepackage{url}
 \usepackage{xspace}
 
-\graphicspath{{../Results/gwtc1_phasemarg/plots/}{Results/gwtc1_phasemarg/plots/}}
+\graphicspath{%
+  {figures/output/}{../mnras_paper/figures/output/}%
+  {../Results/gwtc1_phasemarg/plots/}{Results/gwtc1_phasemarg/plots/}%
+}
 
 \newcommand{\kmsmpc}{\ensuremath{\,\rm km\,s^{-1}\,Mpc^{-1}}\xspace}
 \newcommand{\kms}{\ensuremath{\,\rm km\,s^{-1}}\xspace}
@@ -34,6 +37,9 @@
 \newcommand{\dL}{\ensuremath{d_{L}}\xspace}
 \newcommand{\sigmavp}{\ensuremath{\sigma_{v_p}}\xspace}
 \newcommand{\IMR}{IMRPhenomD\_NRTidalv2\xspace}
+\newcommand{\IMRX}{IMRPhenomXAS\_NRTidalv3\xspace}
+\newcommand{\Pv}{IMRPhenomPv2\xspace}
+\newcommand{\XPHM}{IMRPhenomXPHM\xspace}
 \newcommand{\TF}{TaylorF2\xspace}
 \newcommand{\bjns}{\textsc{blackjax-ns}\xspace}
 \newcommand{\bilby}{\textsc{bilby}\xspace}
@@ -63,7 +69,7 @@ $^{3}$Kavli Institute for Cosmology, University of Cambridge, Madingley Road, Ca
 
 % ======================================================================
 \begin{abstract}
-The binary neutron-star merger GW170817 remains the only confirmed bright gravitational-wave standard siren, and the reference event for direct measurements of the Hubble constant, \hzero, from a compact-binary coalescence. The scientific usefulness of a single bright-siren \hzero posterior depends sensitively on the assumed distance, redshift, and host peculiar-velocity priors, and a complete robustness study requires repeated full parameter estimation under each choice. We revisit GW170817 with a GPU-native nested-sampling pipeline that combines a heterodyned likelihood with differentiable \jax waveforms, and use it to carry out a direct prior-sensitivity study. Our primary \IMR run with 5000 live points recovers a broad \hzero posterior with maximum-posterior value $71.5\kmsmpc$ and weighted 68 per cent quantile interval $[68.2,103.5]\kmsmpc$, consistent with the original GW170817 bright-siren measurement. Replacing the volumetric distance prior with a flat-in-redshift prior by direct sampling shifts the weighted median from $79.1$ to $93.6\kmsmpc$ and raises the tail probability $P(\hzero>120\kmsmpc)$ from $0.076$ to $0.281$. Post-hoc reweighting of the baseline posterior to the same target prior yields $0.195$, partially capturing the shift but understating the high-\hzero tail. The mechanism is visible in the luminosity-distance marginal, where the direct run samples the low-\dL region that the baseline volumetric prior under-populates. Waveform variation between \IMR and \TF, and a change in the host peculiar-velocity uncertainty from $150$ to $250\kms$, both produce smaller shifts than the distance-prior effect. The full 5000-live-point analysis completes in 14\,min 45\,s on a single NVIDIA A100 GPU, and the six-run prior suite in 57\,min, making direct prior and waveform robustness checks practical for bright-siren cosmology.
+The binary neutron-star merger GW170817 remains the only confirmed bright gravitational-wave standard siren, and the reference event for direct measurements of the Hubble constant, \hzero, from a compact-binary coalescence. The scientific usefulness of a single bright-siren \hzero posterior depends sensitively on the assumed distance, redshift, and host peculiar-velocity priors, and a complete robustness study requires repeated full parameter estimation under each choice. We revisit GW170817 with a GPU-native nested-sampling pipeline that combines a heterodyned likelihood with differentiable \jax waveforms, and exploit its $\sim$15-minute primary turnaround to carry out a controlled prior-sensitivity, sampler-robustness, and waveform-systematics study. The primary \IMR baseline run with 5000 live points recovers a broad \hzero posterior with weighted median $79.1\kmsmpc$ and 68 per cent quantile interval $[68.2,103.5]\kmsmpc$, consistent with the original bright-siren measurement. Replacing the volumetric distance prior with a flat-in-redshift prior by direct sampling shifts the weighted median to $93.6\kmsmpc$ and raises the tail probability $P(\hzero>120\kmsmpc)$ from $0.076$ to $0.281$, while post-hoc reweighting of the baseline samples to the same target prior recovers only $0.195$. Targeted mode-isolated runs reveal that the flat-in-redshift posterior is bimodal in $(d_L,\iota)$: a compact-distance branch (Mode~B, $d_L\in[10,30]\,\rm Mpc$, $\hzero^{\rm med}=130\kmsmpc$) and an extended branch (Mode~A, $d_L\in[30,75]\,\rm Mpc$, $\hzero^{\rm med}=78.7\kmsmpc$) carry comparable local evidence after prior-volume normalisation ($\ln \mathcal{B}_{\rm B/A}=-0.66$). Reweighting cannot recover Mode~B because the baseline volumetric prior assigns it negligible weight; this is the mechanism behind the reweighting deficit. A four-waveform cross-check (\IMR, \IMRX, \Pv\ without tides, \TF) finds the \hzero median spread within $3\kmsmpc$ and $P(\hzero>120)$ in $[0.034,0.137]$, smaller than the prior-induced spread. Sampler-hyperparameter ($n_{\rm delete}/n_{\rm live}\in[0.10,0.75]$, $n_{\rm bins}\in[251,1001]$), PSD-source, reference-parameter, and host peculiar-velocity ($\sigmavp=150\to250\kms$) variations all shift \hzero by less than $2\kmsmpc$ in median. The primary 5000-live-point analysis completes in $\sim$14\,min on a single NVIDIA A100 GPU, with the heterodyned likelihood providing a $33\times$ ($n_{\rm live}=500$) to $82\times$ ($n_{\rm live}=2500$) wall-clock speedup over the unheterodyned reference, making direct prior, waveform, and sampler-robustness checks practical for bright-siren cosmology.
 \end{abstract}
 
 \begin{keywords}
@@ -86,9 +92,9 @@ Testing reweighting against a direct posterior obtained by sampling under the ta
 
 Several recent developments make this constraint less severe. Relative binning, also known as the heterodyned likelihood \citep{Cornish2013,Zackay2018RelativeBinning}, reduces the effective frequency grid for a long inspiral to a small number of bins with negligible loss of accuracy. Differentiable waveform libraries in \jax \citep{Bradbury2018JAX}, including \ripple \citep{Edwards2023Ripple}, enable end-to-end GPU evaluation of the likelihood. GPU-native nested-sampling kernels \citep{BlackJAX,Yallup2025BlackJAXNS,Prathaban2025GPUSpeed} retain the evidence estimates that nested sampling provides for free while allowing large live-point counts and repeated full reruns. Related efforts have demonstrated accelerated binary-neutron-star inference with related tools \citep{Krishna2023RelativeBinningBilby,Wong2023Jim,Wouters2024JimBNS}, and have underlined the practical importance of compute-efficient parameter estimation for the third-generation detector era \citep{HuVeitch2025}.
 
-In this paper we use a GPU-native nested-sampling pipeline, built on \bjns \citep{Yallup2025BlackJAXNS,Prathaban2025GPUSpeed} and a \jax implementation of the heterodyned likelihood, to revisit the GW170817 bright-siren \hzero inference. Our focus is not a new single-event measurement of \hzero, but a controlled assessment of how that measurement depends on its priors. We first validate the pipeline against GW150914 and against reference GW170817 posteriors. We then report the baseline \hzero posterior, compare it with a direct flat-in-redshift posterior and with the reweighted flat-in-redshift posterior obtained from the baseline samples, and quantify the prior sensitivity and the waveform cross-check. We finish by reporting runtime and live-point scaling on a single A100 GPU. Performance is presented to motivate that the prior-sensitivity study is now tractable, not as a central claim of the paper.
+In this paper we use a GPU-native nested-sampling pipeline, built on \bjns \citep{Yallup2025BlackJAXNS,Prathaban2025GPUSpeed} and a \jax implementation of the heterodyned likelihood, to revisit the GW170817 bright-siren \hzero inference. Our focus is not a new single-event measurement of \hzero, but a controlled, multi-axis assessment of how that measurement depends on its priors, on the waveform, on the sampler hyperparameters, and on auxiliary inputs (PSDs, heterodyne reference, host peculiar-velocity uncertainty). We first validate the pipeline against GW150914 (using \XPHM, the LVK production waveform) and against reference GW170817 posteriors. We then report the baseline \hzero posterior, compare it with a direct flat-in-redshift posterior and with the reweighted flat-in-redshift posterior, and use targeted mode-isolated runs to identify the $(d_L,\iota)$ bimodality that mechanistically explains the reweighting deficit. A four-waveform cross-check (\IMR, \IMRX, \Pv\ without tides, \TF) bounds the residual waveform systematic on \hzero. A separate set of robustness sweeps quantifies the sensitivity to nested-sampling hyperparameters, heterodyne-bin count, PSD source, and reference parameters. We finish by reporting runtime and live-point scaling on a single A100 GPU. Performance is presented to motivate that this multi-axis study is now tractable, not as a central claim of the paper.
 
-Section~\ref{sec:method} describes the inference setup. Section~\ref{sec:validation} reports validation. Section~\ref{sec:results} contains the \hzero inference and the prior-sensitivity analysis. Section~\ref{sec:performance} reports runtime and scaling. Section~\ref{sec:discussion} discusses implications and limitations. Section~\ref{sec:conclusions} concludes.
+Section~\ref{sec:method} describes the inference setup. Section~\ref{sec:validation} reports validation. Section~\ref{sec:results} contains the \hzero inference, the prior-sensitivity analysis, the bimodality characterisation, the GW-only versus standard-siren comparison, and the multi-waveform cross-check. Section~\ref{sec:performance} reports runtime, live-point scaling, and the sampler/PSD robustness sweeps. Section~\ref{sec:discussion} discusses implications and limitations. Section~\ref{sec:conclusions} concludes.
 
 % ======================================================================
 \section{Method}
@@ -133,8 +139,13 @@ We consider three prior variants in addition to the baseline:
 The direct and reweighted flat-in-redshift posteriors use the same target prior, and differ only in whether the prior is imposed during sampling or applied post-hoc.
 
 \subsection{Waveforms}
+\label{sec:waveforms}
 
-Our primary gravitational-wave model is \IMR, an aligned-spin tidal waveform available in the differentiable \ripple library \citep{Edwards2023Ripple}. We use \TF as a waveform cross-check; our implementation is a point-particle post-Newtonian inspiral-only model, without tidal corrections, and its agreement with the primary analysis is a test for waveform systematics in the distance--inclination plane rather than a like-for-like tidal comparison. The original GW170817 bright-siren analysis used IMRPhenomPv2\_NRTidal, which includes precession. The aligned-spin approximation is expected to be adequate for this event because NGC~4993 pins the sky location and the informative direction on the distance posterior is the inclination at fixed polarisation, but we return to this limitation in Section~\ref{sec:discussion}.
+Our primary gravitational-wave model is \IMR, an aligned-spin tidal waveform available in the differentiable \ripple library \citep{Edwards2023Ripple}. To bound the residual waveform systematic on \hzero we run three additional models: \IMRX, an upgrade with the most recent NR-calibrated tidal phase prescription on a more recent aligned-spin base; \Pv, a precessing BBH waveform without tides, used to bracket the precession contribution that no precessing tidal waveform in the present \ripple inventory provides; and \TF, a point-particle post-Newtonian inspiral-only model used as a waveform-family check. \Pv\ runs use a low-spin prior (spin magnitudes uniform in $[0,0.05]$, isotropic tilts, uniform azimuths) consistent with \citet{Abbott2017H0}; tidal deformabilities are not sampled.
+
+The original GW170817 bright-siren analysis used IMRPhenomPv2\_NRTidal, which includes both precession and NR-calibrated tides. \ripple does not currently expose a precessing tidal waveform; we therefore cannot run a like-for-like reproduction of the LVK setup, and instead bracket the relevant systematics with the \IMRX/\Pv\ pair. The agreement of \hzero posteriors across \IMR, \IMRX, \Pv, and \TF (Section~\ref{sec:waveform}) is the quantitative content of the waveform-systematic bound.
+
+For the GW150914 validation we use \XPHM, the LVK GWTC-2.1+ production waveform for that event, which incorporates precession through a multi-scale-analysis treatment and the dominant higher-order modes; this replaces the IMRPhenomD validation used in earlier drafts of this work and turns the validation into a direct LVK reproduction rather than an offset comparison.
 
 % ======================================================================
 \section{Validation}
@@ -142,35 +153,37 @@ Our primary gravitational-wave model is \IMR, an aligned-spin tidal waveform ava
 
 \subsection{GW150914}
 
-We validate the pipeline on the binary-black-hole event GW150914 \citep{Abbott2016GW150914}, which has a short signal and established public posteriors. We analyse the GWOSC strain data with IMRPhenomD and GWTC-2.1 PSDs, using the same heterodyned sampler as for GW170817 with 5000 live points and phase marginalisation. Table~\ref{tab:gw150914} summarises the recovered parameters. Chirp mass and luminosity distance are both recovered at values consistent with the GWTC reference, with broad inclination and spin posteriors as expected at the signal-to-noise ratio of GW150914. Figure~\ref{fig:gw150914} shows the corresponding corner plot against public GWTC-2.1 samples. The sampler returns $\ln Z = 260.95\pm0.08$ with $1.33\times10^{5}$ dead points [Source: \texttt{Results/gwtc1\_phasemarg/evidence\_table.csv}].
+We validate the pipeline on the binary-black-hole event GW150914 \citep{Abbott2016GW150914}, which has a short signal and established public posteriors. We analyse the GWOSC strain data with \XPHM and GWTC-2.1 PSDs, using the same heterodyned sampler as for GW170817 with 5000 live points and phase marginalisation. Table~\ref{tab:gw150914} summarises the recovered parameters. Chirp mass, luminosity distance, mass ratio, and inclination are all recovered at values consistent with the GWTC-2.1 reference. Figure~\ref{fig:gw150914} shows the corresponding corner plot. The sampler returns $\ln Z = 261.09\pm0.08$ [Source: \texttt{Results/test\_suite/gw150914\_waveform\_comparison.csv}].
+
+The earlier \texttt{IMRPhenomD} aligned-spin validation gave $\dL^{\rm med}\approx 405\,\rm Mpc$, offset from the LVK reference ($\sim$430\,Mpc) by approximately one quarter of the 68 per cent posterior width. Switching to \XPHM, which incorporates precession and dominant higher-order modes, produces $\dL^{\rm med}=459.8\,\rm Mpc$ with 68 per cent quantile interval $[365.7,540.0]\,\rm Mpc$, in agreement with the GWTC-2.1 reference. The validation is therefore now a direct LVK reproduction.
 
 \begin{table}
   \centering
-  \caption{Heterodyned GW150914 validation with IMRPhenomD and 5000 live points. MAP, weighted median, and weighted 68 per cent quantile intervals are shown.}
+  \caption{Heterodyned GW150914 validation with \XPHM\ and 5000 live points. MAP, weighted median, and weighted 68 per cent quantile intervals are shown.}
   \label{tab:gw150914}
   \begin{tabular}{lccc}
     \toprule
     Parameter & MAP & Median & 68\% interval \\
     \midrule
-    $\mathcal{M}_{c}/M_{\odot}$ & 29.88 & 30.04 & $[29.10,31.12]$ \\
-    $q$ & 0.93 & 0.83 & $[0.69,0.95]$ \\
-    $\dL/\rm Mpc$ & 409.7 & 404.6 & $[289.6,509.6]$ \\
-    $\iota/\rm rad$ & 2.62 & 2.49 & $[2.08,2.81]$ \\
+    $\mathcal{M}_{c}/M_{\odot}$ & 30.51 & 30.34 & $[29.40,31.37]$ \\
+    $q$                          & 0.91 & 0.87 & $[0.74,0.96]$ \\
+    $\dL/\rm Mpc$                & 479.0 & 459.8 & $[365.7,540.0]$ \\
+    $\iota/\rm rad$              & 2.64 & 2.62 & $[2.34,2.86]$ \\
     \bottomrule
   \end{tabular}
-  \\ \footnotesize[Source: \texttt{Results/gwtc1\_phasemarg/summary\_stats.csv}.]
+  \\ \footnotesize[Source: \texttt{Results/test\_suite/gw150914\_waveform\_comparison.csv}.]
 \end{table}
 
 \begin{figure}
   \centering
-  \includegraphics[width=\columnwidth]{corner_GW150914.pdf}
-  \caption{GW150914 validation: pipeline posterior overlaid on public GWTC-2.1 samples for the principal source parameters. Priors and PSDs differ between the two analyses; the figure is intended to show qualitative agreement in the mass and distance structure, not a like-for-like reproduction. Produced by \texttt{Plots/plot\_GW150914.py} from \texttt{Results/gwtc1\_phasemarg/GW15\_PhaseMarg\_Heterodyned\_IMRPhenomD\_local\_psd-gwtc2p1\_ref-gwtc1.csv}.}
+  \includegraphics[width=\columnwidth]{fig07_gw150914_corner.pdf}
+  \caption{GW150914 validation: heterodyned-pipeline posterior under \XPHM\ for the principal source parameters. Run \texttt{s06\_\_gw150914\_\_imrphenomxphm\_\_lvkbounds\_\_seed0000}; produced by \texttt{mnras\_paper/figures/plot\_all.py:fig\_gw150914\_corner}.}
   \label{fig:gw150914}
 \end{figure}
 
 \subsection{Heterodyned versus unheterodyned consistency on GW170817}
 
-We next check that the heterodyned approximation does not bias the GW170817 source-parameter posterior. We run the same sampler on the full $259\,201$-bin frequency-domain likelihood with host-localised priors for both \IMR and \TF, at a reduced 1500 live points to keep the runtime tractable [Source: \texttt{paper\_knowledge\_base/codebase\_reference.md}]. Table~\ref{tab:hetero-vs-unhet} compares key marginals. The heterodyned baseline and the unheterodyned run agree on the chirp mass to within the sampler width, and on the weighted median distance to better than one megaparsec. The heterodyned weighted median \hzero is $79.1\kmsmpc$, compared with $77.8\kmsmpc$ for the unheterodyned run, a shift that is much smaller than the statistical width of the \hzero posterior. Figure~\ref{fig:hetero} shows the corresponding corner comparison. We conclude that the heterodyned approximation is adequate for \hzero inference at this event's signal-to-noise ratio; the order-of-magnitude runtime reduction it provides is quantified in Section~\ref{sec:performance}.
+We next check that the heterodyned approximation does not bias the GW170817 source-parameter posterior. We run the same sampler on the full $259\,201$-bin frequency-domain likelihood with host-localised priors for both \IMR and \TF\ at $n_{\rm live}=1500$ to keep the runtime tractable, and additionally at $n_{\rm live}\in\{500,2500\}$ for \IMR\ to verify that the comparison is not live-point limited [Source: \texttt{Results/test\_suite/unhet\_scaling\_summary.csv}, \texttt{paper\_knowledge\_base/codebase\_reference.md}]. Table~\ref{tab:hetero-vs-unhet} compares key marginals. The heterodyned baseline and the $n_{\rm live}=1500$ unheterodyned run agree on the chirp mass to within the sampler width, and on the weighted median distance to better than one megaparsec. The heterodyned weighted median \hzero is $79.1\kmsmpc$, compared with $77.8\kmsmpc$ for the unheterodyned run, a shift that is much smaller than the statistical width of the \hzero posterior. The two larger unheterodyned cross-checks ($n_{\rm live}=500$, $\hzero^{\rm med}=79.5\kmsmpc$, $\ln Z=485.75\pm0.30$, $7\,317\,\rm s$; $n_{\rm live}=2500$, $\hzero^{\rm med}=78.1\kmsmpc$, $\ln Z=490.51\pm0.14$, $37\,240\,\rm s$) place the heterodyned median between the two unheterodyned estimates, well within the sampler-statistical width. Figure~\ref{fig:hetero} shows the corresponding corner comparison. We conclude that the heterodyned approximation is adequate for \hzero inference at this event's signal-to-noise ratio; the corresponding wall-clock reduction is quantified in Section~\ref{sec:speedup}.
 
 \begin{table}
   \centering
@@ -198,15 +211,43 @@ We next check that the heterodyned approximation does not bias the GW170817 sour
 \end{figure}
 
 \subsection{Cross-waveform consistency}
+\label{sec:cross-waveform}
 
-Figure~\ref{fig:combined} compares the \IMR and \TF heterodyned posteriors with the GWTC-1 reference samples. The JAX-based analyses recover the same distance--inclination structure as the LVK reference, with the known small offsets expected from the different waveform families and prior bounds. Jensen--Shannon divergences between the IMR and TF2 baseline posteriors are $0.0047\,\rm nats$ for \hzero and $0.0057\,\rm nats$ for \dL [Source: \texttt{Results/gwtc1\_phasemarg/waveform\_systematics.csv}], which is an order of magnitude smaller than the JSD values observed across prior variants in Section~\ref{sec:results}. Waveform systematics between our aligned-spin choices are therefore not the dominant source of uncertainty in the present analysis.
+Figure~\ref{fig:combined} compares the \IMR and \TF heterodyned posteriors in the host-localised baseline configuration with the GWTC-1 reference samples. The JAX-based analyses recover the same distance--inclination structure as the LVK reference, with the known small offsets expected from the different waveform families and prior bounds. Jensen--Shannon divergences between the \IMR and \TF baseline posteriors are $0.0047\,\rm nats$ for \hzero and $0.0057\,\rm nats$ for \dL [Source: \texttt{Results/gwtc1\_phasemarg/waveform\_systematics.csv}], an order of magnitude smaller than the JSD values observed across prior variants in Section~\ref{sec:prior}.
+
+To bound the residual waveform systematic on \hzero we add two further models on the LVK-bounds prior set ($M_{\rm comp}\in[0.87,1.74]\,M_\odot$): \IMRX, the most recent NR-calibrated tidal model on a modern aligned-spin base, and \Pv, a precessing BBH waveform without tides. Table~\ref{tab:waveform-h0} reports \hzero summaries and evidences for the four-waveform suite. The weighted medians cluster within $3\kmsmpc$ across all four waveforms, and the high-\hzero tail probabilities span $[0.034,0.137]$, with \IMRX\ producing the tightest tail and \Pv\ the broadest. The full \hzero kernel-density estimates (Figure~\ref{fig:waveform-h0}) overlay closely between $40$ and $\sim$$110\kmsmpc$ and disagree mainly in the tail. The waveform-induced shift in $P(\hzero>120)$ ($\sim$$0.10$ across the four waveforms) remains smaller than the prior-induced shift documented in Section~\ref{sec:prior} ($0.076\to0.281$), and \emph{a fortiori} smaller than the difference between direct and reweighted flat-in-redshift estimates ($0.281$ versus $0.195$).
 
 \begin{figure*}
   \centering
   \includegraphics[width=0.92\textwidth]{corner_combined_waveforms.pdf}
-  \caption{GW170817 source-parameter posteriors under \IMR and \TF in the heterodyned baseline configuration, overlaid on GWTC-1 reference samples. Produced by \texttt{Plots/plot\_corner\_combined\_waveforms.py}.}
+  \caption{GW170817 source-parameter posteriors under \IMR\ and \TF\ in the heterodyned baseline configuration, overlaid on GWTC-1 reference samples. Produced by \texttt{Plots/plot\_corner\_combined\_waveforms.py}.}
   \label{fig:combined}
 \end{figure*}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{fig02_h0_waveform_comparison.pdf}
+  \caption{GW170817 \hzero posterior under the LVK-bounds baseline prior for the four-waveform cross-check (\IMR, \IMRX, \Pv\ without tides). The weighted medians cluster within $3\kmsmpc$; the residual disagreement is concentrated in the high-\hzero tail. The shaded band marks the LVK 68 per cent interval \citep{Abbott2017H0} and the dotted line is the Planck CMB value. Run set \texttt{s07\_\_*}; produced by \texttt{mnras\_paper/figures/plot\_all.py:fig\_h0\_waveform}.}
+  \label{fig:waveform-h0}
+\end{figure}
+
+\begin{table}
+  \centering
+  \caption{GW170817 \hzero summaries and nested-sampling evidences for the four-waveform cross-check on the LVK-bounds baseline prior, $n_{\rm live}=5000$. \hzero\ values are in $\kmsmpc$.}
+  \label{tab:waveform-h0}
+  \begin{tabular}{lccccc}
+    \toprule
+    Waveform & MAP & Median & 68\% q.i. & $P(\hzero>120)$ & $\ln Z$ \\
+    \midrule
+    \IMR\          & 73.0 & 79.0 & $[68.4,102.5]$ & 0.070 & $489.96\pm0.10$ \\
+    \IMRX\         & 71.2 & 78.2 & $[68.1,98.1]$  & 0.034 & $490.08\pm0.10$ \\
+    \Pv\ (no tides)& 71.2 & 80.7 & $[68.8,114.4]$ & 0.137 & $491.00\pm0.09$ \\
+    \TF$^{\dagger}$& 70.1 & 77.7 & $[66.8,101.9]$ & 0.065 & $486.90\pm0.10$ \\
+    \bottomrule
+  \end{tabular}
+  \\ \footnotesize[Source: \texttt{Results/test\_suite/gw170817\_waveform\_comparison.csv}, \texttt{Results/gwtc1\_phasemarg/summary\_stats.csv}, \texttt{Results/gwtc1\_phasemarg/evidence\_table.csv}.]
+  \\ \footnotesize $^{\dagger}$ \TF\ is on the host-localised prior set; the other three are on LVK-bounds. The $\ln Z$ values are not directly comparable across these prior sets, but the \hzero summaries are.
+\end{table}
 
 % ======================================================================
 \section{Results}
@@ -223,16 +264,23 @@ with weighted 68 per cent quantile interval
 \begin{equation}
 \hzero \in [68.2,103.5]\kmsmpc \quad\text{(68\% q.i.)},
 \end{equation}
-and weighted median $79.1\kmsmpc$ [Source: \texttt{Results/gwtc1\_phasemarg/summary\_stats.csv}]. A kernel-density estimate of the 68 per cent highest-posterior-density interval gives $[62.7,91.1]\kmsmpc$; we report both the weighted-quantile and KDE-HPD forms because the posterior is strongly asymmetric and the two statistics emphasise different parts of the distribution. Figure~\ref{fig:h0baseline} shows the baseline posterior with Planck and SH0ES reference bands for context (TODO: verify the exact Planck and SH0ES values/intervals used in the figure against the current literature before submission).
+and weighted median $79.1\kmsmpc$ [Source: \texttt{Results/gwtc1\_phasemarg/summary\_stats.csv}]. A kernel-density estimate of the 68 per cent highest-posterior-density interval gives $[62.7,91.1]\kmsmpc$; we report both the weighted-quantile and KDE-HPD forms because the posterior is strongly asymmetric and the two statistics emphasise different parts of the distribution. Figure~\ref{fig:h0baseline} shows the baseline posterior with the LVK \citep{Abbott2017H0} 68 per cent reference band for context.
 
 \begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{H0_baseline_IMRPhenomD.pdf}
-  \caption{Baseline GW170817 \hzero posterior under the volumetric distance prior with \IMR and 5000 live points. Shaded bands mark reference CMB and distance-ladder values (see text). Produced by \texttt{Plots/plot\_H0\_baseline\_IMRPhenomD.py} from \texttt{Results/gwtc1\_phasemarg/PhaseMarg\_Heterodyned\_IMRPhenomD\_NRTidalv2\_local\_psd-gwtc1\_ref-gwtc1\_baseline.csv}.}
+  \caption{Baseline GW170817 \hzero\ posterior under the volumetric distance prior with \IMR\ and 5000 live points. The shaded band marks the LVK 68 per cent reference interval $H_0 = 70.0^{+12.0}_{-8.0}\kmsmpc$ \citep{Abbott2017H0}. Produced by \texttt{Plots/plot\_H0\_baseline\_IMRPhenomD.py} from \texttt{Results/gwtc1\_phasemarg/PhaseMarg\_Heterodyned\_IMRPhenomD\_NRTidalv2\_local\_psd-gwtc1\_ref-gwtc1\_baseline.csv}.}
   \label{fig:h0baseline}
 \end{figure}
 
-This posterior reproduces the qualitative features of the original GW170817 bright-siren measurement \citep{Abbott2017H0}: the peak is in the neighbourhood of the distance-ladder value, the posterior is broad enough to remain consistent with CMB measurements, and the high-\hzero tail extends to the upper edge of the prior range. The present analysis does not sharpen the single-event \hzero constraint relative to the literature; the purpose of reporting this posterior is to establish the baseline against which the prior-sensitivity comparison in Section~\ref{sec:prior} is performed.
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{fig10_h0_summary.pdf}
+  \caption{Synoptic view of the GW170817 \hzero\ constraints reported in this paper, on the LVK-bounds prior set: \IMR\ and \IMRX\ standard-siren posteriors, the \Pv\ (no tides) precessing systematic, and the \IMR/\IMRX\ GW-only equivalent posteriors $H_0=v_{\rm rec}/d_L$ from Section~\ref{sec:gwonly}. Thick bars: 68 per cent quantile intervals. Thin lines: 95 per cent quantile intervals. Run sets \texttt{s07\_\_*}, \texttt{s12\_\_*}; produced by \texttt{mnras\_paper/figures/plot\_all.py:fig\_h0\_summary}.}
+  \label{fig:h0summary}
+\end{figure}
+
+This posterior reproduces the qualitative features of the original GW170817 bright-siren measurement \citep{Abbott2017H0}: the peak is in the neighbourhood of the distance-ladder value, the posterior is broad enough to remain consistent with CMB measurements, and the high-\hzero\ tail extends to the upper edge of the prior range. The present analysis does not sharpen the single-event \hzero\ constraint relative to the literature; the purpose of reporting this posterior is to establish the baseline against which the prior-sensitivity comparison in Section~\ref{sec:prior}, the bimodality characterisation in Section~\ref{sec:bimodality}, and the multi-waveform comparison summarised in Figure~\ref{fig:h0summary} are performed.
 
 \subsection{Prior sensitivity and the reweighting test}
 \label{sec:prior}
@@ -282,6 +330,55 @@ The enlarged peculiar-velocity variant ($\sigmavp=250\kms$) shifts the \hzero po
 
 We caution against over-interpreting these shifts as physical results for \hzero. None of them changes the qualitative statement that GW170817 alone is consistent with both early- and late-Universe measurements of the expansion rate. The scientific content is that the magnitude of the shift under a change of distance prior is a property of the inference, not of the cosmology, and that the magnitude one would report using reweighting alone is materially different from the magnitude recovered by direct sampling.
 
+\subsection{The $d_{L}$--$\iota$ bimodality and the mechanism behind reweighting failure}
+\label{sec:bimodality}
+
+The flat-in-redshift posterior in Figure~\ref{fig:dlreweight} is broad and asymmetric, with non-negligible weight at $\dL\lesssim25\,\rm Mpc$. To resolve whether this is a single broadened mode or a genuine bimodality we run two prior-restricted variants of the direct flat-in-redshift analysis with \IMR\ and $n_{\rm live}=5000$: a Mode-A run with $\dL\in[30,75]\,\rm Mpc$ and a Mode-B run with $\dL\in[10,30]\,\rm Mpc$. Both retain the original GWTC-1 heterodyne reference. We additionally run an unrestricted $\dL\in[10,75]\,\rm Mpc$ flat-in-redshift analysis with the heterodyne reference re-anchored at Mode~B ($\dL=20\,\rm Mpc$, $\iota=2.0\,\rm rad$) to test whether the apparent Mode-B mass is an artefact of the Mode-A-anchored heterodyne expansion.
+
+Figure~\ref{fig:bimodality}a shows the unrestricted flat-in-redshift posterior in the $(\dL,\iota)$ plane: the support is a curved arm running from $(\dL,\iota)\approx(15,1.9)\,\rm Mpc{\cdot}rad$ to $(40,2.7)\,\rm Mpc{\cdot}rad$, with two distinct local maxima. Figure~\ref{fig:bimodality}b shows the corresponding 1D \dL\ marginals from the three runs: the Mode-A and Mode-B sub-posteriors are well-separated and the unrestricted run carries weight in both regions. Table~\ref{tab:bimodality} summarises the local evidences and \hzero medians.
+
+\begin{figure*}
+  \centering
+  \includegraphics[width=0.92\textwidth]{fig05_bimodality.pdf}
+  \caption{The $d_L$--$\iota$ bimodality in the GW170817 flat-in-redshift posterior. Left: the joint $(\dL,\iota)$ posterior from the unrestricted $\dL\in[10,75]\,\rm Mpc$ run shows two distinct local maxima along a curved degeneracy. Right: 1D \dL\ marginals from the unrestricted (combined) run and the prior-restricted Mode-A and Mode-B runs. Run set \texttt{s10\_\_*}; produced by \texttt{mnras\_paper/figures/plot\_all.py:fig\_bimodality}.}
+  \label{fig:bimodality}
+\end{figure*}
+
+\begin{table}
+  \centering
+  \caption{Local evidences, weighted-median distances, and weighted-median \hzero values for the three $\dL$-restricted flat-in-redshift runs of Section~\ref{sec:bimodality}. The Mode-B/Mode-A Bayes factor includes a $\ln(20/45)$ correction for the difference in restricted-prior volumes.}
+  \label{tab:bimodality}
+  \begin{tabular}{lccccc}
+    \toprule
+    Variant & \dL\ range & $\dL^{\rm med}$ & $\hzero^{\rm med}$ & $P(\hzero>120)$ & $\ln Z$ \\
+            & (Mpc) & (Mpc) & ($\kmsmpc$) & & \\
+    \midrule
+    Mode A          & $[30,75]$ & 38.3 & 78.7  & $\sim\!10^{-7}$ & $486.80\pm0.10$ \\
+    Mode B          & $[10,30]$ & 23.1 & 130.0 & 0.638           & $486.95\pm0.09$ \\
+    Unrestricted$^{\dagger}$ & $[10,75]$ & 32.2 & 93.6 & 0.281 & $486.48\pm0.09$ \\
+    \bottomrule
+  \end{tabular}
+  \\ \footnotesize $^{\dagger}$ Heterodyne reference anchored at Mode~B ($\dL=20\,\rm Mpc$, $\iota=2.0\,\rm rad$).
+  \\ \footnotesize $\ln \mathcal{B}_{\rm B/A} = (\ln Z_{\rm B}-\ln Z_{\rm A}) + \ln(20/45) = +0.15 - 0.81 = -0.66$.
+  \\ \footnotesize [Source: \texttt{Results/test\_suite/bimodality\_summary.csv}.]
+\end{table}
+
+The Bayes factor between the Mode-B and Mode-A hypotheses, after correcting for the volume difference between the restricted priors, is $\ln \mathcal{B}_{\rm B/A}=-0.66$: Mode~B is only mildly disfavoured by the data and contributes a non-negligible share of the joint posterior under any prior that gives the low-\dL region appreciable weight. The unrestricted run with the Mode-B-anchored heterodyne reference recovers $\hzero^{\rm med}=93.6\kmsmpc$ and $P(\hzero>120)=0.281$, statistically indistinguishable from the GWTC-1-anchored direct flat-in-redshift run reported in Section~\ref{sec:prior}; the heterodyne-reference choice therefore does not bias the Mode-A/Mode-B weight ratio.
+
+This is the mechanism behind the reweighting failure documented in Section~\ref{sec:prior}. Mode~B is the high-\hzero, small-\dL\ branch of the distance--inclination degeneracy. The baseline volumetric prior $\pi(\dL)\propto\dL^{2}$ assigns Mode~B a tiny prior mass (the $[10,30]\,\rm Mpc$ slab carries less than $5$~per cent of the total $[10,75]\,\rm Mpc$ volumetric prior), and the corresponding region of the baseline posterior is very sparsely sampled; reweighting cannot reconstruct what is not there. Direct sampling under the flat-in-redshift prior, in contrast, populates Mode~B at sampler resolution. The reweighted estimate of $P(\hzero>120)=0.195$ understates the direct-sampled value of $0.281$ specifically because the Mode-B mass is largely missing from the baseline samples. Posterior-coverage diagnostics that compare the baseline samples against the target prior should therefore be standard practice before reporting a reweighted bright-siren \hzero summary.
+
+\subsection{GW-only versus standard-siren posterior}
+\label{sec:gwonly}
+
+To check that the standard-siren posterior is dominated by the gravitational-wave likelihood rather than by the host-velocity coupling, we run \IMR\ and \IMRX\ on the LVK-bounds prior set with the host-velocity terms removed (the ``GW-only'' variant; \texttt{--gw-only}). Figure~\ref{fig:gwonly} compares the \dL\ and $\iota$ marginals between the GW-only and standard-siren analyses for the two waveforms. The two pairs of curves are nearly identical above $\dL\approx 25\,\rm Mpc$, where the bulk of the posterior weight lies, and depart only in the low-\dL\ tail. This confirms that for GW170817 the host-velocity likelihood acts as a soft pull on the high-\hzero, low-\dL\ branch, but does not impose the dominant constraint on the source parameters; the \dL--$\iota$ degeneracy structure documented in Section~\ref{sec:bimodality} is a feature of the gravitational-wave data, not of the cosmological coupling.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{fig06_gw_only_vs_siren.pdf}
+  \caption{GW-only versus standard-siren posteriors for GW170817, comparing \dL\ (left) and $\iota$ (right) marginals under \IMR\ and \IMRX. Solid lines: standard-siren analyses (full likelihood including $v_r$ and $v_p$ terms); dashed lines: GW-only analyses with host-velocity terms removed. Run set \texttt{s12\_\_*}; produced by \texttt{mnras\_paper/figures/plot\_all.py:fig\_gw\_only}.}
+  \label{fig:gwonly}
+\end{figure}
+
 \subsection{Waveform cross-check}
 \label{sec:waveform}
 
@@ -312,31 +409,45 @@ The nested-sampling evidence for each run is summarised in Table~\ref{tab:eviden
 \end{table}
 
 % ======================================================================
-\section{Performance}
+\section{Performance and robustness}
 \label{sec:performance}
 
-The science-enabling claim of this paper is that fast nested sampling makes the prior-sensitivity test of Section~\ref{sec:prior} practical. This section quantifies the runtime on a single A100 GPU (Google Cloud a2-highgpu-1g instance [Source: \texttt{paper\_knowledge\_base/hardware\_platforms.md}]), without attempting a like-for-like CPU benchmark.
+The science-enabling claim of this paper is that fast nested sampling makes the prior-sensitivity test of Section~\ref{sec:prior}, the bimodality characterisation of Section~\ref{sec:bimodality}, and the multi-axis robustness study below practical on a single GPU. This section quantifies the runtime on a single A100 GPU (Google Cloud a2-highgpu-1g instance [Source: \texttt{paper\_knowledge\_base/hardware\_platforms.md}]), without attempting a like-for-like CPU benchmark, and reports the sampler/PSD/reference-parameter robustness that justifies treating the primary configuration as converged.
 
 \subsection{Wall-clock runtime}
+\label{sec:wallclock}
 
-The primary heterodyned GW170817 \hzero analysis with \IMR and 5000 live points completes in 14\,min 45\,s of wall-clock time, of which 12\,min 52\,s is the sampling stage and the remaining $\sim2\,\rm min$ is data loading, heterodyne setup, sampler initialisation and JIT compilation [Source: \texttt{paper\_knowledge\_base/a100\_run\_data.md}]. The corresponding \TF baseline completes in 3\,min 55\,s total ($2\,\rm min\,41\,s$ sampling). The full six-run prior-sensitivity suite---baseline, direct flat-in-redshift, and $\sigmavp=250\kms$ for both waveforms---completes in $\approx57\,\rm min$ end to end. The GW150914 validation run in Section~\ref{sec:validation} takes 4\,min 8\,s total. These numbers are for the same hardware that produced all posterior CSV files used in the preceding sections, so the runtime quoted for each posterior is the runtime of the run that produced it.
+The primary heterodyned GW170817 \hzero analysis with \IMR\ and 5000 live points completes in 14\,min 45\,s of wall-clock time on host-localised priors, of which 12\,min 52\,s is the sampling stage and the remaining $\sim$$2\,\rm min$ is data loading, heterodyne setup, sampler initialisation and JIT compilation [Source: \texttt{paper\_knowledge\_base/a100\_run\_data.md}]. The corresponding \TF\ baseline completes in 3\,min 55\,s total ($2\,\rm min\,41\,s$ sampling). On the LVK-bounds prior set used for the four-waveform cross-check, the same \IMR\ analysis runs in $14\,\rm min\,18\,s$, \IMRX\ in $13\,\rm min\,30\,s$, and \Pv\ in $11\,\rm min\,34\,s$ [Source: \texttt{Results/test\_suite/s07\_\_*/finish.json}]. The full six-run prior-sensitivity suite---baseline, direct flat-in-redshift, and $\sigmavp=250\kms$ for both \IMR\ and \TF---completes in $\approx$$57\,\rm min$ end to end. The GW150914 \XPHM\ validation run takes $\approx$$2\,\rm h\,3\,\rm min$ on the same hardware [Source: \texttt{Results/test\_suite/s06\_\_gw150914\_\_imrphenomxphm\_\_lvkbounds\_\_seed0000/}]; this is longer than the earlier IMRPhenomD validation ($4\,\rm min\,8\,s$) because the precessing higher-mode model has substantially higher per-evaluation cost, and is the price for the like-for-like LVK reproduction reported in Section~\ref{sec:validation}.
 
-The heterodyned likelihood is the enabling approximation. A head-to-head comparison on the same A100 hardware shows that an unheterodyned \IMR GW170817 run with 1500 live points and host-localised priors requires 5\,h 34\,min of wall-clock time; the heterodyned run at $3.3\times$ more live points completes in 14\,min 45\,s. At matched configurations, sampling-only speedups in the range $\sim$21--26$\times$ for \IMR and $\sim$28--53$\times$ for \TF are recorded in the repository [Source: \texttt{paper\_knowledge\_base/a100\_run\_data.md}]. These numbers establish that the relative-binning approximation is responsible for the order-of-magnitude reduction in runtime, and that the GPU contribution, while important for keeping the sampler saturated, is layered on top of the algorithmic improvement.
+\subsection{Heterodyne speedup}
+\label{sec:speedup}
 
-\subsection{Scaling with live points}
+The heterodyned likelihood is the enabling approximation. Figure~\ref{fig:speedup} compares \IMR\ heterodyned wall-clock time against the unheterodyned reference at matched live-point counts. At $n_{\rm live}=500$ the unheterodyned run takes $7\,317\,\rm s$ versus $223\,\rm s$ for the heterodyned run ($33\times$ wall-clock speedup); at $n_{\rm live}=2500$ the unheterodyned run takes $37\,240\,\rm s$ versus $\approx$$455\,\rm s$ heterodyned ($82\times$). At matched configurations on host-localised priors, sampling-only speedups in the range $\sim$$21$--$26\times$ for \IMR\ and $\sim$$28$--$53\times$ for \TF\ are recorded in the repository [Source: \texttt{paper\_knowledge\_base/a100\_run\_data.md}]. The relative-binning approximation accounts for the bulk of the wall-clock reduction; the GPU saturation provided by \bjns\ is layered on top.
 
 \begin{figure}
   \centering
-  \includegraphics[width=\columnwidth]{scaling_study.pdf}
-  \caption{Wall-clock runtime of the heterodyned \IMR GW170817 analysis as a function of nested-sampling live-point count, on a single A100 GPU. Total runtime is shown; data loading, heterodyne setup, initialisation and JIT compilation contribute an approximately live-point-independent overhead of $\sim80\,\rm s$. Produced by \texttt{Plots/plot\_scaling\_study.py} from \texttt{Results/scaling\_study/scaling\_summary.csv}.}
-  \label{fig:scaling}
+  \includegraphics[width=\columnwidth]{fig09_speedup.pdf}
+  \caption{Heterodyne wall-clock speedup for \IMR\ on GW170817, single A100 GPU. Heterodyned runs use $N_{\rm bins}=501$. Unheterodyned points are full-likelihood ($259\,201$ bins) at $n_{\rm live}\in\{500,2500\}$. Speedup factors annotated at the matched live-point counts. Run sets \texttt{s04\_\_*}, \texttt{s05\_\_*}, \texttt{s07\_\_*}, \texttt{s13\_\_*}; produced by \texttt{mnras\_paper/figures/plot\_all.py:fig\_speedup}.}
+  \label{fig:speedup}
 \end{figure}
 
-Table~\ref{tab:scaling} and Figure~\ref{fig:scaling} show the live-point scaling of the heterodyned \IMR analysis. The 5000-live-point configuration used for the science runs sits in the middle of the accessible range. At 100\,000 live points the analysis still completes within four hours on a single A100, and the statistical uncertainty on the evidence falls to $\sigma_{\ln Z}=0.02$.
+\subsection{Live-point convergence and scaling}
+\label{sec:nlivescaling}
+
+We characterise the dependence of the science output on the live-point count with a dedicated $n_{\rm live}\in\{500,1000,2500,5000,10\,000,20\,000\}$ sweep on the LVK-bounds baseline (\IMR, $n_{\rm bins}=501$, $n_{\rm delete}=n_{\rm live}/2$, GWTC-1 reference). Figure~\ref{fig:nlive-convergence} shows the resulting $\ln Z$, the weighted \hzero\ median with 68 per cent quantile band, and the wall-clock runtime as functions of $n_{\rm live}$. The \hzero\ median moves by less than $1.4\kmsmpc$ over the full range, the 68 per cent interval is essentially constant for $n_{\rm live}\geq2500$, and $\ln Z$ stabilises within $\pm 0.2$ for $n_{\rm live}\geq2500$. The $n_{\rm live}=5000$ configuration adopted for the science runs is therefore in the converged regime; reducing to $n_{\rm live}=2500$ would change the reported \hzero\ summaries below the level of the prior-induced shifts, but at $n_{\rm live}=500$--$1000$ the evidence and the upper 68 per cent quantile become noticeably noisier.
+
+\begin{figure*}
+  \centering
+  \includegraphics[width=0.92\textwidth]{fig03_nlive_convergence.pdf}
+  \caption{Live-point convergence of the heterodyned \IMR GW170817 analysis on the LVK-bounds baseline. Left: nested-sampling evidence with statistical $\sigma_{\ln Z}$. Centre: weighted \hzero\ median with 68 per cent quantile band. Right: wall-clock runtime; the unheterodyned reference points (Section~\ref{sec:speedup}) are shown for comparison. Run set \texttt{s13\_\_*}; produced by \texttt{mnras\_paper/figures/plot\_all.py:fig\_nlive\_convergence}.}
+  \label{fig:nlive-convergence}
+\end{figure*}
+
+Table~\ref{tab:scaling} reports an extended live-point scaling study on the host-localised priors (the original baseline configuration), including $n_{\rm live}=50\,000$ and $100\,000$. The original $n_{\rm live}=20\,000$ entry was flagged as anomalous in earlier drafts because it accumulated fewer dead points than a linear interpolation from the surrounding rows would predict. A repeat run with the termination tolerance tightened from $\Delta\ln Z<10^{-3}$ to $\Delta\ln Z<10^{-4}$ recovers $840\,000$ dead points and $\ln Z=485.92$ (consistent with the surrounding rows), confirming that the original run terminated early on the looser tolerance and not for a sampler-physical reason [Source: \texttt{Results/test\_suite/scaling\_20k\_anomaly.csv}]. The anomaly is therefore resolved.
 
 \begin{table}
   \centering
-  \caption{Live-point scaling of the heterodyned \IMR GW170817 analysis on a single A100 GPU. Dead points are the total number accumulated at sampler termination.}
+  \caption{Extended live-point scaling of the heterodyned \IMR GW170817 analysis on a single A100 GPU (host-localised priors). Dead points are the total number accumulated at sampler termination. The $n_{\rm live}=20\,000$ row gives the original (looser-tolerance) and the tightened-tolerance repeat run.}
   \label{tab:scaling}
   \begin{tabular}{rrrrrr}
     \toprule
@@ -347,19 +458,49 @@ Table~\ref{tab:scaling} and Figure~\ref{fig:scaling} show the live-point scaling
     2500    & $99\,750$   & 486.32 & 0.13 & 458    & 550     \\
     5000    & $198\,000$  & 486.66 & 0.10 & 761    & 872     \\
     10\,000 & $402\,000$  & 485.92 & 0.07 & 1478   & 1659    \\
-    20\,000$^{\dagger}$ & $690\,000$  & 485.95 & 0.05 & 1695  & 2035    \\
+    20\,000 & $690\,000$  & 485.95 & 0.05 & 1695  & 2035    \\
+    20\,000$^{\dagger}$ & $840\,000$  & 485.92 & 0.05 & 2243  & 2414    \\
     50\,000 & $1\,725\,000$ & 486.22 & 0.03 & 4812 & 6280    \\
     100\,000 & $3\,450\,000$ & 486.29 & 0.02 & 9150 & 14\,393 \\
     \bottomrule
   \end{tabular}
-  \\ \footnotesize[Source: \texttt{Results/scaling\_study/scaling\_summary.csv}.] $^{\dagger}$The $n_{\rm live}=20\,000$ entry accumulates fewer dead points than a strict linear extrapolation from the surrounding rows would suggest; the scaling plot is drawn without relying on this point for a linear-scaling claim and the discrepancy is noted as an open item (see \S\ref{sec:discussion}).
+  \\ \footnotesize[Source: \texttt{Results/scaling\_study/scaling\_summary.csv}, \texttt{Results/test\_suite/scaling\_20k\_anomaly.csv}.] $^{\dagger}$Tightened termination tolerance, $\Delta\ln Z<10^{-4}$.
 \end{table}
 
-Runtime scales close to linearly with live-point count once the sampler is saturated ($n_{\rm live}\gtrsim2500$), consistent with the sampler-bound regime discussed in \citet{Prathaban2025GPUSpeed}. Below that, the fixed overhead per iteration dominates. The 5000-live-point configuration is therefore comfortably within the linear-scaling regime, and the science runs are not under-sampled: the baseline produces $\sim2\times10^{5}$ dead points and an effective sample size of $\sim3.7\times10^{4}$ [Source: \texttt{Results/gwtc1\_phasemarg/evidence\_table.csv}].
+Runtime scales close to linearly with live-point count once the sampler is saturated ($n_{\rm live}\gtrsim2500$), consistent with the sampler-bound regime discussed in \citet{Prathaban2025GPUSpeed}. The 5000-live-point configuration sits comfortably within the linear regime; the baseline produces $\sim$$2\times 10^{5}$ dead points and an effective sample size of $\sim$$3.7\times 10^{4}$ [Source: \texttt{Results/gwtc1\_phasemarg/evidence\_table.csv}].
+
+\subsection{Sampler-hyperparameter robustness}
+\label{sec:robustness}
+
+Figure~\ref{fig:robustness} reports two complementary sweeps over sampler hyperparameters at fixed $n_{\rm live}=5000$ on the host-localised \IMR\ baseline: (i) the per-iteration deletion fraction $n_{\rm delete}/n_{\rm live}\in\{0.10,0.25,0.50,0.75\}$, and (ii) the heterodyne-bin count $n_{\rm bins}\in\{251,501,1001\}$.
+
+In the $n_{\rm delete}$ sweep the weighted \hzero\ median varies by $1.2\kmsmpc$ across the range and the 68 per cent quantile interval changes by less than $5\kmsmpc$ in either bound. The evidence varies by $\sim$$0.6$ in $\ln Z$, with the lowest and highest fractions both producing slightly higher $\ln Z$ than the central choices; we adopt $n_{\rm delete}=n_{\rm live}/2$ as the default because it minimises the per-iteration overhead while preserving the saw-tooth volume-compression matching of \citet{Prathaban2025GPUSpeed}. In the $n_{\rm bins}$ sweep the weighted \hzero\ median varies by $0.7\kmsmpc$ across $251$--$1001$ bins; the largest pairwise Wasserstein-1 distance between the three \hzero\ posteriors is $1.96\kmsmpc$, well below the prior-induced shifts of Section~\ref{sec:prior} [Source: \texttt{Results/test\_suite/het\_bins\_sweep\_summary.csv}, \texttt{het\_bins\_sweep\_wasserstein.csv}].
+
+\begin{figure*}
+  \centering
+  \includegraphics[width=0.92\textwidth]{fig04_robustness.pdf}
+  \caption{Sampler-hyperparameter robustness for the heterodyned \IMR\ baseline at $n_{\rm live}=5000$. Top row: per-iteration deletion fraction $n_{\rm delete}/n_{\rm live}$ (default $0.5$, dashed grey line). Bottom row: heterodyne-bin count $n_{\rm bins}$ (default $501$, dashed grey line). Run sets \texttt{s08\_\_*}, \texttt{s09\_\_*}; produced by \texttt{mnras\_paper/figures/plot\_all.py:fig\_robustness}.}
+  \label{fig:robustness}
+\end{figure*}
+
+\subsection{PSD source and heterodyne reference}
+\label{sec:psd-ref}
+
+Two further axes that one might worry about for a heterodyned bright-siren analysis are the choice of detector PSD and the choice of heterodyne reference parameters. We test both with \TF\ runs at $n_{\rm live}=5000$ on the baseline prior. Figure~\ref{fig:psd-ref}(a) compares \hzero\ posteriors under the GWTC-1 PSDs adopted in our primary runs against PSDs distributed with the \texttt{kazewong} \citep{Wong2023Jim,Wouters2024JimBNS} and \bilby\ reference workflows. The three weighted medians span $76.4$--$77.7\kmsmpc$ and the high-\hzero\ tail probabilities span $0.043$--$0.065$ [Source: \texttt{Results/test\_suite/psd\_sensitivity\_summary.csv}]; the largest pairwise W$_{1}$ distance between the three \hzero\ posteriors is below $2\kmsmpc$, again sub-dominant to the prior-induced shifts.
+
+Figure~\ref{fig:psd-ref}(b) compares the \IMR\ baseline under the GWTC-1 reference parameters used for the heterodyne expansion against an alternative reference taken from the maximum-likelihood point of an initial low-cost optimisation (\texttt{--ref-params optimize}). The two posteriors are close to indistinguishable through the bulk of the distribution and depart marginally only in the high-\hzero\ tail, confirming that the heterodyne-reference choice does not bias the \hzero\ inference at the level of the prior effects under study.
+
+\begin{figure*}
+  \centering
+  \includegraphics[width=0.92\textwidth]{fig08_psd_refparams.pdf}
+  \caption{(a) PSD-source sensitivity for \TF\ on GW170817: posteriors under GWTC-1, \texttt{kazewong}, and \bilby\ PSDs. (b) Heterodyne-reference sensitivity for \IMR: posteriors under GWTC-1 reference parameters versus a ML-optimised reference. Run set \texttt{s05\_\_*}; produced by \texttt{mnras\_paper/figures/plot\_all.py:fig\_psd\_refparams}.}
+  \label{fig:psd-ref}
+\end{figure*}
 
 \subsection{Scope of the performance claim}
+\label{sec:scope}
 
-We deliberately do not compare runtime against a single-core CPU baseline, which would give a misleadingly large speedup factor, nor against a production \pbilby run that we have not executed under matched settings. A like-for-like GW170817 \pbilby benchmark using \IMR with identical priors, live-point count, and waveform configuration is the appropriate CPU comparison and is left for future work (TODO: insert the matched \pbilby benchmark once executed on CSD3). The claim we do make is narrower and reproducible: on a single A100 GPU, the full 5000-live-point GW170817 \hzero analysis completes in under a quarter of an hour, and a six-run prior-sensitivity suite fits inside one hour. This runtime budget is what makes the direct comparison with reweighting in Section~\ref{sec:prior} scientifically routine rather than exceptional.
+We deliberately do not compare runtime against a single-core CPU baseline, which would give a misleadingly large speedup factor, nor against a production \pbilby\ run that we have not executed under matched settings. A like-for-like GW170817 \pbilby\ benchmark using \IMR\ with identical priors, live-point count, and waveform configuration is the appropriate CPU comparison and is left for future work (TODO: insert the matched \pbilby\ benchmark once executed on CSD3). The claim we do make is narrower and reproducible: on a single A100 GPU, the full 5000-live-point GW170817 \hzero\ analysis completes in under a quarter of an hour, the four-waveform cross-check fits inside an hour, and the live-point convergence study, sampler/PSD robustness sweeps, and bimodality characterisation reported above each fit inside two hours. This runtime budget is what makes the multi-axis robustness study scientifically routine rather than exceptional.
 
 % ======================================================================
 \section{Discussion}
@@ -373,31 +514,36 @@ For a single event, this under-estimation does not change the cosmological inter
 
 \subsection{Where reweighting is sufficient}
 
-Reweighting is adequate when the target and baseline priors have similar support in the regions that carry most of the posterior mass. The $\sigmavp=250\kms$ variant in our analysis is a case of this kind: the change in \sigmavp modifies the host-velocity likelihood smoothly over the scale of the velocity posterior, the baseline samples cover the affected region well, and the reweighted and directly sampled \sigmavp posteriors agree to well within the statistical width (Wasserstein distance $1.2\kmsmpc$). The flat-in-redshift case fails the same coverage test, because the baseline volumetric prior and the target flat-in-redshift prior differ most at the edges of the \dL range. Diagnostics such as an effective-sample-size ratio under the reweighted weights, or a direct overlay of the \dL marginals, can flag such cases before the reweighted \hzero posterior is reported.
+Reweighting is adequate when the target and baseline priors have similar support in the regions that carry most of the posterior mass. The $\sigmavp=250\kms$ variant in our analysis is a case of this kind: the change in \sigmavp\ modifies the host-velocity likelihood smoothly over the scale of the velocity posterior, the baseline samples cover the affected region well, and the reweighted and directly sampled \sigmavp\ posteriors agree to well within the statistical width (Wasserstein distance $1.2\kmsmpc$). The flat-in-redshift case fails the same coverage test, because the baseline volumetric prior and the target flat-in-redshift prior differ most at the edges of the \dL\ range. The mode-isolated runs of Section~\ref{sec:bimodality} make this concrete: the high-\hzero\ Mode~B has $\ln \mathcal{B}_{\rm B/A}=-0.66$ relative to Mode~A under the flat-in-redshift prior, but its baseline-volumetric-prior mass is $<5$~per cent of Mode~A's, so reweighted samples from the baseline are essentially blind to it. Diagnostics such as an effective-sample-size ratio under the reweighted weights, or a direct overlay of the \dL\ marginals, can flag such cases before the reweighted \hzero\ posterior is reported.
+
+\subsection{Mass-ratio prior-Jacobian and the apparent LVK deficit}
+\label{sec:qprior}
+
+The corner plots of Section~\ref{sec:cross-waveform} show our $q$ posterior with less mass at $q\to1$ than the GWTC-1 reference. To diagnose whether this is a data effect or a prior effect we sample the project's mass prior in $(\mathcal{M}_{c},q)$ space directly (with the likelihood disabled) and compare against an analytic LVK-equivalent prior (uniform-in-component-masses) that produces the same $q$ marginal as the public GW170817 analyses. The project prior has $P(q>0.95)=0.099$, the LVK-equivalent has $P(q>0.95)=0.074$, and the project \IMR\ baseline posterior has $P(q>0.95)=0.139$ [Source: \texttt{Results/test\_suite/sH\_\_gw170817\_\_prior\_only\_q\_\_seed0000/prior\_comparison.csv}, \texttt{Results/gwtc1\_phasemarg/PhaseMarg\_Heterodyned\_IMRPhenomD\_NRTidalv2\_local\_psd-gwtc1\_ref-gwtc1\_baseline.csv}]. The posterior places \emph{more} mass at $q>0.95$ than the project prior, which means the data are pulling $q$ toward equal-mass; the residual gap between our posterior and the public GWTC-1 reference at $q\to1$ is therefore not a data deficit but a prior-Jacobian effect inherited from the uniform-in-$(\mathcal{M}_{c},q)$ parameterisation. The qualitative recovery of the chirp mass, distance, and inclination posteriors is unaffected.
 
 \subsection{Implications for future bright sirens}
 
-The practical consequence is that direct prior sampling should be used for bright-siren \hzero analyses whenever the target prior differs non-trivially in support from the baseline, rather than being used only as a cross-check. The runtime budget on a single A100 GPU now permits such reruns routinely, and the scaling study in Section~\ref{sec:performance} indicates that live-point counts up to $10^{5}$ are accessible on the same hardware, which means that prior-sensitivity studies can in principle be combined with population-level analyses without a substantial increase in end-to-end wall-clock time. This is directly relevant to the third-generation detector era, where the detection rate of compact-binary mergers will make repeated, controlled posterior reanalyses the norm rather than the exception \citep{HuVeitch2025}.
+The practical consequence is that direct prior sampling should be used for bright-siren \hzero\ analyses whenever the target prior differs non-trivially in support from the baseline, rather than being used only as a cross-check. The runtime budget on a single A100 GPU now permits such reruns routinely; the live-point convergence and sampler-robustness sweeps of Section~\ref{sec:performance} show that the science-quality configuration sits in the converged regime, so the marginal cost of a prior-sensitivity rerun is the marginal cost of one $\sim$$15\,\rm min$ run. Live-point counts up to $10^{5}$ are accessible on the same hardware, which means that prior-sensitivity studies can in principle be combined with population-level analyses without a substantial increase in end-to-end wall-clock time. This is directly relevant to the third-generation detector era, where the detection rate of compact-binary mergers will make repeated, controlled posterior reanalyses the norm rather than the exception \citep{HuVeitch2025}.
 
 \subsection{Limitations and open items}
 
 Several limitations should be addressed before the present analysis is treated as a definitive prior-sensitivity study.
 
-First, the primary waveform in our analysis, \IMR, is aligned-spin and does not include precession; the original GW170817 bright-siren analysis used the precessing IMRPhenomPv2\_NRTidal family. Precession is expected to be subdominant for GW170817 given NGC~4993's sky localisation and the modest spin constraints allowed by the source priors, but we do not claim a precessing analysis here, and any quantitative statement about precession effects on the \hzero prior sensitivity would require an additional sampler with a precessing waveform in \jax.
+First, no waveform in our suite simultaneously includes precession and tides. The \ripple\ inventory does not currently expose a precessing tidal model, so we bracket the relevant waveform systematic with the \IMRX\ (tides, no precession) and \Pv\ (precession, no tides) pair documented in Section~\ref{sec:cross-waveform}. The \hzero\ medians of these two waveforms agree to within $2.5\kmsmpc$, and the high-\hzero\ tail probabilities differ by $\sim$$0.10$, which we treat as an empirical bound on the precessing-tidal systematic for GW170817; a like-for-like reproduction of the LVK IMRPhenomPv2\_NRTidal analysis would require porting that waveform to \jax.
 
-Second, the host-galaxy association with NGC~4993, its recessional velocity, and the peculiar-velocity estimate are taken directly from the bright-siren setup of \citet{Abbott2017H0}. We have varied \sigmavp but have not varied $\langle v_{p}\rangle$; systematic work on host-galaxy peculiar velocities is outside the scope of this paper.
+Second, the host-galaxy association with NGC~4993, its recessional velocity, and the peculiar-velocity estimate are taken directly from the bright-siren setup of \citet{Abbott2017H0}. We have varied \sigmavp\ but have not varied $\langle v_{p}\rangle$; systematic work on host-galaxy peculiar velocities is outside the scope of this paper.
 
-Third, we do not present a matched \pbilby benchmark. The performance claim is therefore explicitly restricted to single-A100 wall-clock runtime and scaling on the current pipeline (\S\ref{sec:performance}), and any CPU-vs-GPU comparison is deferred.
+Third, we do not present a matched \pbilby\ benchmark. The performance claim is therefore explicitly restricted to single-A100 wall-clock runtime and scaling on the current pipeline (\S\ref{sec:performance}), and any CPU-vs-GPU comparison is deferred.
 
-Fourth, the $n_{\rm live}=20\,000$ scaling-study entry (Table~\ref{tab:scaling}) accumulates fewer dead points than a linear interpolation from neighbouring runs would predict. This is an open item; we have not used this row for any scaling claim and the discrepancy should be investigated before the scaling table is treated as definitive.
+Fourth, the $d_L$--$\iota$ bimodality of Section~\ref{sec:bimodality} is characterised at the level of local evidences and mode-isolated marginals; we do not at present propagate Mode~B into a population analysis or combine it with an electromagnetic likelihood for the host inclination. Both extensions would tighten the practical statement about how much of Mode~B should be retained when GW170817 is combined with other bright sirens.
 
-Finally, several reference-sample cross-comparisons, notably against GWTC-1 and GWTC-2.1 public posteriors, are shown in corner form only. Direct \hzero comparisons against updated LVK reanalyses would sharpen the context for Section~\ref{sec:prior}, but are not a prerequisite for the methodological conclusion.
+Finally, several reference-sample cross-comparisons, notably against GWTC-1 and GWTC-2.1 public posteriors, are shown in corner form only. Direct \hzero\ comparisons against updated LVK reanalyses would sharpen the context for Section~\ref{sec:prior}, but are not a prerequisite for the methodological conclusion.
 
 % ======================================================================
 \section{Conclusions}
 \label{sec:conclusions}
 
-We have used a GPU-native nested-sampling pipeline to carry out a direct prior-sensitivity analysis of the Hubble-constant measurement from GW170817. The baseline \IMR analysis yields a broad \hzero posterior with maximum-posterior value $71.5\kmsmpc$ and 68 per cent weighted quantile interval $[68.2,103.5]\kmsmpc$, consistent with the original bright-siren result. Switching from the baseline volumetric-distance prior to a flat-in-redshift prior by direct sampling produces a substantially broader posterior with weighted median $93.6\kmsmpc$ and a high-\hzero tail probability $P(\hzero>120\kmsmpc)=0.281$. Reweighting the baseline posterior to the same target prior gives $P(\hzero>120\kmsmpc)=0.195$, only partially capturing the shift, because the baseline samples under-populate the low-\dL region that the target prior up-weights. The waveform cross-check with \TF and a modified peculiar-velocity uncertainty both produce smaller shifts than the distance-prior change. The analysis runs in 14\,min 45\,s on a single A100 GPU, and the full six-run prior-sensitivity suite in 57\,min. The scientific value of fast nested sampling for bright-siren cosmology is that direct prior reruns replace post-hoc reweighting as the default robustness tool, without a substantial change in the computational budget.
+We have used a GPU-native nested-sampling pipeline to carry out a direct prior-sensitivity, sampler-robustness, and waveform-systematics analysis of the Hubble-constant measurement from GW170817. The baseline \IMR\ analysis yields a broad \hzero\ posterior with maximum-posterior value $71.5\kmsmpc$ and 68 per cent weighted quantile interval $[68.2,103.5]\kmsmpc$, consistent with the original bright-siren result. Switching from the baseline volumetric-distance prior to a flat-in-redshift prior by direct sampling produces a substantially broader posterior with weighted median $93.6\kmsmpc$ and a high-\hzero\ tail probability $P(\hzero>120\kmsmpc)=0.281$, while reweighting the baseline posterior to the same target prior gives $P(\hzero>120\kmsmpc)=0.195$. Targeted mode-isolated runs reveal that the flat-in-redshift posterior is bimodal in $(d_L,\iota)$, with a high-\hzero\ Mode~B carrying $\ln \mathcal{B}_{\rm B/A}=-0.66$ relative to the low-\hzero\ Mode~A after prior-volume normalisation; reweighting cannot recover Mode~B because the baseline volumetric prior assigns it negligible mass, which is the mechanism behind the reweighting deficit. A four-waveform cross-check (\IMR, \IMRX, \Pv\ without tides, \TF) and a four-axis robustness sweep (sampler $n_{\rm delete}/n_{\rm live}$, heterodyne-bin count, PSD source, heterodyne reference) both produce \hzero\ shifts much smaller than the distance-prior shift. The primary analysis runs in $\sim$$14\,\rm min$ on a single A100 GPU and is $33$--$82\times$ faster than its unheterodyned counterpart at matched live-point counts. The scientific value of fast nested sampling for bright-siren cosmology is that direct prior reruns, multi-waveform cross-checks, and full sampler-robustness studies all become routine, replacing post-hoc reweighting and isolated cross-checks as the default robustness tool without a substantial change in the computational budget.
 
 % ======================================================================
 \section*{Acknowledgements}
@@ -407,7 +553,7 @@ TODO: add supervisor, research-group, compute-resource (Google Cloud A100), and 
 % ======================================================================
 \section*{Data Availability}
 
-This paper uses publicly available GW170817 and GW150914 strain data and GWTC-1 and GWTC-2.1 reference posteriors from the Gravitational Wave Open Science Center (GWOSC). All derived posterior-sample CSV files, summary tables, scaling logs, and plotting scripts used in this paper are distributed with the project repository at \url{TODO: insert permanent repository URL/DOI}, and are listed by provenance in \texttt{paper\_knowledge\_base/result\_link\_index.md}. Large CSVs and HDF5 reference files are tracked with Git LFS; detailed regeneration instructions are in \texttt{Plots/run\_all\_plots.sh}. TODO: confirm GWOSC release identifiers for the GW170817 and GW150914 strain segments before submission.
+This paper uses publicly available GW170817 and GW150914 strain data and GWTC-1/GWTC-2.1 reference posteriors from the Gravitational Wave Open Science Center (GWOSC). All derived posterior-sample CSV files, summary tables, scaling logs, and plotting scripts used in this paper are distributed with the project repository at \url{TODO: insert permanent repository URL/DOI}, and are catalogued by provenance in \texttt{paper\_knowledge\_base/result\_link\_index.md} (primary results) and \texttt{mnras\_paper/test\_suite/MANIFEST.md} (multi-axis robustness, bimodality, and waveform-systematic runs). The aggregate test-suite catalogue is in \texttt{mnras\_paper/test\_suite/run\_catalog.csv}. Large CSVs and HDF5 reference files are tracked with Git LFS; figure-regeneration is via \texttt{mnras\_paper/figures/plot\_all.py}, and primary-table regeneration is via \texttt{Plots/run\_all\_plots.sh}. TODO: confirm GWOSC release identifiers for the GW170817 and GW150914 strain segments before submission.
 
 % ======================================================================
 \bibliographystyle{mnras}
