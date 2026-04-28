@@ -265,6 +265,7 @@ _PRIOR_LOG_LOG_RATIO = jnp.log(jnp.log(PRIOR_HI / PRIOR_LO))
 _BETA_LN = jax.scipy.special.betaln(3.0, 1.0)
 # Power-law ∝ x^2 (volumetric d_L): normalisation constant log(3 / (hi^3 - lo^3))
 _POWERLAW2_LOG_NORM = jnp.log(3.0) - jnp.log(PRIOR_HI ** 3 - PRIOR_LO ** 3)
+_COS_DEC_LOG_NORM = jnp.log(jnp.sin(PRIOR_HI[I_DEC]) - jnp.sin(PRIOR_LO[I_DEC]))
 
 
 # ============================================================================
@@ -287,8 +288,8 @@ def logprior_fn(x):
     # Sin prior (iota): log(sin(x)/2) on [0, pi]
     lp_sin = jnp.where(in_bounds, jnp.log(jnp.abs(jnp.sin(x)) + 1e-300) - jnp.log(2.0), -jnp.inf)
 
-    # Cos prior (dec): log(cos(x)/2) on [-pi/2, pi/2]
-    lp_cos = jnp.where(in_bounds, jnp.log(jnp.abs(jnp.cos(x)) + 1e-300) - jnp.log(2.0), -jnp.inf)
+    # Cos prior (dec): log(cos(x) / (sin(hi) - sin(lo))), works for full-sky and narrow window
+    lp_cos = jnp.where(in_bounds, jnp.log(jnp.abs(jnp.cos(x)) + 1e-300) - _COS_DEC_LOG_NORM, -jnp.inf)
 
     # Beta(3,1) prior (d_L): log(3*u^2 / range) where u = (x-lo)/(hi-lo)
     u = (x - PRIOR_LO) / _PRIOR_RANGE
@@ -1053,8 +1054,9 @@ def sample_from_prior(key, n):
                 col = jax.random.uniform(keys[i], (n_try,), minval=lo, maxval=hi)
             elif ptype == 1:  # sin (iota): inverse CDF = arccos(1 - 2u)
                 col = jnp.arccos(1 - 2 * jax.random.uniform(keys[i], (n_try,)))
-            elif ptype == 2:  # cos (dec): inverse CDF = arcsin(2u - 1)
-                col = jnp.arcsin(2 * jax.random.uniform(keys[i], (n_try,)) - 1)
+            elif ptype == 2:  # cos (dec): inverse CDF = arcsin(sin(lo) + u*(sin(hi)-sin(lo)))
+                u = jax.random.uniform(keys[i], (n_try,))
+                col = jnp.arcsin(np.sin(lo) + u * (np.sin(hi) - np.sin(lo)))
             elif ptype == 3:  # beta(3,1)
                 col = jax.random.beta(keys[i], 3.0, 1.0, (n_try,)) * (hi - lo) + lo
             elif ptype == 4:  # log-uniform: x = lo * (hi/lo)^u
