@@ -70,7 +70,7 @@ for x, w, label, col, ls in [
 ]:
     if x is None: continue
     w = w / w.sum()
-    pdf = gaussian_kde(x, weights=w)(xg); pdf /= np.trapz(pdf, xg)
+    pdf = gaussian_kde(x, weights=w)(xg); pdf /= np.trapezoid(pdf, xg)
     ax.plot(xg, pdf, color=col, lw=2.0, ls=ls, label=label)
 # LVK reference
 ax.axvspan(62, 82, color='0.55', alpha=0.18, zorder=0,

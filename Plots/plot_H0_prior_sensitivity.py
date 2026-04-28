@@ -22,7 +22,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 from _plot_utils import (
     OUT_DIR, RESULTS_DIR, COLORS, load_nested_csv,
     load_gwtc1_gw170817, derive_lvk_h0_samples,
-    compute_hpd_samples, plot_h0_hist,
+    compute_hpd_samples, plot_h0,
 )
 import numpy as np
 import pandas as pd
@@ -52,35 +52,20 @@ XAS_CSVS = [
     f'{XAS_BASE}__vp250__seed0000/samples.csv',
 ]
 
-if all(os.path.exists(c) for c in XAS_CSVS):
-    PRIMARY_TAG = 'IMRPhenomXAS_NRTidalv3'
-    VARIANTS = [
-        (r'XAS\_NRTv3 baseline ($\pi(d_L)\propto d_L^2$)',
-         XAS_CSVS[0], COLORS['imr_baseline']),
-        (r'XAS\_NRTv3 flat-in-$z$ (direct)',
-         XAS_CSVS[1], COLORS['flatZ']),
-        (r'XAS\_NRTv3 flat-in-$z$ (reweighted)',
-         XAS_CSVS[2], COLORS['reweighted']),
-        (r'XAS\_NRTv3 $\sigma_{v_p}=250\,\rm km\,s^{-1}$',
-         XAS_CSVS[3], COLORS['vp250']),
-    ]
-else:
-    PRIMARY_TAG = 'IMRPhenomD_NRTidalv2 (host-loc) — XAS sweep not yet on disk'
-    print(f"  NOTE: {XAS_BASE}__*/samples.csv not found; using IMR host-loc fallback.")
-    VARIANTS = [
-        (r'NRTv2 baseline ($\pi(d_L)\propto d_L^2$)',
-         'Results/gwtc1_phasemarg/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_baseline.csv',
-         COLORS['imr_baseline']),
-        (r'NRTv2 flat-in-$z$ (direct)',
-         'Results/gwtc1_phasemarg/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_flatZ.csv',
-         COLORS['flatZ']),
-        (r'NRTv2 flat-in-$z$ (reweighted)',
-         'Results/gwtc1_phasemarg/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_reweighted_flatZ.csv',
-         COLORS['reweighted']),
-        (r'NRTv2 $\sigma_{v_p}=250\,\rm km\,s^{-1}$',
-         'Results/gwtc1_phasemarg/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_vp250.csv',
-         COLORS['vp250']),
-    ]
+missing = [c for c in XAS_CSVS if not os.path.exists(c)]
+if missing:
+    raise SystemExit(f"  Missing XAS s14 CSVs: {missing}")
+PRIMARY_TAG = 'IMRPhenomXAS_NRTidalv3'
+VARIANTS = [
+    (r'XAS\_NRTv3 baseline ($\pi(d_L)\propto d_L^2$)',
+     XAS_CSVS[0], COLORS['imr_baseline']),
+    (r'XAS\_NRTv3 flat-in-$z$ (direct)',
+     XAS_CSVS[1], COLORS['flatZ']),
+    (r'XAS\_NRTv3 flat-in-$z$ (reweighted)',
+     XAS_CSVS[2], COLORS['reweighted']),
+    (r'XAS\_NRTv3 $\sigma_{v_p}=250\,\rm km\,s^{-1}$',
+     XAS_CSVS[3], COLORS['vp250']),
+]
 
 print(f"  Primary waveform for prior sensitivity: {PRIMARY_TAG}\n")
 
@@ -101,6 +86,6 @@ lvk_h0 = derive_lvk_h0_samples(lvk['d_L'].to_numpy(), rng=np.random.default_rng(
 lvk_w = np.ones(len(lvk_h0))
 runs.append(((lvk_h0, lvk_w), r'LVK GWTC-1 (Abbott+2017)', '0.25'))
 
-plot_h0_hist(runs, 'H0_prior_sensitivity',
-             xlim=(40, 220), bins=110,
-             add_planck_shoes=True, lvk_band=False, hpd_lines=False)
+runs_kde = [({'H_0': h0, 'weights': w}, lab, col)
+            for ((h0, w), lab, col) in runs]
+plot_h0(runs_kde, 'H0_prior_sensitivity', xlim=(40, 220))

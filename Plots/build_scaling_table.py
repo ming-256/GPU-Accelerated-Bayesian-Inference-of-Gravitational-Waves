@@ -37,14 +37,23 @@ for _, r in df.iterrows():
 
 # 2) s13 LVK-bounds heterodyned IMR sweep
 def _runtime(run_dir):
-    cfg = json.load(open(os.path.join(run_dir, 'config.json')))
-    fin = open(os.path.join(run_dir, 'finish.json')).read().strip().splitlines()[-1]
-    fin = json.loads(fin)
-    import datetime as dt
-    fmt = '%Y-%m-%dT%H:%M:%SZ'
-    s = dt.datetime.strptime(cfg['started'], fmt)
-    e = dt.datetime.strptime(fin['finished'], fmt)
-    return (e - s).total_seconds()
+    fin_path = os.path.join(run_dir, 'finish.json')
+    if os.path.exists(fin_path):
+        cfg = json.load(open(os.path.join(run_dir, 'config.json')))
+        fin = open(fin_path).read().strip().splitlines()[-1]
+        fin = json.loads(fin)
+        import datetime as dt
+        fmt = '%Y-%m-%dT%H:%M:%SZ'
+        s = dt.datetime.strptime(cfg['started'], fmt)
+        e = dt.datetime.strptime(fin['finished'], fmt)
+        return (e - s).total_seconds()
+    log_path = os.path.join(run_dir, 'sampler.log')
+    if os.path.exists(log_path):
+        for line in open(log_path):
+            line = line.strip()
+            if line.startswith('Total:'):
+                return float(line.split()[1].rstrip('s'))
+    return float('nan')
 
 def _logz_from_log(run_dir):
     """Parse log Z from sampler.log."""

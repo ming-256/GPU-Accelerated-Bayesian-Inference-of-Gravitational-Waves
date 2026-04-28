@@ -20,7 +20,7 @@ import sys, os
 sys.path.insert(0, os.path.dirname(__file__))
 from _plot_utils import (
     OUT_DIR, RESULTS_DIR, COLORS, load_nested_csv,
-    load_gwtc1_gw170817, derive_lvk_h0_samples, plot_h0_hist,
+    load_gwtc1_gw170817, derive_lvk_h0_samples, plot_h0,
 )
 import numpy as np
 
@@ -50,7 +50,15 @@ print(f"  Derived {len(lvk_h0)} LVK H_0 samples (median {float(np.median(lvk_h0)
 runs.append(((lvk_h0, lvk_w), r'LVK GWTC-1 (Abbott+2017, this work\'s $v_p$ model)', '0.25'))
 
 if runs:
-    plot_h0_hist(runs, 'H0_waveform_comparison',
-                 xlim=(40, 180), bins=80,
-                 add_planck_shoes=True, lvk_band=False, hpd_lines=True)
+    # KDE variant per user request (overrides hist default for this figure).
+    # plot_h0 expects dicts with 'H_0' and 'weights' keys.
+    runs_kde = []
+    for entry in runs:
+        s, lab, col = entry
+        if isinstance(s, tuple):
+            d = {'H_0': np.asarray(s[0]), 'weights': np.asarray(s[1])}
+        else:
+            d = {'H_0': s['H_0'].to_numpy(), 'weights': np.asarray(s.get_weights())}
+        runs_kde.append((d, lab, col))
+    plot_h0(runs_kde, 'H0_waveform_comparison', xlim=(40, 180))
 print("\nDone.")
