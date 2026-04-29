@@ -42,14 +42,15 @@ def load_h0_w(csv):
     return x, w
 
 
-# Try the s14 IMRPhenomXAS_NRTidalv3 sensitivity sweep first; fall back to IMR host-loc
-# when those files have not yet been produced by the GPU run.
+# Slim variant set: baseline vs direct flat-z vs reweighted flat-z. The
+# vp250 sweep is documented inline in the paper (peculiar-velocity sweep)
+# and intentionally not promoted to this figure to keep the central
+# direct-vs-reweighted comparison legible.
 XAS_BASE = 'Results/test_suite/s14__gw170817__imrphenomxas_nrtidalv3'
 XAS_CSVS = [
     f'{XAS_BASE}__baseline__seed0000/samples.csv',
     f'{XAS_BASE}__flatz__seed0000/samples.csv',
     f'{XAS_BASE}__reweighted_flatz__seed0000/samples.csv',
-    f'{XAS_BASE}__vp250__seed0000/samples.csv',
 ]
 
 missing = [c for c in XAS_CSVS if not os.path.exists(c)]
@@ -63,8 +64,6 @@ VARIANTS = [
      XAS_CSVS[1], COLORS['flatZ']),
     (r'XAS\_NRTv3 flat-in-$z$ (reweighted)',
      XAS_CSVS[2], COLORS['reweighted']),
-    (r'XAS\_NRTv3 $\sigma_{v_p}=250\,\rm km\,s^{-1}$',
-     XAS_CSVS[3], COLORS['vp250']),
 ]
 
 print(f"  Primary waveform for prior sensitivity: {PRIMARY_TAG}\n")

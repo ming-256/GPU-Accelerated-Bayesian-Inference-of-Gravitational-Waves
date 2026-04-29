@@ -106,6 +106,15 @@ parser.add_argument('--narrow-sky', action='store_true',
                          '(matches the LVK Abbott+2017 EM-counterpart-localised analysis). '
                          'Default: full-sky (uniform RA on [0, 2π], cos(dec) on the sphere). '
                          'Used for runtime comparison of full-sky vs sky-restricted nested sampling.')
+parser.add_argument('--lvk-spin-ball', action='store_true',
+                    help='Replace the default uniform p(s_iz) on [-chi_max, chi_max] with the '
+                         'projection of an isotropic 3-D spin ball |chi_i| <= chi_max onto s_iz: '
+                         'p(s_z) = (3/4) * (chi_max^2 - s_z^2) / chi_max^3 (parabolic, peak at 0, '
+                         'zero at the boundary). Matches the LVK GW170817 lowSpin BNS spin prior '
+                         '(uniform-in-volume of the spin ball, isotropic direction). '
+                         'Only meaningful for aligned-spin tidal waveforms; no-op for IMRPhenomPv2 '
+                         '(precessing branch already uses an explicit (a_i, cos(tilt_i), phi_i) '
+                         'parameterisation).')
 args = parser.parse_args()
 waveform_tag = args.waveform
 data_source = args.data_source
@@ -255,7 +264,23 @@ PRIOR_HI = jnp.array(_PRIOR_HI_BASE)
 M_COMP_LO = args.m_comp_lo if args.m_comp_lo is not None else 0.5    # M_sun
 M_COMP_HI = args.m_comp_hi if args.m_comp_hi is not None else 7.7    # M_sun
 
-# Prior type encoding: 0=uniform, 1=sin(iota), 2=cos(dec), 3=beta(d_L), 4=log-uniform(H_0)
+# --lvk-spin-ball: switch the s_z component priors from uniform on [-chi_max, chi_max]
+# to the parabolic projection p(s_z) = (3/4)*(chi_max^2 - s_z^2)/chi_max^3 of an
+# isotropic 3-D ball, matching the LVK GW170817 lowSpin BNS spin prior. No-op for
+# the precessing branch.
+if args.lvk_spin_ball and not precessing:
+    _PRIOR_TYPE_BASE[I_S1Z] = 6
+    _PRIOR_TYPE_BASE[I_S2Z] = 6
+    print(f"Spin prior: LVK ball-projection — p(s_iz) = (3/4)(chi_max^2 - s_iz^2)/chi_max^3, "
+          f"chi_max = {(_PRIOR_HI_BASE[I_S1Z] - _PRIOR_LO_BASE[I_S1Z]) / 2:.3f}")
+elif args.lvk_spin_ball and precessing:
+    print("Note: --lvk-spin-ball is a no-op for the precessing branch "
+          "(spins already (a_i, cos(tilt_i), phi_i) with isotropic direction).")
+else:
+    print("Spin prior: uniform on [-chi_max, chi_max] per component (default).")
+
+# Prior type encoding: 0=uniform, 1=sin(iota), 2=cos(dec), 3=beta(d_L),
+# 4=log-uniform(H_0), 5=power-law(d_L^2), 6=ball-projection(s_z)
 PRIOR_TYPE = jnp.array(_PRIOR_TYPE_BASE)
 
 # Pre-computed prior constants (avoid recomputation in JIT)
@@ -266,6 +291,11 @@ _BETA_LN = jax.scipy.special.betaln(3.0, 1.0)
 # Power-law ∝ x^2 (volumetric d_L): normalisation constant log(3 / (hi^3 - lo^3))
 _POWERLAW2_LOG_NORM = jnp.log(3.0) - jnp.log(PRIOR_HI ** 3 - PRIOR_LO ** 3)
 _COS_DEC_LOG_NORM = jnp.log(jnp.sin(PRIOR_HI[I_DEC]) - jnp.sin(PRIOR_LO[I_DEC]))
+# Ball-projection (type 6): p(s_z) = (3/4)(chi_max^2 - s_z^2)/chi_max^3 on
+# [center - chi_max, center + chi_max]. Symmetric-box assumption: chi_max = range/2.
+_BALL_CENTER     = (PRIOR_HI + PRIOR_LO) / 2.0
+_BALL_CHI_MAX    = _PRIOR_RANGE / 2.0
+_BALL_LOG_NORM   = jnp.log(3.0) - jnp.log(4.0) - 3.0 * jnp.log(_BALL_CHI_MAX + 1e-300)
 
 
 # ============================================================================
@@ -301,13 +331,22 @@ def logprior_fn(x):
     # Power-law ∝ x^2 (volumetric d_L): log(3 x^2 / (hi^3 - lo^3))
     lp_powerlaw2 = jnp.where(in_bounds, _POWERLAW2_LOG_NORM + 2.0 * jnp.log(jnp.abs(x) + 1e-300), -jnp.inf)
 
+    # Ball-projection prior (s_z marginal of isotropic 3-D ball with |chi| <= chi_max):
+    #   p(s_z) = (3/4) * (chi_max^2 - s_z^2) / chi_max^3   on [center - chi_max, center + chi_max]
+    # Used by --lvk-spin-ball to match the LVK GW170817 lowSpin BNS spin prior.
+    s_z_centered = x - _BALL_CENTER
+    lp_ball = jnp.where(in_bounds,
+        _BALL_LOG_NORM + jnp.log(jnp.maximum(_BALL_CHI_MAX ** 2 - s_z_centered ** 2, 1e-300)),
+        -jnp.inf)
+
     # Select per-parameter prior using type index
     lp = jnp.where(PRIOR_TYPE == 0, lp_uniform,
          jnp.where(PRIOR_TYPE == 1, lp_sin,
          jnp.where(PRIOR_TYPE == 2, lp_cos,
          jnp.where(PRIOR_TYPE == 3, lp_beta,
          jnp.where(PRIOR_TYPE == 4, lp_log,
-                    lp_powerlaw2)))))
+         jnp.where(PRIOR_TYPE == 5, lp_powerlaw2,
+                    lp_ball))))))
 
     total = jnp.sum(lp)
 

@@ -189,7 +189,7 @@ We validate the pipeline on the binary-black-hole event GW150914 \citep{Abbott20
 \begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{corner_GW150914_waveform_comparison.pdf}
-  \caption{GW150914 validation: corner overlay of the LVK GWTC-2.1 \XPHM\ posterior, our heterodyned \IMR\ run, and our heterodyned \XPHM\ run at $n_{\rm live}=5000$. Switching from \IMR\ to \XPHM\ realigns the recovered $\dL$ with the LVK reference.}
+  \caption{GW150914 validation: corner overlay of the LVK GWTC-2.1 \XPHM\ posterior and our heterodyned \XPHM\ run at $n_{\rm live}=5000$. Both legend entries use the same waveform, so the panels show a like-for-like reproduction.}
   \label{fig:gw150914}
 \end{figure}
 
@@ -216,7 +216,7 @@ The IMRPhenomPv2-no-tides run on the same prior set returns $\hzero^{\rm MAP}\ap
 \begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{H0_waveform_comparison.pdf}
-  \caption{GW170817 \hzero\ posterior under the LVK-bounds baseline prior for the three-waveform set \IMRX/\IMR/\TF\ (weighted step-histograms) plus the GWTC-1 IMRPhenomPv2\_NRTidal posterior mapped through this work's standard-siren likelihood of equation~\ref{eq:h0likelihood}. Vertical markers are sample-derived 68 per cent HPD bounds. The Planck $\Lambda$CDM and SH0ES distance-ladder values are shown for context.}
+  \caption{GW170817 \hzero\ posterior under the LVK-bounds baseline prior for the two NR-calibrated tidal waveforms used as primary/anchor (\IMRX, \IMR), plus the GWTC-1 IMRPhenomPv2\_NRTidal posterior mapped through this work's standard-siren likelihood of equation~\ref{eq:h0likelihood}. Vertical markers are sample-derived 68 per cent HPD bounds. The Planck $\Lambda$CDM and SH0ES distance-ladder values are shown for context. The \TF\ and IMRPhenomPv2 (no tides) family checks are reported in Table~\ref{tab:waveform-h0} and retained in the public test suite, but are not promoted to this figure.}
   \label{fig:waveform-h0}
 \end{figure}
 
@@ -227,7 +227,7 @@ The IMRPhenomPv2-no-tides run on the same prior set returns $\hzero^{\rm MAP}\ap
   \label{fig:waveform-corner}
 \end{figure*}
 
-\begin{table}
+\begin{table*}
   \centering
   \caption{GW170817 \hzero\ summaries for the three-waveform set on the LVK-bounds baseline prior, $n_{\rm live}=5000$, plus the GWTC-1 IMRPhenomPv2\_NRTidal posterior mapped through this work's standard-siren likelihood. MAP and sample-derived HPDs in $\kmsmpc$.}
   \label{tab:waveform-h0}
@@ -241,37 +241,7 @@ The IMRPhenomPv2-no-tides run on the same prior set returns $\hzero^{\rm MAP}\ap
     GWTC-1 (mapped)            & 67.1 & $[61.6,87.6]$  & $[57.1,125.6]$  & --    & --              \\
     \bottomrule
   \end{tabular}
-\end{table}
-
-\subsection{Synoptic Hubble-constant view}
-\label{sec:synoptic}
-
-Figure~\ref{fig:h0synoptic} compiles the standard-siren and gravitational-wave-only \hzero\ summaries for the three-waveform set, plus the mapped GWTC-1 row. Sample-derived HPDs at 68 and 95 per cent are shown; the Planck $\Lambda$CDM and SH0ES distance-ladder bands are included for context. The GW-only rows replace the standard-siren likelihood with $\hzero=v_{\rm r}/\dL$ at fixed $v_{\rm r}$ (no host-velocity coupling); they sit slightly lower than the standard-siren rows in MAP and have substantially heavier high-\hzero\ tails, confirming that for GW170817 the host-velocity likelihood acts as a soft pull on the high-\hzero, low-\dL\ branch but does not dominate the source-parameter constraint. The $(\dL,\iota)$ degeneracy structure reported in Section~\ref{sec:bimodality} is therefore a feature of the gravitational-wave data, not of the cosmological coupling.
-
-\begin{table}
-  \centering
-  \caption{Synoptic GW170817 \hzero\ forest. Standard-siren and GW-only ($\hzero=v_{\rm r}/\dL$) rows for \IMRX, \IMR, and \TF, plus the GWTC-1 row. MAP and sample-derived HPDs in $\kmsmpc$.}
-  \label{tab:synoptic}
-  \begin{tabular}{lccc}
-    \toprule
-    Row & MAP & 68\% HPD & 95\% HPD \\
-    \midrule
-    \IMRX\ (siren, primary)             & 71.5 & $[63.1,88.5]$ & $[58.8,117.6]$ \\
-    \IMR\ (siren, anchor)               & 71.5 & $[63.2,90.5]$ & $[58.2,130.0]$ \\
-    \TF\ (siren)                        & 68.5 & $[61.2,89.3]$ & $[56.7,127.0]$ \\
-    \IMRX\ (GW-only)                    & 69.5 & $[64.4,91.1]$ & $[62.0,147.2]$ \\
-    \IMR\ (GW-only)                     & 70.5 & $[64.0,91.2]$ & $[61.5,147.1]$ \\
-    GWTC-1 (mapped)                     & 67.5 & $[61.6,87.6]$ & $[57.1,125.6]$ \\
-    \bottomrule
-  \end{tabular}
-\end{table}
-
-\begin{figure}
-  \centering
-  \includegraphics[width=\columnwidth]{H0_synoptic.pdf}
-  \caption{Synoptic forest plot of GW170817 \hzero\ summaries. Standard-siren and GW-only rows for the three-waveform set, plus the GWTC-1 IMRPhenomPv2\_NRTidal posterior mapped through this work's standard-siren likelihood. Thick bars: sample-derived 68 per cent HPDs; thin bars: 95 per cent HPDs. The Planck and SH0ES distance-ladder bands are shown for context. There is no shaded LVK reference band; the LVK row is the actual posterior.}
-  \label{fig:h0synoptic}
-\end{figure}
+\end{table*}
 
 \subsection{Prior sensitivity (the central science finding)}
 \label{sec:prior}
@@ -282,7 +252,7 @@ The central scientific result of this paper is a direct comparison between the f
   \centering
   \caption{\IMRX\ \hzero\ summaries for the four prior variants on the default-mass full-sky prior set, $n_{\rm live}=5000$. MAP and sample-derived HPDs in $\kmsmpc$. The reweighted variant is post-hoc and has no independent $\ln Z$.}
   \label{tab:h0priors}
-  \begin{tabular}{lcccccc}
+  \begin{tabular}{lccccc}
     \toprule
     Variant & MAP & 68\% HPD & $P(\hzero>120)$ & $P(\hzero>150)$ & $\ln Z$ \\
     \midrule
@@ -297,7 +267,7 @@ The central scientific result of this paper is a direct comparison between the f
 \begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{H0_prior_sensitivity.pdf}
-  \caption{Prior-sensitivity comparison for \IMRX. Weighted step-histograms of \hzero\ under the four prior variants of Section~\ref{sec:priors}, with the GWTC-1 IMRPhenomPv2\_NRTidal posterior mapped through this work's standard-siren likelihood overlaid as the literature reference. The directly sampled flat-in-redshift posterior places substantially more mass at high \hzero\ than the reweighted estimate, and both depart from the volumetric baseline.}
+  \caption{Prior-sensitivity comparison for \IMRX. Weighted step-histograms of \hzero\ under the volumetric baseline and the two flat-in-redshift variants of Section~\ref{sec:priors}, with the GWTC-1 IMRPhenomPv2\_NRTidal posterior mapped through this work's standard-siren likelihood overlaid as the literature reference. The directly sampled flat-in-redshift posterior places substantially more mass at high \hzero\ than the reweighted estimate. The $\sigmavp=250\kms$ peculiar-velocity sweep is reported in Table~\ref{tab:h0priors} and discussed inline rather than promoted to this figure.}
   \label{fig:h0prior}
 \end{figure}
 
@@ -334,11 +304,11 @@ Figure~\ref{fig:bimodality} shows the joint $(\dL,\iota)$ posterior under the un
 \begin{figure*}
   \centering
   \includegraphics[width=0.92\textwidth]{bimodality.pdf}
-  \caption{The $\dL$--$\iota$ bimodality in the GW170817 flat-in-redshift posterior. Left: joint $(\dL,\iota)$ posterior from the unrestricted $\dL\in[10,75]\,\rm Mpc$ run (Mode-B-anchored heterodyne reference), with the prior-restricted Mode-A and Mode-B contours overlaid. Right: per-mode \hzero\ marginals as weighted step-histograms.}
+  \caption{The $\dL$--$\iota$ bimodality in the GW170817 flat-in-redshift posterior. Left: joint $(\dL,\iota)$ posterior from the unrestricted $\dL\in[10,75]\,\rm Mpc$ run (Mode-B-anchored heterodyne reference), with the prior-restricted Mode-A and Mode-B contours overlaid. Right: per-mode \hzero\ marginals as weighted step-histograms. The Planck $\Lambda$CDM and SH0ES distance-ladder bands are shown for context; this work is itself a GW170817 reanalysis, so the LVK GW170817 band is uninformative here and is not included.}
   \label{fig:bimodality}
 \end{figure*}
 
-\begin{table}
+\begin{table*}
   \centering
   \caption{Local evidences, MAP $\hzero$ values, and sample-derived 68 per cent HPDs for the three $\dL$-restricted flat-in-redshift runs. The Mode-B/Mode-A Bayes factor includes a $\ln(20/45)$ correction for the difference in restricted-prior $\dL$ volumes.}
   \label{tab:bimodality}
@@ -351,7 +321,7 @@ Figure~\ref{fig:bimodality} shows the joint $(\dL,\iota)$ posterior under the un
     Unrestricted    & $[10,75]$ & 75.2   & $[61.5,118.0]$ & 0.281           & $486.48\pm 0.09$ \\
     \bottomrule
   \end{tabular}
-\end{table}
+\end{table*}
 
 The Bayes factor between Mode~B and Mode~A, after correcting for the volume difference between the restricted priors, is
 \begin{equation}
@@ -405,14 +375,7 @@ The heterodyned $\hzero^{\rm MAP}$ is stable across $n_{\rm live}\geq 2500$ to w
 
 We have so far emphasised that every heterodyned run in the science set is full-sky: right ascension uniform on $[0,2\pi]$ and declination distributed as $\cos\delta$ on $[-\pi/2,\pi/2]$. NGC~4993 enters only as the heterodyne reference parameters and as the optional $\pm 0.05\,\rm rad$ patch invoked here for a controlled comparison.
 
-To check whether the heterodyne speedup of Section~\ref{sec:speedup} is in fact driven by an implicitly tight sky prior, we ran a matched-pair runtime sweep at $n_{\rm live}=5000$ comparing full-sky and narrow-sky ($\pm 0.05\,\rm rad$ around NGC~4993) versions of the same configuration on four sampler/waveform combinations. Table~\ref{tab:skyprior} reports the wall-clock results, and Figure~\ref{fig:skyprior} visualises them.
-
-\begin{figure}
-  \centering
-  \includegraphics[width=\columnwidth]{sky_prior_runtime.pdf}
-  \caption{Sky-prior runtime sweep at $n_{\rm live}=5000$. Matched-pair wall-clock for full-sky and narrow-sky ($\pm 0.05\,\rm rad$ around NGC~4993) versions of the heterodyned and unheterodyned samplers across waveforms; the right panel shows the narrow-vs-full ratio.}
-  \label{fig:skyprior}
-\end{figure}
+To check whether the heterodyne speedup of Section~\ref{sec:speedup} is in fact driven by an implicitly tight sky prior, we ran a matched-pair runtime sweep at $n_{\rm live}=5000$ comparing full-sky and narrow-sky ($\pm 0.05\,\rm rad$ around NGC~4993) versions of the same configuration on four sampler/waveform combinations. Table~\ref{tab:skyprior} reports the wall-clock results.
 
 \begin{table}
   \centering

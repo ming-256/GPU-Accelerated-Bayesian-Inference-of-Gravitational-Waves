@@ -72,10 +72,15 @@ for x, w, label, col, ls in [
     w = w / w.sum()
     pdf = gaussian_kde(x, weights=w)(xg); pdf /= np.trapezoid(pdf, xg)
     ax.plot(xg, pdf, color=col, lw=2.0, ls=ls, label=label)
-# LVK reference
-ax.axvspan(62, 82, color='0.55', alpha=0.18, zorder=0,
-           label=r'LVK GW170817 (Abbott+2017, 68\% HPD)')
-ax.axvline(70.0, color='0.4', ls='-.', lw=1.0, zorder=0)
+# Cosmological reference bands — Planck CMB and SH0ES distance-ladder.
+# (LVK GW170817 band intentionally dropped: this work is itself a
+# GW170817 reanalysis, so the LVK band is uninformative here.)
+ax.axvspan(65.7, 68.2, color=COLORS['planck_outer'], alpha=0.3, zorder=0)
+ax.axvspan(66.93 - 0.62, 66.93 + 0.62, color=COLORS['planck_inner'],
+           alpha=0.3, zorder=0, label='Planck')
+ax.axvspan(69.76, 76.72, color=COLORS['shoes_outer'], alpha=0.3, zorder=0)
+ax.axvspan(73.24 - 1.74, 73.24 + 1.74, color=COLORS['shoes_inner'],
+           alpha=0.3, zorder=0, label='SH0ES')
 ax.set_xlim(40, 230); ax.set_ylim(bottom=0)
 ax.set_xlabel(r'$H_0$ (km s$^{-1}$ Mpc$^{-1}$)', fontsize=13)
 ax.set_ylabel(r'$P(H_0)$ (km$^{-1}$ s Mpc)', fontsize=13)

@@ -1,9 +1,8 @@
 """
-GW150914 multi-waveform comparison.
+GW150914 validation overlay.
 
-Overlay (in the existing Plots/ corner-plot style):
-  - GWTC-2.1 reference (IMRPhenomXPHM PE samples from LVK)
-  - Our IMRPhenomD heterodyned run (Results/gwtc1_phasemarg/GW15_*.csv)
+Two-curve overlay (LVK reference vs this work; both IMRPhenomXPHM):
+  - LVK GWTC-2.1 IMRPhenomXPHM PE samples
   - Our IMRPhenomXPHM heterodyned run (Results/test_suite/s06__*/samples.csv)
 
 Output: Results/gwtc1_phasemarg/plots/corner_GW150914_waveform_comparison.{pdf,png}
@@ -17,16 +16,12 @@ PLOT_COLS = [r'$\mathcal{M}_c$', r'$q$', r'$\chi_{\rm eff}$',
 
 datasets = []
 
-# --- LVK GWTC-2.1 reference ---
+# --- LVK GWTC-2.1 reference (IMRPhenomXPHM) ---
 gwtc = load_gwtc2p1_gw150914()
-datasets.append((gwtc, 'LVK (GWTC-2.1, IMRPhenomXPHM)', COLORS['gwtc']))
+datasets.append((gwtc, 'LVK', COLORS['gwtc']))
 
 def _load_GW150914(csv, has_inplane=False):
-    """Load a GW150914 nested-sampling CSV and synthesise (M_c, q, chi_eff, d_L, iota).
-
-    has_inplane: True for IMRPhenomXPHM (a_1, cost_1, phi_1, a_2, cost_2, phi_2);
-                 False for aligned-spin (s1_z, s2_z).
-    """
+    """Load a GW150914 nested-sampling CSV and synthesise (M_c, q, chi_eff, d_L, iota)."""
     s = load_nested_csv(csv)
     Mc = s['M_c'].to_numpy()
     q  = s['q'].to_numpy()
@@ -46,18 +41,13 @@ def _load_GW150914(csv, has_inplane=False):
         weights=np.asarray(s.get_weights()),
     )
 
-# --- Our IMRPhenomD heterodyned baseline ---
-imrd_csv = os.path.join(RESULTS_DIR,
-    'gwtc1_phasemarg/GW15_PhaseMarg_Heterodyned_IMRPhenomD_local_psd-gwtc2p1_ref-gwtc1.csv')
-if os.path.exists(imrd_csv):
-    datasets.append((_load_GW150914(imrd_csv, has_inplane=False),
-                     'IMRPhenomD (this work)', COLORS['imr_baseline']))
-
 # --- Our IMRPhenomXPHM heterodyned (s06) ---
 xphm_csv = 'Results/test_suite/s06__gw150914__imrphenomxphm__lvkbounds__seed0000/samples.csv'
 if os.path.exists(xphm_csv):
     datasets.append((_load_GW150914(xphm_csv, has_inplane=True),
-                     'IMRPhenomXPHM (this work)', COLORS['flatZ']))
+                     'this work', COLORS['flatZ']))
+else:
+    raise SystemExit(f"  Missing s06 XPHM CSV: {xphm_csv}")
 
 make_corner(datasets, PLOT_COLS, 'corner_GW150914_waveform_comparison',
             figsize=(12, 12))

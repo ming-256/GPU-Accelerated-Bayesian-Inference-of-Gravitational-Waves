@@ -1,18 +1,16 @@
 """
-GW170817 H_0 posterior — three-waveform comparison plus LVK actual posterior.
+GW170817 H_0 posterior — slim two-waveform comparison plus LVK actual posterior.
 
-Overlays weighted-histogram H_0 posteriors (sample-derived HPDs, no KDE):
-  - IMRPhenomXAS_NRTidalv3        (s07 LVK-bounds baseline) — primary
-  - IMRPhenomD_NRTidalv2          (s07 LVK-bounds baseline) — anchor
-  - TaylorF2  (host-localised, gwtc1_phasemarg)            — family check
-  - LVK GW170817 GWTC-1 IMRPhenomPv2_NRTidal samples       — derived H_0
+Overlays the two NR-calibrated tidal waveforms used as primary/anchor
+plus the LVK GW170817 GWTC-1 IMRPhenomPv2_NRTidal posterior mapped
+through this work's standard-siren model:
+  - IMRPhenomXAS_NRTidalv3   (s07 LVK-bounds baseline)  — primary
+  - IMRPhenomD_NRTidalv2     (s07 LVK-bounds baseline)  — anchor
+  - LVK GWTC-1 (Abbott+2017) — derived H_0 from d_L posterior
 
-The LVK curve is *not* an HPD band — it is the LVK GWTC-1 d_L posterior
-mapped through this work's standard-siren model
-(v_obs ~ N(v_p + H_0 d_L, 72), v_p ~ N(310, 150)) so the comparison is
-apples-to-apples. IMRPhenomPv2 (no tides) is intentionally dropped from the
-main figure; the precession-only systematic stays in the open-source
-test_suite (s07__imrphenompv2__baseline_lvkbounds).
+TaylorF2 and IMRPhenomPv2 are intentionally dropped from the main figure;
+both stay in the open-source test_suite (TaylorF2 in gwtc1_phasemarg,
+IMRPhenomPv2 in s07__imrphenompv2__baseline_lvkbounds).
 
 Output: Results/gwtc1_phasemarg/plots/H0_waveform_comparison.{pdf,png}
 """
@@ -26,14 +24,11 @@ import numpy as np
 
 CSV_NRTV2     = 'Results/test_suite/s07__gw170817__imrphenomd_nrtidalv2__baseline_lvkbounds__seed0000/samples.csv'
 CSV_XAS_NRTV3 = 'Results/test_suite/s07__gw170817__imrphenomxas_nrtidalv3__baseline_lvkbounds__seed0000/samples.csv'
-CSV_TF2       = os.path.join(RESULTS_DIR,
-    'gwtc1_phasemarg/PhaseMarg_Heterodyned_TaylorF2_local_psd-gwtc1_ref-gwtc1_baseline.csv')
 
 runs = []
 for csv, label, colour in [
     (CSV_XAS_NRTV3, r'IMRPhenomXAS\_NRTidalv3 (this work)',  COLORS['flatZ']),
     (CSV_NRTV2,     r'IMRPhenomD\_NRTidalv2 (this work)',    COLORS['imr_baseline']),
-    (CSV_TF2,       r'TaylorF2 (this work)',                  COLORS['tf2_baseline']),
 ]:
     if os.path.exists(csv):
         s = load_nested_csv(csv)
