@@ -58,7 +58,7 @@ if missing:
     raise SystemExit(f"  Missing XAS s14 CSVs: {missing}")
 PRIMARY_TAG = 'IMRPhenomXAS_NRTidalv3'
 VARIANTS = [
-    (r'XAS\_NRTv3 baseline ($\pi(d_L)\propto d_L^2$)',
+    (r'XAS\_NRTv3 baseline',
      XAS_CSVS[0], COLORS['imr_baseline']),
     (r'XAS\_NRTv3 flat-in-$z$ (direct)',
      XAS_CSVS[1], COLORS['flatZ']),
@@ -78,13 +78,6 @@ for label, csv, col in VARIANTS:
     print(f"  {label:55s}  P(>120)={p120:.3f}  P(>150)={p150:.3f}")
     runs.append(((x, w), label, col))
 
-# LVK posterior — same standard-siren mapping as elsewhere; no shaded band.
-print("  Loading LVK GWTC-1 GW170817 d_L posterior for the LVK overlay...")
-lvk = load_gwtc1_gw170817(columns=['d_L'])
-lvk_h0 = derive_lvk_h0_samples(lvk['d_L'].to_numpy(), rng=np.random.default_rng(170817))
-lvk_w = np.ones(len(lvk_h0))
-runs.append(((lvk_h0, lvk_w), r'LVK GWTC-1 (Abbott+2017)', '0.25'))
-
 runs_kde = [({'H_0': h0, 'weights': w}, lab, col)
             for ((h0, w), lab, col) in runs]
-plot_h0(runs_kde, 'H0_prior_sensitivity', xlim=(40, 220))
+plot_h0(runs_kde, 'H0_prior_sensitivity', xlim=(40, 180))

@@ -38,7 +38,7 @@ MNRAS_2COL  = 6.97   # double column inches
 GOLDEN      = (1 + 5**0.5) / 2
 
 plt.rcParams.update({
-    "text.usetex":        True,
+    "text.usetex":        False,
     "font.family":        "serif",
     "font.serif":         ["Times New Roman", "Times", "DejaVu Serif"],
     "font.size":          8,
@@ -334,24 +334,9 @@ def fig_bimodality():
     run_b = load_run("s10__gw170817__imrphenomd_nrtidalv2__flatz__dL10-30__refGWTC1__seed0000")
     run_full = load_run("s10__gw170817__imrphenomd_nrtidalv2__flatz__dL10-75__refModeB__seed0000")
 
-    fig, axes = plt.subplots(1, 2, figsize=(MNRAS_2COL, MNRAS_2COL / GOLDEN * 0.65))
+    fig, ax = plt.subplots(figsize=(MNRAS_COL * 1.5, MNRAS_COL))
 
-    # Left: full posterior in d_L-iota plane
-    ax = axes[0]
-    dl = run_full.param("d_L"); iota = run_full.param("iota"); w = run_full.weights
-    h, xe, ye = np.histogram2d(dl, iota, bins=80, weights=w, density=True)
-    ax.contourf(0.5*(xe[:-1]+xe[1:]), 0.5*(ye[:-1]+ye[1:]), h.T,
-                levels=10, cmap="Blues", alpha=0.85)
-    ax.contour(0.5*(xe[:-1]+xe[1:]), 0.5*(ye[:-1]+ye[1:]), h.T,
-               levels=5, colors="white", linewidths=0.4, alpha=0.6)
-    ax.set_xlabel(r"$d_L\,[\mathrm{Mpc}]$")
-    ax.set_ylabel(r"$\iota\,[\mathrm{rad}]$")
-    ax.set_title(r"(a) Full posterior (flat-$z$, $d_L\in[10,75]$\,Mpc)")
-    ax.text(16, 1.2, r"Mode B", fontsize=6, color="white", weight="bold")
-    ax.text(35, 2.8, r"Mode A", fontsize=6, color="white", weight="bold")
-
-    # Right: 1D d_L posteriors for each mode + combined
-    ax = axes[1]
+    # Only plot 1D d_L posteriors for each mode + combined
     xgrid = np.linspace(5, 80, 500)
     for run, label, col, ls in [
         (run_full, r"combined $[10,75]$\,Mpc",  C0, "-"),
@@ -359,11 +344,12 @@ def fig_bimodality():
         (run_b,    r"Mode B $[10,30]$\,Mpc",    C3, ":"),
     ]:
         dl = run.param("d_L"); w = run.weights
-        ax.plot(xgrid, kde1d(dl, w, xgrid), color=col, ls=ls, lw=0.9, label=label)
+        ax.plot(xgrid, kde1d(dl, w, xgrid), color=col, ls=ls, lw=1.2, label=label)
+    
     ax.set_xlabel(r"$d_L\,[\mathrm{Mpc}]$")
     ax.set_ylabel(r"Probability density")
-    ax.set_title(r"(b) $d_L$ marginals by mode")
-    ax.legend(fontsize=6)
+    ax.set_title(r"GW170817 $d_L$ marginals by mode")
+    ax.legend(fontsize=7)
     ax.set_xlim(5, 80)
     ax.set_ylim(bottom=0)
 
@@ -428,28 +414,58 @@ def fig_gw_only():
 # ════════════════════════════════════════════════════════════════════════════
 def fig_gw150914_corner():
     print("Fig 7: GW150914 corner …")
+    sys.path.insert(0, os.path.join(REPO, "Plots"))
+    from _plot_utils import load_gwtc2p1_gw150914
+    
+    gwtc = load_gwtc2p1_gw150914()
     run = load_run("s06__gw150914__imrphenomxphm__lvkbounds__seed0000")
     cols   = ["M_c", "q", "d_L", "iota"]
     labels = [r"$\mathcal{M}_c\,[M_\odot]$", r"$q$",
               r"$d_L\,[\mathrm{Mpc}]$", r"$\iota\,[\mathrm{rad}]$"]
-    data = np.column_stack([run.param(c) for c in cols])
+    gwtc_cols = [r'$\mathcal{M}_c$', r'$q$', r'$d_L$', r'$\iota$']
+    
+    data_our = np.column_stack([run.param(c) for c in cols])
+    data_lvk = np.column_stack([gwtc[c].to_numpy() for c in gwtc_cols])
 
+    fig = plt.figure(figsize=(MNRAS_COL * 1.5, MNRAS_COL * 1.5))
+    
+    # Plot LVK first
     fig = corner.corner(
-        data, weights=run.weights, labels=labels,
-        color=C2,
+        data_lvk, labels=labels,
+        color=GREY,
         levels=(0.68, 0.95),
         smooth=1.0, smooth1d=1.0,
         plot_datapoints=False, fill_contours=True,
-        contourf_kwargs={"colors": [plt.cm.Greens(0.25), plt.cm.Greens(0.55), "white"],
-                         "alpha": 0.9},
+        contourf_kwargs={"colors": ["#e0e0e0", "#f5f5f5", "white"], "alpha": 0.6},
         contour_kwargs={"linewidths": 0.6},
         hist_kwargs={"linewidth": 0.8},
+        fig=fig,
+    )
+    
+    # Plot ours
+    fig = corner.corner(
+        data_our, weights=run.weights, labels=labels,
+        color=C2,
+        levels=(0.68, 0.95),
+        smooth=1.0, smooth1d=1.0,
+        plot_datapoints=False, fill_contours=False,
+        contour_kwargs={"linewidths": 1.2},
+        hist_kwargs={"linewidth": 1.5},
         label_kwargs={"fontsize": 7},
         title_kwargs={"fontsize": 7},
         show_titles=True, title_fmt=".2f",
         quantiles=[0.16, 0.5, 0.84],
-        fig=plt.figure(figsize=(MNRAS_COL * 1.5, MNRAS_COL * 1.5)),
+        fig=fig,
     )
+    
+    from matplotlib.lines import Line2D
+    handles = [
+        Line2D([], [], color=GREY, lw=2, label="LVK"),
+        Line2D([], [], color=C2, lw=2, label="this work")
+    ]
+    # Put legend in the top right empty panel (axes[3] is the second column, first row)
+    fig.axes[3].legend(handles=handles, loc="center", fontsize=7, frameon=False)
+
     fig.suptitle(r"GW150914 — \texttt{IMRPhenomXPHM}, $n_\mathrm{live}=5000$",
                  fontsize=8, y=1.01)
     savefig(fig, "fig07_gw150914_corner")
@@ -614,14 +630,8 @@ def fig_h0_summary():
 # ════════════════════════════════════════════════════════════════════════════
 if __name__ == "__main__":
     print(f"Writing figures to {OUT}/")
-    fig_gw170817_corner()
     fig_h0_waveform()
-    fig_nlive_convergence()
-    fig_robustness()
     fig_bimodality()
-    fig_gw_only()
     fig_gw150914_corner()
-    fig_psd_refparams()
-    fig_speedup()
     fig_h0_summary()
     print("Done.")

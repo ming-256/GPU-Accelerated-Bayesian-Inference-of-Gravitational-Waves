@@ -27,8 +27,7 @@ CSV_XAS_NRTV3 = 'Results/test_suite/s07__gw170817__imrphenomxas_nrtidalv3__basel
 
 runs = []
 for csv, label, colour in [
-    (CSV_XAS_NRTV3, r'IMRPhenomXAS\_NRTidalv3 (this work)',  COLORS['flatZ']),
-    (CSV_NRTV2,     r'IMRPhenomD\_NRTidalv2 (this work)',    COLORS['imr_baseline']),
+    (CSV_XAS_NRTV3, r'IMRPhenomXAS\_NRTidalv3 (Jim-based work)',  COLORS['flatZ']),
 ]:
     if os.path.exists(csv):
         s = load_nested_csv(csv)
@@ -42,7 +41,7 @@ lvk = load_gwtc1_gw170817(columns=['d_L'])
 lvk_h0 = derive_lvk_h0_samples(lvk['d_L'].to_numpy(), rng=np.random.default_rng(170817))
 lvk_w = np.ones(len(lvk_h0))
 print(f"  Derived {len(lvk_h0)} LVK H_0 samples (median {float(np.median(lvk_h0)):.1f} km/s/Mpc)")
-runs.append(((lvk_h0, lvk_w), r'LVK GWTC-1 (Abbott+2017, this work\'s $v_p$ model)', '0.25'))
+runs.append(((lvk_h0, lvk_w), r'IMRPhenomPv2\_NRTidal (LVK)', '0.25'))
 
 if runs:
     # KDE variant per user request (overrides hist default for this figure).

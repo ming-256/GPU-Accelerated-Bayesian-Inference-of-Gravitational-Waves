@@ -45,7 +45,7 @@ def _load_GW150914(csv, has_inplane=False):
 xphm_csv = 'Results/test_suite/s06__gw150914__imrphenomxphm__lvkbounds__seed0000/samples.csv'
 if os.path.exists(xphm_csv):
     datasets.append((_load_GW150914(xphm_csv, has_inplane=True),
-                     'this work', COLORS['flatZ']))
+                     'Jim-based work', 'tab:orange'))
 else:
     raise SystemExit(f"  Missing s06 XPHM CSV: {xphm_csv}")
 

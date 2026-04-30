@@ -35,38 +35,37 @@ fig, axes = plt.subplots(1, 2, figsize=(14, 5.5))
 
 # ----- Panel (a): d_L vs iota -----
 ax = axes[0]
-# Combined run as a heatmap
 xi = np.linspace(8, 80, 200)
 yi = np.linspace(0, np.pi, 200)
 XX, YY = np.meshgrid(xi, yi)
 kde_full = gaussian_kde(np.vstack([dlF, iF]), weights=wF/wF.sum())
 ZZ = kde_full(np.vstack([XX.ravel(), YY.ravel()])).reshape(XX.shape)
-ax.contourf(XX, YY, ZZ, levels=10, cmap='Blues', alpha=0.6)
-# Mode A contour (orange)
+ax.contourf(XX, YY, ZZ, levels=15, cmap='Blues', alpha=0.6)
+# Mode A contour
 ZA = gaussian_kde(np.vstack([dlA, iA]), weights=wA/wA.sum())(
     np.vstack([XX.ravel(), YY.ravel()])).reshape(XX.shape)
-ax.contour(XX, YY, ZA, levels=4, colors='maroon', linewidths=1.2)
-# Mode B contour (teal)
+ax.contour(XX, YY, ZA, levels=6, colors='tab:orange', linewidths=1.2)
+# Mode B contour
 ZB = gaussian_kde(np.vstack([dlB, iB]), weights=wB/wB.sum())(
     np.vstack([XX.ravel(), YY.ravel()])).reshape(XX.shape)
-ax.contour(XX, YY, ZB, levels=4, colors='teal', linewidths=1.2)
-ax.set_xlim(8, 80); ax.set_ylim(0, np.pi)
+ax.contour(XX, YY, ZB, levels=6, colors=COLORS['small_h0_imr'], linewidths=1.2)
+ax.set_xlim(10, 60); ax.set_ylim(1.5, np.pi)
 ax.set_xlabel(r'$d_L$ (Mpc)', fontsize=13)
 ax.set_ylabel(r'$\iota$ (rad)', fontsize=13)
 ax.set_title(r'(a) Joint $(d_L,\iota)$ posterior, flat-in-$z$')
 # Annotate modes
-ax.text(20, 1.95, 'Mode B', color='teal', fontsize=11,
-        weight='bold', ha='center')
-ax.text(38, 2.65, 'Mode A', color='maroon', fontsize=11,
-        weight='bold', ha='center')
+ax.text(23, 1.80, 'Mode B', color=COLORS['small_h0_imr'], fontsize=12,
+        weight='bold', ha='center', bbox=dict(facecolor='white', alpha=0.6, edgecolor='none', pad=1))
+ax.text(42, 2.75, 'Mode A', color='tab:orange', fontsize=12,
+        weight='bold', ha='center', bbox=dict(facecolor='white', alpha=0.6, edgecolor='none', pad=1))
 
 # ----- Panel (b): H_0 1D marginals -----
 ax = axes[1]
 xg = np.linspace(40, 230, 4000)
 for x, w, label, col, ls in [
-    (h0A, wA, r'Mode A ($d_L\in[30,75]\,\rm Mpc$)', 'maroon', '--'),
-    (h0B, wB, r'Mode B ($d_L\in[10,30]\,\rm Mpc$)', 'teal',   ':'),
-    (h0F, wF, r'Combined ($d_L\in[10,75]\,\rm Mpc$)', COLORS['flatZ'], '-'),
+    (h0A, wA, r'Mode A ($d_L\in[30,75]\,\rm Mpc$)', 'tab:orange', '--'),
+    (h0B, wB, r'Mode B ($d_L\in[10,30]\,\rm Mpc$)', COLORS['small_h0_imr'],   ':'),
+    (h0F, wF, r'Combined ($d_L\in[10,75]\,\rm Mpc$)', COLORS['imr_baseline'], '-'),
 ]:
     if x is None: continue
     w = w / w.sum()

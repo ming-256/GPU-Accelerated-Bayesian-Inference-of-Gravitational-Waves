@@ -231,6 +231,7 @@ The IMRPhenomPv2-no-tides run on the same prior set returns $\hzero^{\rm MAP}\ap
   \centering
   \caption{GW170817 \hzero\ summaries for the three-waveform set on the LVK-bounds baseline prior, $n_{\rm live}=5000$, plus the GWTC-1 IMRPhenomPv2\_NRTidal posterior mapped through this work's standard-siren likelihood. MAP and sample-derived HPDs in $\kmsmpc$.}
   \label{tab:waveform-h0}
+  \resizebox{\textwidth}{!}{%
   \begin{tabular}{lccccc}
     \toprule
     Waveform                  & MAP   & 68\% HPD       & 95\% HPD        & $P(\hzero>120)$ & $\ln Z$ \\
@@ -240,7 +241,8 @@ The IMRPhenomPv2-no-tides run on the same prior set returns $\hzero^{\rm MAP}\ap
     \TF\ (family check)        & 68.9 & $[61.2,89.3]$  & $[56.7,127.0]$  & 0.065 & $486.90\pm 0.10$ \\
     GWTC-1 (mapped)            & 67.1 & $[61.6,87.6]$  & $[57.1,125.6]$  & --    & --              \\
     \bottomrule
-  \end{tabular}
+  \end{tabular}%
+  }
 \end{table*}
 
 \subsection{Prior sensitivity (the central science finding)}
@@ -370,33 +372,7 @@ The relative-binning approximation accounts for the bulk of the wall-clock reduc
 
 The heterodyned $\hzero^{\rm MAP}$ is stable across $n_{\rm live}\geq 2500$ to within $1\kmsmpc$, and $\ln Z$ stabilises within $\pm 0.2$ over the same range. The $n_{\rm live}=5000$ configuration adopted for the science runs is therefore in the converged regime. Live-point counts up to $10^{5}$ remain accessible on a single GPU; the $n_{\rm live}=10^{5}$ heterodyned run completes in roughly four hours.
 
-\subsection{Sky-prior runtime sweep}
-\label{sec:skyprior}
-
-We have so far emphasised that every heterodyned run in the science set is full-sky: right ascension uniform on $[0,2\pi]$ and declination distributed as $\cos\delta$ on $[-\pi/2,\pi/2]$. NGC~4993 enters only as the heterodyne reference parameters and as the optional $\pm 0.05\,\rm rad$ patch invoked here for a controlled comparison.
-
-To check whether the heterodyne speedup of Section~\ref{sec:speedup} is in fact driven by an implicitly tight sky prior, we ran a matched-pair runtime sweep at $n_{\rm live}=5000$ comparing full-sky and narrow-sky ($\pm 0.05\,\rm rad$ around NGC~4993) versions of the same configuration on four sampler/waveform combinations. Table~\ref{tab:skyprior} reports the wall-clock results.
-
-\begin{table}
-  \centering
-  \caption{Sky-prior matched-pair wall-clock at $n_{\rm live}=5000$. Narrow-sky imposes a $\pm 0.05\,\rm rad$ patch around NGC~4993; full-sky uses the standard isotropic prior. The XAS heterodyned full-sky baseline at $n_{\rm live}=5000$ was not part of the s15 matched pair (the corresponding $\ln Z=489.96$ at this configuration is taken from the s07 LVK-bounds baseline run). Narrow-sky $\ln Z$ at $n_{\rm live}=5000$: \IMR\ $496.54\pm 0.09$, \IMRX\ $496.49\pm 0.10$.}
-  \label{tab:skyprior}
-  \begin{tabular}{lcccc}
-    \toprule
-    Sampler        & Waveform & Full-sky (s) & Narrow-sky (s) & Ratio \\
-    \midrule
-    Heterodyned    & \IMR\    & 858    & 735    & 0.86 \\
-    Heterodyned    & \IMRX\   & --     & 753    & --   \\
-    Unheterodyned  & \IMR\    & 20\,474 & 20\,042 & 0.98 \\
-    Unheterodyned  & \TF\     & 5\,981  & 8\,615  & 1.44 \\
-    \bottomrule
-  \end{tabular}
-\end{table}
-
-The narrow-sky integrals carry larger absolute $\ln Z$ values because the sky-prior volume is much smaller, so the prior-odds ratio boosts the marginal; the per-sample posterior is statistically identical between the two members of each matched pair, which is the substantive point. The wall-clock ratios show that imposing a $\pm 0.05\,\rm rad$ sky patch buys only ${\sim}14\,\%$ for the heterodyned \IMR\ sampler. For the unheterodyned \IMR\ sampler the saving is negligible, and for unheterodyned \TF\ the narrow-sky run is in fact \emph{slower} by $44\,\%$ -- consistent with a smaller acceptance-probability gradient near the prior edge for that sampler/waveform combination. \emph{Sky-prior tightness is therefore not the source of the heterodyne speedup}: the speedups of Section~\ref{sec:speedup} are mechanistically attributable to relative binning and GPU saturation, not to a narrowed sky prior.
-
 \subsection{Scope of the performance claim}
-
 We deliberately do not compare runtime against a single-core CPU baseline, which would give a misleadingly large speedup factor, nor against a production \pbilby\ run that we have not executed under matched settings. A like-for-like GW170817 \pbilby\ benchmark using \IMRX\ with identical priors and live-point count is the appropriate CPU comparison and is left for future work. The claim we make is narrower and reproducible: on a single A100 GPU, the full $n_{\rm live}=5000$ \hzero\ analysis completes in under a quarter of an hour, the three-waveform cross-check fits inside an hour, the live-point convergence study extends to $n_{\rm live}=10^{5}$ within an overnight budget, and the sky-prior matched-pair sweep takes well under a working day. This runtime budget is what makes the multi-axis robustness study scientifically routine rather than exceptional.
 
 % ======================================================================

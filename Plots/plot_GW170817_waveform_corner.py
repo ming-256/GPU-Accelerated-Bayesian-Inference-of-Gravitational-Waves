@@ -36,19 +36,14 @@ gwtc1_5d = MCMCSamples(
     columns=PLOT_COLS,
 )
 
-datasets = [(gwtc1_5d, 'LVK GWTC-1', COLORS['gwtc'])]
+datasets = [(gwtc1_5d, r'IMRPhenomPv2\_NRTidal (LVK)', COLORS['gwtc'])]
 
 # IMRPhenomPv2 (no tides) is intentionally excluded from the main figure;
 # the precession-only systematic stays in the open-source test_suite under
 # s07__gw170817__imrphenompv2__baseline_lvkbounds for the reproducibility appendix.
 for csv, label, colour, has_inplane in [
-    ('Results/test_suite/s07__gw170817__imrphenomxas_nrtidalv3__baseline_lvkbounds__seed0000/samples.csv',
-     'IMRPhenomXAS\\_NRTidalv3', COLORS['flatZ'], False),
-    ('Results/test_suite/s07__gw170817__imrphenomd_nrtidalv2__baseline_lvkbounds__seed0000/samples.csv',
-     'IMRPhenomD\\_NRTidalv2', COLORS['imr_baseline'], False),
-    (os.path.join(RESULTS_DIR,
-        'gwtc1_phasemarg/PhaseMarg_Heterodyned_TaylorF2_local_psd-gwtc1_ref-gwtc1_baseline.csv'),
-     'TaylorF2', COLORS['tf2_baseline'], False),
+    (os.path.join(RESULTS_DIR, 'test_suite', 's16__gw170817__imrphenomxas_nrtidalv3__qtest_spinball__seed0000', 'PhaseMarg_Heterodyned_IMRPhenomXAS_NRTidalv3_local_psd-gwtc1_ref-gwtc1_baseline.csv'),
+     r'IMRPhenomXAS\_NRTidalv3 (Jim-based work)', COLORS['flatZ'], False),
 ]:
     if os.path.exists(csv):
         s = load_nested_csv(csv)

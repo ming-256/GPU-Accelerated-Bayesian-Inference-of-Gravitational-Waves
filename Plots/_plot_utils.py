@@ -24,7 +24,7 @@ import pandas as pd
 # --------------------------------------------------------------------------- #
 # LaTeX rendering
 # --------------------------------------------------------------------------- #
-if shutil.which('pdflatex') or shutil.which('latex'):
+if False: # shutil.which('pdflatex') or shutil.which('latex'):
     mpl.rcParams['text.usetex'] = True
     mpl.rcParams['font.family'] = 'serif'
     mpl.rcParams['font.serif'] = ['Computer Modern']

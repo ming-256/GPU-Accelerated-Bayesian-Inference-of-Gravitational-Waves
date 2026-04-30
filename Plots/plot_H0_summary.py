@@ -57,7 +57,7 @@ for csv_path, label, color, fmt in FILES:
         print(f"  WARNING: {label} has no H_0 column — skipping")
 
 if runs:
-    plot_h0(runs, 'H0_summary_all_methods')
+    plot_h0_hist(runs, 'H0_summary_all_methods', lvk_band=False, add_planck_shoes=True)
 else:
     print("  No data found.")
 

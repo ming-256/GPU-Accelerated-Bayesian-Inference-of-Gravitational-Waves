@@ -48,6 +48,14 @@ rate = 858.0 / 5000.0
 ax.plot(n_ref, rate * n_ref, 'k--', lw=1.0, alpha=0.4,
         label=r'Linear ref $\propto n_{\rm live}$')
 
+# Calculate gradient for heterodyned LVK-bounds
+df_het_lvk = df[(df['kind']=='heterodyned') & (df['waveform']=='IMRPhenomD_NRTidalv2') & (df['priors'] == 'lvk-bounds')]
+if len(df_het_lvk) > 1:
+    log_n = np.log10(df_het_lvk['n_live'])
+    log_t = np.log10(df_het_lvk['total_s'])
+    slope, intercept = np.polyfit(log_n, log_t, 1)
+    ax.text(3000, 2000, f'Gradient: {slope:.2f}', color=COLORS['flatZ'], fontsize=10, rotation=35)
+
 # Speedup annotation: unhet IMR host-loc vs hetero host-loc, matched n_live.
 het_hl = df[(df['kind']=='heterodyned') & (df['waveform']=='IMRPhenomD_NRTidalv2')
             & (df['priors']=='host-localised')].set_index('n_live')['total_s']
@@ -95,7 +103,7 @@ for nl, t_un in unhet_hl.items():
 
 # Verify n_live=20000 is plotted in LVK-bounds series
 lvk20k = df[(df['kind']=='heterodyned') & (df['waveform']=='IMRPhenomD_NRTidalv2')
-            & (df['priors'].isin(['lvk-bounds', 'lvk-bounds, tol1e-4']))
+            & (df['priors'] == 'lvk-bounds')
             & (df['n_live']==20000)]
 print(f"\nLVK-bounds n_live=20000 rows plotted: {len(lvk20k)}")
 print(lvk20k[['source','priors','total_s']].to_string(index=False))
