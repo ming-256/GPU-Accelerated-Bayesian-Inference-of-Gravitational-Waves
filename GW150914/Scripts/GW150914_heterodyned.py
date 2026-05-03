@@ -93,6 +93,9 @@ parser.add_argument('--m-comp-lo', type=float, default=None,
                     help='Lower bound on component masses (M_sun). Default: script-internal value (1.0).')
 parser.add_argument('--m-comp-hi', type=float, default=None,
                     help='Upper bound on component masses (M_sun). Default: script-internal value (100.0).')
+parser.add_argument('--n-mcmc-steps', type=int, default=None,
+                    help='Number of MCMC steps per nested sampling iteration. '
+                         'Default: NUM_DIMS * 8 (112 for precessing, 88 for aligned-spin).')
 args = parser.parse_args()
 waveform_tag = args.waveform
 data_source = args.data_source
@@ -890,7 +893,7 @@ def loglikelihood_fn(x):
 
 num_live = args.n_live
 num_delete = int(num_live * 0.3)
-num_mcmc_steps = int(NUM_DIMS * 8)
+num_mcmc_steps = args.n_mcmc_steps if args.n_mcmc_steps is not None else int(NUM_DIMS * 8)
 
 @jax.jit
 def stepper_fn(x, d, t):

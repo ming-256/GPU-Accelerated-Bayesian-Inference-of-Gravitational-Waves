@@ -1,0 +1,4 @@
+=== session_17_gw150914_xphm_larger start: 2026-05-03T15:25:23Z  git f43463380001445d4a5aca4fd7bc53c561fa96ed ===
+--- [s17a__gw150914__imrphenomxphm__nlive8000_mcmc160__seed0000] 15:25:23
+  -> canonicalised CSV: /home/user/GPU-Accelerated-Bayesian-Inference-of-Gravitational-Waves/Results/test_suite/s17a__gw150914__imrphenomxphm__nlive8000_mcmc160__seed0000/GW15_PhaseMarg_Heterodyned_IMRPhenomXPHM_local_psd-gwtc2p1_ref-gwtc1.csv -> /home/user/GPU-Accelerated-Bayesian-Inference-of-Gravitational-Waves/Results/test_suite/s17a__gw150914__imrphenomxphm__nlive8000_mcmc160__seed0000/samples.csv
+--- [s17b__gw150914__imrphenomxphm__nlive10000_mcmc210__seed0000] 20:36:29
