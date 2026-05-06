@@ -257,7 +257,8 @@ def plot_h0(runs, out_name, xlim=(20, 250), n_eval=2000):
         pdf_vals = kde(x_eval)
 
         # Area-normalise
-        pdf_vals = pdf_vals / np.trapezoid(pdf_vals, x_eval)
+        _trapz = getattr(np, 'trapezoid', np.trapz)
+        pdf_vals = pdf_vals / _trapz(pdf_vals, x_eval)
 
         # Plot
         ax.plot(x_eval, pdf_vals, color=color, lw=2, label=label)
@@ -388,7 +389,7 @@ def plot_h0_hist(runs, out_name, xlim=(40, 180), bins=80,
 # --------------------------------------------------------------------------- #
 # Corner plot helper
 # --------------------------------------------------------------------------- #
-def make_corner(datasets, params, out_name, figsize=(10, 10)):
+def make_corner(datasets, params, out_name, figsize=(10, 10), lims=None):
     """Create a corner plot from multiple datasets.
 
     Parameters
@@ -397,6 +398,8 @@ def make_corner(datasets, params, out_name, figsize=(10, 10)):
     params : list of str — column names to plot
     out_name : str — output filename stem
     figsize : tuple
+    lims : dict, optional
+        Mapping from plotted parameter label to ``(lo, hi)`` axis limits.
     """
     fig, axes = make_2d_axes(params=params, upper=False, figsize=figsize)
 
@@ -413,6 +416,49 @@ def make_corner(datasets, params, out_name, figsize=(10, 10)):
             lower_kwargs=dict(levels=[0.99730, 0.95450, 0.68269]),
             color=color, alpha=0.75, label=label,
         )
+
+    if lims:
+        for y_param in axes.index:
+            for x_param in axes.columns:
+                ax = axes.loc[y_param, x_param]
+                if ax is None:
+                    continue
+                is_diagonal = x_param == y_param
+                if x_param in lims:
+                    ax.set_xlim(*lims[x_param])
+                if y_param in lims and not is_diagonal:
+                    ax.set_ylim(*lims[y_param])
+                if is_diagonal:
+                    ax.tick_params(axis='y', which='both', left=False, labelleft=False)
+                    ax.set_ylabel('')
+
+    for ax in fig.axes:
+        if ax.get_ylabel():
+            continue
+        if ax.get_xlabel() not in params:
+            continue
+        if lims and ax.get_xlabel() in lims:
+            ax.set_xlim(*lims[ax.get_xlabel()])
+        y_max = 0.0
+        for patch in ax.patches:
+            if patch.__class__.__name__ == 'Rectangle':
+                continue
+            vertices = patch.get_path().vertices
+            if len(vertices):
+                y_max = max(y_max, float(np.nanmax(vertices[:, 1])))
+        if y_max > 0:
+            ax.set_ylim(0.0, y_max * 1.08)
+            ax.tick_params(axis='y', which='both', left=False, labelleft=False)
+            ax.set_ylabel('')
+
+    for ax in fig.axes:
+        if ax is None:
+            continue
+        for artist in [*ax.lines, *ax.patches, *ax.collections]:
+            artist.set_clip_on(True)
+            artist.set_zorder(2)
+        for spine in ax.spines.values():
+            spine.set_zorder(10)
 
     axes.iloc[-1, 0].legend(
         bbox_to_anchor=(len(axes) * 0.85, len(axes) * 0.8),

@@ -56,14 +56,16 @@
 
 \title[Rapid GW170817 \hzero inference]{Rapid Hubble constant inference from GW170817 using GPU-accelerated nested sampling: prior sensitivity and the limits of post-hoc reweighting}
 
-\author[M. Yang et al.]{
-Ming Yang,$^{1}$\thanks{E-mail: TODO}
-Will Handley,$^{2,3}$
-and \mbox{TODO co-authors}
+\author[Yang, Prathaban, Yallup \& Handley]{
+Ming Yang,$^{1}$\thanks{E-mail: mhy32@cantab.ac.uk}
+Metha Prathaban,$^{2,3}$
+David Yallup,$^{4,2}$
+and Will Handley$^{4,2}$
 \\
-$^{1}$St John's College, University of Cambridge, Cambridge CB2 1TP, UK\\
-$^{2}$Institute of Astronomy, University of Cambridge, Madingley Road, Cambridge CB3 0HA, UK\\
-$^{3}$Kavli Institute for Cosmology, University of Cambridge, Madingley Road, Cambridge CB3 0HA, UK
+$^{1}$Independent researcher (formerly Institute of Astronomy and St John's College, University of Cambridge), UK\\
+$^{2}$Kavli Institute for Cosmology, University of Cambridge, Madingley Road, Cambridge CB3 0HA, UK\\
+$^{3}$Department of Physics, University of Cambridge, JJ Thomson Avenue, Cambridge CB3 0HE, UK\\
+$^{4}$Institute of Astronomy, University of Cambridge, Madingley Road, Cambridge CB3 0HA, UK
 }
 
 \date{Accepted XXX. Received YYY; in original form ZZZ}
@@ -116,7 +118,7 @@ p(\theta\mid d,\mathcal{M}) = \frac{\mathcal{L}(d\mid\theta,\mathcal{M})\,\pi(\t
 \end{equation}
 where $\mathcal{L}$ is the gravitational-wave likelihood, $\pi$ the prior, and $Z$ the Bayesian evidence. We estimate $Z$ and draw posterior samples by nested sampling \citep{Skilling2006Nested}, using the GPU-native slice sampler implemented in \bjns\ \citep{Yallup2025BlackJAXNS,Prathaban2025GPUSpeed}. The sampler evolves a population of live points through batched slice updates; this vectorisation is the key ingredient that keeps the GPU saturated when the per-evaluation likelihood cost is small.
 
-All heterodyned GW170817 science runs in this paper use $n_{\rm live}=5000$, $n_{\rm delete}=2500$ points removed per iteration ($\tfrac12\,n_{\rm live}$), and $5\,n_{\rm dim}$ MCMC steps per slice; runs terminate when the fractional evidence increment is below $10^{-3}$. Scaling experiments vary $n_{\rm live}$ while holding all other settings fixed.
+All heterodyned GW170817 science runs in this paper use $n_{\rm live}=5000$, $n_{\rm delete}=2500$ points removed per iteration ($\tfrac12\,n_{\rm live}$), and $5\,n_{\rm dim}$ MCMC steps per slice; runs terminate when the fractional evidence increment is below $10^{-3}$. Scaling experiments vary $n_{\rm live}$ while holding all other settings fixed. The GW150914 \XPHM\ validation run reported in Section~\ref{sec:gw150914} uses larger settings ($n_{\rm live}=8000$, $n_{\rm delete}=2400$, $n_{\rm mcmc}=160$) to verify that the validation conclusions are not sampler-limited at the smaller short-signal $n_{\rm dim}$.
 
 \subsection{Heterodyned likelihood}
 
@@ -167,21 +169,22 @@ We summarise one-dimensional marginals by the maximum a posteriori (MAP) value a
 \subsection{GW150914}
 \label{sec:gw150914}
 
-We validate the pipeline on the binary-black-hole event GW150914 \citep{Abbott2016GW150914}, which has a short signal and well-established public posteriors. We analyse the GWOSC strain data with \XPHM\ and the GWTC-2.1 PSDs, using the same heterodyned sampler as for GW170817 with $n_{\rm live}=5000$ and phase marginalisation. Table~\ref{tab:gw150914} compares our recovered parameters with the LVK GWTC-2.1 PE \XPHM\ samples; the corresponding corner overlay is shown in Figure~\ref{fig:gw150914}, which also includes our earlier \IMR\ run for context. Chirp mass, mass ratio, luminosity distance, and inclination all agree with the LVK reference; in particular, $\dL^{\rm med}=459.8\,\rm Mpc$ for our \XPHM\ run is within a few megaparsecs of the LVK value, against the ${\sim}50\,\rm Mpc$ offset seen with \IMR. The validation is therefore now a direct LVK reproduction. The sampler returns $\ln Z=261.09\pm 0.08$ for \XPHM\ and $260.95\pm 0.08$ for \IMR.
+We validate the pipeline on the binary-black-hole event GW150914 \citep{Abbott2016GW150914}, which has a short signal and well-established public posteriors. We analyse the GWOSC strain data with \XPHM\ and the GWTC-2.1 PSDs, using the same heterodyned sampler as for GW170817 with phase marginalisation; for this validation run we increase the sampler settings to $n_{\rm live}=8000$ with $n_{\rm mcmc}=160$ slice steps per update, so that the comparison is not sampler-limited at the short-signal $n_{\rm dim}$. Table~\ref{tab:gw150914} compares our recovered parameters with the LVK GWTC-2.1 PE \XPHM\ samples; the corresponding corner overlay is shown in Figure~\ref{fig:gw150914}. Chirp mass, mass ratio, luminosity distance, and inclination all agree with the LVK reference; in particular, $\dL^{\rm med}=455.1\,\rm Mpc$ for our \XPHM\ run is within ${\sim}5\,\rm Mpc$ of the LVK value, against the ${\sim}50\,\rm Mpc$ offset seen in our earlier \IMR\ cross-check. The validation is therefore a direct LVK reproduction. The sampler returns $\ln Z=260.86\pm 0.06$ for \XPHM\ and $260.95\pm 0.08$ for the earlier \IMR\ cross-check.
 
 \begin{table}
   \centering
-  \caption{GW150914 validation: median values of the principal source parameters for the LVK GWTC-2.1 \XPHM\ public PE, our heterodyned \IMR\ run, and our heterodyned \XPHM\ run at $n_{\rm live}=5000$.}
+  \caption{GW150914 validation: median values of the principal source parameters for the LVK GWTC-2.1 \XPHM\ public PE and our heterodyned \XPHM\ run at $n_{\rm live}=8000$, $n_{\rm mcmc}=160$.}
   \label{tab:gw150914}
-  \begin{tabular}{lccc}
+  \begin{tabular}{lcc}
     \toprule
-    Quantity & LVK GWTC-2.1 \XPHM & this work, \IMR & this work, \XPHM \\
+    Quantity & LVK GWTC-2.1 \XPHM & this work, \XPHM \\
     \midrule
-    $\mathcal{M}_{c}/M_{\odot}$ & 30.7   & 30.04 & 30.34 \\
-    $q$                          & ${\sim}0.83$ & 0.83 & 0.87 \\
-    $\dL/\rm Mpc$                & ${\sim}440$  & 404.6 & 459.8 \\
-    $\iota/\rm rad$              & 2.62  & 2.49  & 2.62  \\
-    $\ln Z$                      & --    & $260.95\pm 0.08$ & $261.09\pm 0.08$ \\
+    $\mathcal{M}_{c}/M_{\odot}$ & 30.7         & 30.35 \\
+    $q$                          & ${\sim}0.83$ & 0.87 \\
+    $\chi_{\rm eff}$             & ${\sim}-0.06$ & $-0.07$ \\
+    $\dL/\rm Mpc$                & ${\sim}440$  & 455.1 \\
+    $\iota/\rm rad$              & 2.62         & 2.61 \\
+    $\ln Z$                      & --           & $260.86\pm 0.06$ \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -189,7 +192,7 @@ We validate the pipeline on the binary-black-hole event GW150914 \citep{Abbott20
 \begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{corner_GW150914_waveform_comparison.pdf}
-  \caption{GW150914 validation: corner overlay of the LVK GWTC-2.1 \XPHM\ posterior and our heterodyned \XPHM\ run at $n_{\rm live}=5000$. Both legend entries use the same waveform, so the panels show a like-for-like reproduction.}
+  \caption{GW150914 validation: corner overlay of the LVK GWTC-2.1 \XPHM\ posterior and our heterodyned \XPHM\ run at $n_{\rm live}=8000$, $n_{\rm mcmc}=160$. Both legend entries use the same waveform, so the panels show a like-for-like reproduction.}
   \label{fig:gw150914}
 \end{figure}
 
@@ -216,7 +219,7 @@ The IMRPhenomPv2-no-tides run on the same prior set returns $\hzero^{\rm MAP}\ap
 \begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{H0_waveform_comparison.pdf}
-  \caption{GW170817 \hzero\ posterior under the LVK-bounds baseline prior for the two NR-calibrated tidal waveforms used as primary/anchor (\IMRX, \IMR), plus the GWTC-1 IMRPhenomPv2\_NRTidal posterior mapped through this work's standard-siren likelihood of equation~\ref{eq:h0likelihood}. Vertical markers are sample-derived 68 per cent HPD bounds. The Planck $\Lambda$CDM and SH0ES distance-ladder values are shown for context. The \TF\ and IMRPhenomPv2 (no tides) family checks are reported in Table~\ref{tab:waveform-h0} and retained in the public test suite, but are not promoted to this figure.}
+  \caption{GW170817 \hzero\ posterior for the three-waveform set of Table~\ref{tab:waveform-h0}: \IMRX\ (primary, LVK-bounds baseline), \IMR\ (anchor, LVK-bounds baseline), and \TF\ (family check, default-mass baseline), plus the GWTC-1 IMRPhenomPv2\_NRTidal posterior mapped through this work's standard-siren likelihood of equation~\ref{eq:h0likelihood}. Vertical markers are 68 per cent and 95 per cent HPD bounds derived from a weighted KDE; sample-derived HPDs are reported in Table~\ref{tab:waveform-h0}. The Planck $\Lambda$CDM and SH0ES distance-ladder values are shown for context. The IMRPhenomPv2 (no tides) cross-check is reported inline in Section~\ref{sec:cross-waveform} and retained in the public test suite.}
   \label{fig:waveform-h0}
 \end{figure}
 
@@ -352,7 +355,7 @@ All three axes therefore produce \hzero\ shifts at least an order of magnitude s
 \subsection{Wall-clock runtime}
 \label{sec:wallclock}
 
-The primary heterodyned GW170817 \hzero\ analysis with \IMRX\ and $n_{\rm live}=5000$ on the LVK-bounds prior set completes in $\approx 13$\,min on a single NVIDIA A100 GPU; the corresponding \IMR\ run takes $\approx 14$\,min and the \TF\ run $\approx 9$\,min. The full four-variant prior-sensitivity suite (baseline, direct flat-in-$z$, reweighted post-hoc, $\sigmavp=250\kms$) for \IMRX\ on the default-mass prior set fits inside an hour. The GW150914 \XPHM\ validation run takes $\approx 2\,\rm h$ on the same hardware -- longer than an aligned-spin reference, and the price for the like-for-like LVK reproduction of Section~\ref{sec:gw150914}.
+The primary heterodyned GW170817 \hzero\ analysis with \IMRX\ and $n_{\rm live}=5000$ on the LVK-bounds prior set completes in $\approx 13$\,min on a single NVIDIA A100 GPU; the corresponding \IMR\ run takes $\approx 14$\,min and the \TF\ run $\approx 9$\,min. The full four-variant prior-sensitivity suite (baseline, direct flat-in-$z$, reweighted post-hoc, $\sigmavp=250\kms$) for \IMRX\ on the default-mass prior set fits inside an hour. The GW150914 \XPHM\ validation run at the larger $n_{\rm live}=8000$, $n_{\rm mcmc}=160$ settings takes $\approx 5.2\,\rm h$ on the same hardware -- the price for both the precessing waveform and the converged short-signal sampler configuration that yields the like-for-like LVK reproduction of Section~\ref{sec:gw150914}.
 
 \subsection{Heterodyne speedup and live-point scaling}
 \label{sec:speedup}
@@ -366,7 +369,7 @@ The relative-binning approximation accounts for the bulk of the wall-clock reduc
 \begin{figure*}
   \centering
   \includegraphics[width=0.92\textwidth]{scaling_study_full.pdf}
-  \caption{GW170817 wall-clock scaling. Left: heterodyned and unheterodyned wall-clock as a function of $n_{\rm live}$ for the \IMR\ family on default-mass and LVK-bounds prior sets, with the \TF\ unheterodyned point at $n_{\rm live}=1500$ for context. Right: heterodyne-vs-unheterodyne speedup factor at matched $n_{\rm live}$, with the $31\times$/$51\times$/$68\times$ values annotated.}
+  \caption{GW170817 wall-clock scaling. Heterodyned and unheterodyned wall-clock as a function of $n_{\rm live}$ for the \IMR\ family on default-mass and LVK-bounds prior sets, with the \TF\ unheterodyned point at $n_{\rm live}=1500$ for context. The heterodyned LVK-bounds series has log--log gradient $\simeq 0.60$ over the plotted range; matched unheterodyned points are $31\times$/$51\times$/$68\times$ slower at $n_{\rm live}=500/1500/2500$.}
   \label{fig:scaling}
 \end{figure*}
 

@@ -3,7 +3,7 @@ GW150914 validation overlay.
 
 Two-curve overlay (LVK reference vs this work; both IMRPhenomXPHM):
   - LVK GWTC-2.1 IMRPhenomXPHM PE samples
-  - Our IMRPhenomXPHM heterodyned run (Results/test_suite/s06__*/samples.csv)
+  - Our IMRPhenomXPHM heterodyned run, n_live=8000, n_mcmc=160 (s17a)
 
 Output: Results/gwtc1_phasemarg/plots/corner_GW150914_waveform_comparison.{pdf,png}
 """
@@ -41,14 +41,14 @@ def _load_GW150914(csv, has_inplane=False):
         weights=np.asarray(s.get_weights()),
     )
 
-# --- Our IMRPhenomXPHM heterodyned (s06) ---
-xphm_csv = 'Results/test_suite/s06__gw150914__imrphenomxphm__lvkbounds__seed0000/samples.csv'
-if os.path.exists(xphm_csv):
-    datasets.append((_load_GW150914(xphm_csv, has_inplane=True),
-                     'Jim-based work', 'tab:orange'))
+# --- Our IMRPhenomXPHM heterodyned, n_live=8000, n_mcmc=160 (s17a) ---
+s17a_csv = 'Results/test_suite/s17a__gw150914__imrphenomxphm__nlive8000_mcmc160__seed0000/samples.csv'
+if os.path.exists(s17a_csv):
+    datasets.append((_load_GW150914(s17a_csv, has_inplane=True),
+                     'this work (IMRPhenomXPHM)', 'tab:green'))
 else:
-    raise SystemExit(f"  Missing s06 XPHM CSV: {xphm_csv}")
+    raise SystemExit(f"  Missing s17a XPHM CSV: {s17a_csv}")
 
 make_corner(datasets, PLOT_COLS, 'corner_GW150914_waveform_comparison',
-            figsize=(12, 12))
+            figsize=(12, 12), lims={r'$q$': (0.3, 1.0)})
 print("\nDone.")
