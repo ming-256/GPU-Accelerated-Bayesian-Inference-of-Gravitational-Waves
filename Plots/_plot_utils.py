@@ -307,7 +307,7 @@ def plot_h0(runs, out_name, xlim=(20, 250), n_eval=2000):
 # --------------------------------------------------------------------------- #
 # H_0 plot — weighted-histogram version (no KDE smoothing on 1-D marginals)
 # --------------------------------------------------------------------------- #
-def plot_h0_hist(runs, out_name, xlim=(40, 180), bins=80,
+def plot_h0_hist(runs, out_name, xlim=(40, 180), bins=140,
                  add_planck_shoes=True, lvk_band=False, hpd_lines=True,
                  figsize=(10, 6)):
     """H_0 posterior plot using weighted step-histograms with sample-derived HPDs.
@@ -361,7 +361,7 @@ def plot_h0_hist(runs, out_name, xlim=(40, 180), bins=80,
 
     if lvk_band:
         ax.axvspan(62, 82, color='0.55', alpha=0.18, zorder=0,
-                   label=r'LVK GW170817 (Abbott+2017, 68\% HPD)')
+                   label='Abbott+2017 GW170817 ($H_0=70_{-8}^{+12}$, 68% HPD)')
         ax.axvline(70.0, color='0.4', ls='-.', lw=1.0, zorder=0)
 
     if add_planck_shoes:

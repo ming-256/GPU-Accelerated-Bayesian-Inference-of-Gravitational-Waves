@@ -31,6 +31,16 @@
   et~al.}{2017b}]{Abbott2017H0}
 {Abbott} B.~P.,  et~al., 2017b, \mn@doi [Nature] {10.1038/nature24471}, 551, 85
 
+\bibitem[\protect\citeauthoryear{{Abbott} et~al.}{{Abbott}
+  et~al.}{2019}]{Abbott2019GWTC1}
+{Abbott} B.~P.,  et~al., 2019, \mn@doi [Physical Review X]
+  {10.1103/PhysRevX.9.031040}, 9, 031040
+
+\bibitem[\protect\citeauthoryear{{Abbott} et~al.}{{Abbott}
+  et~al.}{2024}]{Abbott2021GWTC2p1}
+{Abbott} R.,  et~al., 2024, \mn@doi [Physical Review D]
+  {10.1103/PhysRevD.109.022001}, 109, 022001
+
 \bibitem[\protect\citeauthoryear{{Ashton} et~al.}{{Ashton}
   et~al.}{2019}]{Ashton2019Bilby}
 {Ashton} G.,  et~al., 2019, \mn@doi [The Astrophysical Journal Supplement
@@ -64,6 +74,30 @@
 {Krishna} K.,  et~al., 2023, {Accelerated parameter estimation with relative
   binning in Bilby} (\mn@eprint {arXiv} {2312.06009})
 
+\bibitem[\protect\citeauthoryear{{LIGO Scientific Collaboration} \& {Virgo
+  Collaboration}}{{LIGO Scientific Collaboration} \& {Virgo
+  Collaboration}}{2017}]{LVK_H0_DataRelease}
+{LIGO Scientific Collaboration} {Virgo Collaboration} 2017, {A
+  gravitational-wave standard siren measurement of the Hubble constant -- Data
+  Release}, LIGO Document P1700296;
+  \url{https://dcc.ligo.org/LIGO-P1700296/public}
+
+\bibitem[\protect\citeauthoryear{{LIGO Scientific Collaboration} \& {Virgo
+  Collaboration}}{{LIGO Scientific Collaboration} \& {Virgo
+  Collaboration}}{2018}]{LVK_GW170817_DataRelease}
+{LIGO Scientific Collaboration} {Virgo Collaboration} 2018, {Properties of the
+  binary neutron star merger GW170817 -- Data Release}, LIGO Document P1800061;
+  \url{https://dcc.ligo.org/LIGO-P1800061/public}
+
+\bibitem[\protect\citeauthoryear{{LIGO Scientific Collaboration}, {Virgo
+  Collaboration}  \& {KAGRA Collaboration}}{{LIGO Scientific Collaboration}
+  et~al.}{2022}]{GWTC2p1_GW150914_Zenodo}
+{LIGO Scientific Collaboration} {Virgo Collaboration}  {KAGRA Collaboration}
+  2022, {GWTC-2.1: Deep Extended Catalog of Compact Binary Coalescences
+  Observed by LIGO and Virgo During the First Half of the Third Observing Run
+  -- Parameter Estimation Data Release}, Zenodo,
+  \url{https://doi.org/10.5281/zenodo.6513631}, \mn@doi{10.5281/zenodo.6513631}
+
 \bibitem[\protect\citeauthoryear{{Planck Collaboration}}{{Planck
   Collaboration}}{2016}]{Planck2016}
 {Planck Collaboration} 2016, \mn@doi [Astronomy and Astrophysics]
@@ -74,6 +108,11 @@
 {Prathaban} M.,  et~al., 2025, {Gravitational-wave inference at GPU speed: A
   bilby-like nested sampling kernel within blackjax-ns} (\mn@eprint {arXiv}
   {2509.04336})
+
+\bibitem[\protect\citeauthoryear{{Pratten} et~al.}{{Pratten}
+  et~al.}{2021}]{Pratten2021XPHM}
+{Pratten} G.,  et~al., 2021, \mn@doi [Physical Review D]
+  {10.1103/PhysRevD.103.104056}, 103, 104056
 
 \bibitem[\protect\citeauthoryear{{Riess} et~al.}{{Riess}
   et~al.}{2016}]{Riess2016}

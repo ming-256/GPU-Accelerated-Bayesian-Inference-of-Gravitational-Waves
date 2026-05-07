@@ -21,8 +21,7 @@ import sys, os
 sys.path.insert(0, os.path.dirname(__file__))
 from _plot_utils import (
     OUT_DIR, RESULTS_DIR, COLORS, load_nested_csv,
-    load_gwtc1_gw170817, derive_lvk_h0_samples,
-    compute_hpd_samples, plot_h0,
+    compute_hpd_samples, plot_h0_hist,
 )
 import numpy as np
 import pandas as pd
@@ -58,11 +57,11 @@ if missing:
     raise SystemExit(f"  Missing XAS s14 CSVs: {missing}")
 PRIMARY_TAG = 'IMRPhenomXAS_NRTidalv3'
 VARIANTS = [
-    (r'XAS\_NRTv3 baseline',
+    ('XAS_NRTv3 baseline',
      XAS_CSVS[0], COLORS['imr_baseline']),
-    (r'XAS\_NRTv3 flat-in-$z$ (direct)',
+    (r'XAS_NRTv3 flat-in-$z$ (direct)',
      XAS_CSVS[1], COLORS['flatZ']),
-    (r'XAS\_NRTv3 flat-in-$z$ (reweighted)',
+    (r'XAS_NRTv3 flat-in-$z$ (reweighted)',
      XAS_CSVS[2], COLORS['reweighted']),
 ]
 
@@ -78,6 +77,5 @@ for label, csv, col in VARIANTS:
     print(f"  {label:55s}  P(>120)={p120:.3f}  P(>150)={p150:.3f}")
     runs.append(((x, w), label, col))
 
-runs_kde = [({'H_0': h0, 'weights': w}, lab, col)
-            for ((h0, w), lab, col) in runs]
-plot_h0(runs_kde, 'H0_prior_sensitivity', xlim=(40, 180))
+plot_h0_hist(runs, 'H0_prior_sensitivity', xlim=(40, 180), bins=140,
+             add_planck_shoes=True, lvk_band=True, hpd_lines=True)

@@ -106,6 +106,12 @@ parser.add_argument('--narrow-sky', action='store_true',
                          '(matches the LVK Abbott+2017 EM-counterpart-localised analysis). '
                          'Default: full-sky (uniform RA on [0, 2π], cos(dec) on the sphere). '
                          'Used for runtime comparison of full-sky vs sky-restricted nested sampling.')
+parser.add_argument('--vp-mean', type=float, default=310.0,
+                    help='Mean of the Gaussian prior on the host peculiar velocity, km/s '
+                         '(default: 310, matching Abbott+2017 H0). Sweep e.g. 215, 310, 405.')
+parser.add_argument('--sigma-vp', type=float, default=150.0,
+                    help='Width of the Gaussian prior on the host peculiar velocity, km/s '
+                         '(default: 150, matching Abbott+2017 H0). Vary in robustness studies.')
 parser.add_argument('--lvk-spin-ball', action='store_true',
                     help='Replace the default uniform p(s_iz) on [-chi_max, chi_max] with the '
                          'projection of an isotropic 3-D spin ball |chi_i| <= chi_max onto s_iz: '
@@ -1032,7 +1038,7 @@ def loglikelihood_fn(x):
 
     # --- Standard siren velocity terms (Abbott et al. 2017, arXiv:1710.05832) ---
     ll_vr = stats.norm.logpdf(3327.0, x[I_VP] + x[I_H0] * x[I_DL], 72.0)
-    ll_vp = stats.norm.logpdf(310.0, x[I_VP], 150.0)
+    ll_vp = stats.norm.logpdf(args.vp_mean, x[I_VP], args.sigma_vp)
 
     return ll_gw + ll_vr + ll_vp
 

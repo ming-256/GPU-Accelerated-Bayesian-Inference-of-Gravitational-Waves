@@ -17,19 +17,17 @@ import pandas as pd
 CSV = os.path.join(RESULTS_DIR, 'scaling_study', 'scaling_summary_full.csv')
 df = pd.read_csv(CSV)
 
-# Three series only: hetero host-loc (A100), hetero LVK-bounds (incl. n_live=20000), unhet host-loc IMR.
+# Two series: heterodyned IMR (host-loc, A100) vs unheterodyned IMR (host-loc).
+# LVK-bounds series intentionally dropped — the central scientific point is
+# heterodyned-vs-unheterodyned, not the choice of mass-prior bounds.
 GROUPS = [
     (((df['kind']=='heterodyned') & (df['waveform']=='IMRPhenomD_NRTidalv2')
-      & (df['priors']=='host-localised')),
-     r'IMRPhenomD\_NRTidalv2 hetero (host-loc, A100)',
+     & (df['priors']=='host-localised')),
+     'IMRPhenomD_NRTidalv2 heterodyned',
      COLORS['imr_baseline'], 'o'),
-    (((df['kind']=='heterodyned') & (df['waveform']=='IMRPhenomD_NRTidalv2')
-      & (df['priors'].isin(['lvk-bounds', 'lvk-bounds, tol1e-4']))),
-     r'IMRPhenomD\_NRTidalv2 hetero (LVK-bounds)',
-     COLORS['flatZ'], 's'),
     (((df['kind']=='unheterodyned') & (df['waveform']=='IMRPhenomD_NRTidalv2')
       & (df['priors']=='host-localised')),
-     r'IMRPhenomD\_NRTidalv2 unhetero (host-loc)',
+     'IMRPhenomD_NRTidalv2 unheterodyned',
      'tab:red', '^'),
 ]
 
@@ -54,7 +52,7 @@ if len(df_het_lvk) > 1:
     log_n = np.log10(df_het_lvk['n_live'])
     log_t = np.log10(df_het_lvk['total_s'])
     slope, intercept = np.polyfit(log_n, log_t, 1)
-    ax.text(3000, 2000, f'Gradient: {slope:.2f}', color=COLORS['flatZ'], fontsize=10, rotation=35)
+    print(f"  Heterodyned LVK-bounds log-log gradient: {slope:.2f}")
 
 # Speedup annotation: unhet IMR host-loc vs hetero host-loc, matched n_live.
 het_hl = df[(df['kind']=='heterodyned') & (df['waveform']=='IMRPhenomD_NRTidalv2')

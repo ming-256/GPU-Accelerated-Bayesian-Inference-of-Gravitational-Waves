@@ -22,7 +22,7 @@ plot_params = ['M_c', 'q', 's1_z', 's2_z', 'd_L', 'iota', 'H_0']
 datasets = []
 if os.path.exists(SAMPLED_CSV):
     datasets.append((load_nested_csv(SAMPLED_CSV),
-                     r'XAS\_NRTv3 sampled flat-in-$z$', COLORS['flatZ']))
+                     r'XAS_NRTv3 sampled flat-in-$z$', COLORS['flatZ']))
 else:
     print(f"  WARNING: missing {SAMPLED_CSV}")
 
@@ -30,7 +30,7 @@ if os.path.exists(REWEIGHTED_CSV):
     # The s14 reweighted_flatz run is a fresh nested-sampling run with the
     # reweighting applied — same loader as a normal nested-sampling CSV.
     datasets.append((load_nested_csv(REWEIGHTED_CSV),
-                     r'XAS\_NRTv3 reweighted flat-in-$z$', COLORS['reweighted']))
+                     r'XAS_NRTv3 reweighted flat-in-$z$', COLORS['reweighted']))
 else:
     print(f"  WARNING: missing {REWEIGHTED_CSV}")
 

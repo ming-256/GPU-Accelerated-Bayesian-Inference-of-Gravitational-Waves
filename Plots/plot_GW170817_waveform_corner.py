@@ -36,14 +36,20 @@ gwtc1_5d = MCMCSamples(
     columns=PLOT_COLS,
 )
 
-datasets = [(gwtc1_5d, r'IMRPhenomPv2\_NRTidal (LVK)', COLORS['gwtc'])]
+datasets = [(gwtc1_5d, 'GWTC-1 IMRPhenomPv2_NRTidal', COLORS['gwtc'])]
 
-# IMRPhenomPv2 (no tides) is intentionally excluded from the main figure;
-# the precession-only systematic stays in the open-source test_suite under
-# s07__gw170817__imrphenompv2__baseline_lvkbounds for the reproducibility appendix.
+# Locked main set: IMRX (primary) + TF2 (family check). IMR (anchor) is
+# reported in Appendix A only; IMRPhenomPv2 (no tides) is dropped from the
+# paper -- BNS without tides is not a like-for-like model.
 for csv, label, colour, has_inplane in [
-    (os.path.join(RESULTS_DIR, 'test_suite', 's16__gw170817__imrphenomxas_nrtidalv3__qtest_spinball__seed0000', 'PhaseMarg_Heterodyned_IMRPhenomXAS_NRTidalv3_local_psd-gwtc1_ref-gwtc1_baseline.csv'),
-     r'IMRPhenomXAS\_NRTidalv3 (Jim-based work)', COLORS['flatZ'], False),
+    (os.path.join(RESULTS_DIR, 'test_suite',
+                  's07__gw170817__imrphenomxas_nrtidalv3__baseline_lvkbounds__seed0000',
+                  'samples.csv'),
+     'this work (IMRPhenomXAS_NRTidalv3)', COLORS['imr_baseline'], False),
+    (os.path.join(RESULTS_DIR, 'test_suite',
+                  's07__gw170817__taylorf2__baseline_lvkbounds__seed0000',
+                  'samples.csv'),
+     'this work (TaylorF2)', COLORS['tf2_baseline'], False),
 ]:
     if os.path.exists(csv):
         s = load_nested_csv(csv)
