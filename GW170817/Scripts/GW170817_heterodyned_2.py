@@ -98,7 +98,21 @@ parser.add_argument('--narrow-sky', action='store_true',
                     help='Restrict the (RA, dec) prior to a ±0.05 rad box around NGC 4993 '
                          '(matches the LVK Abbott+2017 EM-counterpart-localised analysis). '
                          'Default: full-sky. Used for runtime comparison studies.')
+parser.add_argument('--dL-lo', type=float, default=None, dest='dl_lo',
+                    help='Alias for --dl-min (lower d_L prior bound, Mpc).')
+parser.add_argument('--dL-hi', type=float, default=None, dest='dl_hi',
+                    help='Alias for --dl-max (upper d_L prior bound, Mpc).')
+parser.add_argument('--seed', type=int, default=0,
+                    help='JAX PRNGKey seed for reproducibility (default: 0).')
+parser.add_argument('--ref-modeB', action='store_true',
+                    help='Shorthand: anchor heterodyne reference to Mode-B (d_L=20 Mpc, iota=2.0 rad). '
+                         'Equivalent to --ref-dl 20.0 --ref-iota 2.0.')
 args = parser.parse_args()
+# --dL-lo / --dL-hi are aliases for --dl-min / --dl-max
+if args.dl_lo is not None:
+    args.dl_min = args.dl_lo
+if args.dl_hi is not None:
+    args.dl_max = args.dl_hi
 waveform_tag = args.waveform
 data_source = args.data_source
 psd_source = args.psd_source
@@ -697,6 +711,10 @@ else:
 
 # Mode-B reference swap: override d_L / iota in the heterodyne reference (P-MODEB).
 # Tests whether the heterodyne reference choice biases the secondary mode's recovery.
+if args.ref_modeB:
+    ref_params['d_L'] = 20.0
+    ref_params['iota'] = 2.0
+    print("  ref-swap: Mode-B anchor (d_L=20 Mpc, iota=2.0 rad)")
 if args.ref_dl is not None:
     ref_params['d_L'] = float(args.ref_dl)
     print(f"  ref-swap: overriding reference d_L -> {args.ref_dl} Mpc")
@@ -1026,7 +1044,7 @@ def sample_from_prior(key, n):
     return jnp.array(np.concatenate(collected)[:n])
 
 t_init0 = time.time()
-rng_key = jax.random.PRNGKey(0)
+rng_key = jax.random.PRNGKey(args.seed)
 rng_key, init_key = jax.random.split(rng_key)
 initial_particles = sample_from_prior(init_key, num_live)
 
