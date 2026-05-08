@@ -102,6 +102,11 @@ TABLE5_PRIOR_SENSITIVITY = [
         's14__gw170817__imrphenomxas_nrtidalv3__reweighted_flatz__seed0000'),
     ('$\\sigma_{v_p}=250\\,\\mathrm{km\\,s^{-1}}$',
         's14__gw170817__imrphenomxas_nrtidalv3__vp250__seed0000'),
+    # v_p mean sweep (s18); vp=310 replicates baseline to <0.01 in lnZ
+    ('$\\langle v_p\\rangle=215\\,\\mathrm{km\\,s^{-1}}$',
+        's18__gw170817__imrphenomxas_nrtidalv3__baseline__vpmean215__seed0000'),
+    ('$\\langle v_p\\rangle=405\\,\\mathrm{km\\,s^{-1}}$',
+        's18__gw170817__imrphenomxas_nrtidalv3__baseline__vpmean405__seed0000'),
 ]
 
 TABLE4_CROSS_WAVEFORM = [
@@ -114,12 +119,20 @@ TABLE4_CROSS_WAVEFORM = [
 ]
 
 TABLE6_BIMODALITY = [
+    # seed=0 (primary)
     ('Mode A',          '$[30,75]$',
         's10__gw170817__imrphenomd_nrtidalv2__flatz__dL30-75__refGWTC1__seed0000'),
     ('Mode B',          '$[10,30]$',
         's10__gw170817__imrphenomd_nrtidalv2__flatz__dL10-30__refGWTC1__seed0000'),
     ('Unrestricted',    '$[10,75]$',
         's10__gw170817__imrphenomd_nrtidalv2__flatz__dL10-75__refModeB__seed0000'),
+    # seed=1 independent verification (s18)
+    ('Mode A (s=1)',    '$[30,75]$',
+        's18__gw170817__imrphenomd_nrtidalv2__flatz__dL30-75__refGWTC1__seed0001'),
+    ('Mode B (s=1)',    '$[10,30]$',
+        's18__gw170817__imrphenomd_nrtidalv2__flatz__dL10-30__refGWTC1__seed0001'),
+    ('Unrestr. (s=1)', '$[10,75]$',
+        's18__gw170817__imrphenomd_nrtidalv2__flatz__dL10-75__refModeB__seed0001'),
 ]
 
 # GW150914 validation: Table 1
@@ -207,7 +220,9 @@ def write_table4(rows, path):
 
 def write_table5(rows, path):
     body = ''
-    for r in rows:
+    for i, r in enumerate(rows):
+        if i == 4:  # separator before vp-mean sweep group
+            body += '    \\midrule\n'
         lz = _lnz_str(r['lnZ'], r['dlnZ']) if 'reweighted' not in r['run'] else '(post-hoc)'
         body += (f"    {r['label']:<46} & {r['MAP']:.1f} & "
                  f"{_hpd_str(r['HPD68_lo'], r['HPD68_hi'])} & "
@@ -218,7 +233,9 @@ def write_table5(rows, path):
 
 def write_table6(rows, path):
     body = ''
-    for r in rows:
+    for i, r in enumerate(rows):
+        if i == 3:  # separator before seed=1 group
+            body += '    \\midrule\n'
         body += (f"    {r['label']:<14} & {r['dL_range']} & {r['MAP']:.1f} & "
                  f"{_hpd_str(r['HPD68_lo'], r['HPD68_hi'])} & "
                  f"{_tail_str(r['P_gt_120'])} & {_lnz_str(r['lnZ'], r['dlnZ'])} \\\\\n")

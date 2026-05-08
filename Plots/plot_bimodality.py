@@ -20,6 +20,10 @@ from scipy.stats import gaussian_kde
 CSV_A    = 'Results/test_suite/s10__gw170817__imrphenomd_nrtidalv2__flatz__dL30-75__refGWTC1__seed0000/samples.csv'
 CSV_B    = 'Results/test_suite/s10__gw170817__imrphenomd_nrtidalv2__flatz__dL10-30__refGWTC1__seed0000/samples.csv'
 CSV_FULL = 'Results/test_suite/s10__gw170817__imrphenomd_nrtidalv2__flatz__dL10-75__refModeB__seed0000/samples.csv'
+# seed=1 verification (s18)
+CSV_A1   = 'Results/test_suite/s18__gw170817__imrphenomd_nrtidalv2__flatz__dL30-75__refGWTC1__seed0001/samples.csv'
+CSV_B1   = 'Results/test_suite/s18__gw170817__imrphenomd_nrtidalv2__flatz__dL10-30__refGWTC1__seed0001/samples.csv'
+CSV_FULL1= 'Results/test_suite/s18__gw170817__imrphenomd_nrtidalv2__flatz__dL10-75__refModeB__seed0001/samples.csv'
 
 def load_dl_iota_h0(csv):
     s = load_nested_csv(csv)
@@ -30,6 +34,9 @@ def load_dl_iota_h0(csv):
 dlA, iA, h0A, wA = load_dl_iota_h0(CSV_A)
 dlB, iB, h0B, wB = load_dl_iota_h0(CSV_B)
 dlF, iF, h0F, wF = load_dl_iota_h0(CSV_FULL)
+_, _, h0A1, wA1 = load_dl_iota_h0(CSV_A1)
+_, _, h0B1, wB1 = load_dl_iota_h0(CSV_B1)
+_, _, h0F1, wF1 = load_dl_iota_h0(CSV_FULL1)
 
 fig, axes = plt.subplots(1, 2, figsize=(14, 5.5))
 
@@ -78,11 +85,14 @@ ax = axes[1]
 xg = np.linspace(40, 230, 4000)
 # 1-D H_0 marginals: weighted step-histograms (no KDE smoothing on tails).
 H0_BINS = np.linspace(40, 230, 191)   # 1 km/s/Mpc bins, matches paper tables
-_trapz = getattr(np, 'trapezoid', np.trapz)
+_trapz = getattr(np, 'trapezoid', getattr(np, 'trapz', None))
 for x, w, label, col, ls in [
-    (h0A, wA, r'Mode A run ($d_L\in[30,75]\,\rm Mpc$)', MODE_A_COL,   '-'),
-    (h0B, wB, r'Mode B run ($d_L\in[10,30]\,\rm Mpc$)', MODE_B_COL,   '-'),
-    (h0F, wF, r'Unrestricted run ($d_L\in[10,75]\,\rm Mpc$)', COMBINED_COL, '-'),
+    (h0A, wA,   r'Mode A (seed=0)',       MODE_A_COL,    '-'),
+    (h0B, wB,   r'Mode B (seed=0)',       MODE_B_COL,    '-'),
+    (h0F, wF,   r'Unrestricted (seed=0)', COMBINED_COL,  '-'),
+    (h0A1, wA1, r'Mode A (seed=1)',       MODE_A_COL,    '--'),
+    (h0B1, wB1, r'Mode B (seed=1)',       MODE_B_COL,    '--'),
+    (h0F1, wF1, r'Unrestricted (seed=1)', COMBINED_COL,  '--'),
 ]:
     if x is None: continue
     w = w / w.sum()
