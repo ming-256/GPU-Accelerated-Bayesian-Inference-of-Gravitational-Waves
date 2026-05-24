@@ -32,9 +32,19 @@
 {Abbott} B.~P.,  et~al., 2017b, \mn@doi [Nature] {10.1038/nature24471}, 551, 85
 
 \bibitem[\protect\citeauthoryear{{Abbott} et~al.}{{Abbott}
-  et~al.}{2019}]{Abbott2019GWTC1}
-{Abbott} B.~P.,  et~al., 2019, \mn@doi [Physical Review X]
+  et~al.}{2019a}]{Abbott2019GW170817Properties}
+{Abbott} B.~P.,  et~al., 2019a, \mn@doi [Physical Review X]
+  {10.1103/PhysRevX.9.011001}, 9, 011001
+
+\bibitem[\protect\citeauthoryear{{Abbott} et~al.}{{Abbott}
+  et~al.}{2019b}]{Abbott2019GWTC1}
+{Abbott} B.~P.,  et~al., 2019b, \mn@doi [Physical Review X]
   {10.1103/PhysRevX.9.031040}, 9, 031040
+
+\bibitem[\protect\citeauthoryear{{Abbott} et~al.}{{Abbott}
+  et~al.}{2020}]{LVK2020Prospects}
+{Abbott} B.~P.,  et~al., 2020, \mn@doi [Living Reviews in Relativity]
+  {10.1007/s41114-020-00026-9}, 23, 3
 
 \bibitem[\protect\citeauthoryear{{Abbott} et~al.}{{Abbott}
   et~al.}{2024}]{Abbott2021GWTC2p1}
@@ -51,28 +61,66 @@
 {Bradbury} J.,  et~al., 2018, {JAX: composable transformations of Python+NumPy
   programs}, \url{https://github.com/jax-ml/jax}
 
-\bibitem[\protect\citeauthoryear{{Cabezas} et~al.}{{Cabezas}
-  et~al.}{2024}]{BlackJAX}
-{Cabezas} A.,  et~al., 2024, {BlackJAX: Composable Bayesian inference in JAX}
+\bibitem[\protect\citeauthoryear{{Cabezas}, {Corenflos}, {Lao}, {Louf}
+  et~al.}{{Cabezas} et~al.}{2024}]{BlackJAX}
+{Cabezas} A.,  {Corenflos} A.,  {Lao} J.,  {Louf} R.,   et~al., 2024,
+  {BlackJAX: Composable Bayesian inference in JAX} (\mn@eprint {arXiv}
+  {2402.10797})
 
-\bibitem[\protect\citeauthoryear{{Cornish}}{{Cornish}}{2013}]{Cornish2013}
-{Cornish} N.~J.,  2013, {Heterodyned likelihood for rapid gravitational-wave
-  parameter estimation} (\mn@eprint {arXiv} {1007.4820})
+\bibitem[\protect\citeauthoryear{{Chen}, {Fishbach}  \& {Holz}}{{Chen}
+  et~al.}{2018}]{Chen2018Forecast}
+{Chen} H.-Y.,  {Fishbach} M.,   {Holz} D.~E.,  2018, \mn@doi [Nature]
+  {10.1038/s41586-018-0606-0}, 562, 545
 
-\bibitem[\protect\citeauthoryear{{Edwards} et~al.}{{Edwards}
-  et~al.}{2023}]{Edwards2023Ripple}
-{Edwards} T. D.~P.,  et~al., 2023, {Ripple: Differentiable and
-  hardware-accelerated gravitational waveforms}
+\bibitem[\protect\citeauthoryear{{Cornish}}{{Cornish}}{2010}]{Cornish2010}
+{Cornish} N.~J.,  2010, {Fast Fisher Matrices and Lazy Likelihoods} (\mn@eprint
+  {arXiv} {1007.4820})
+
+\bibitem[\protect\citeauthoryear{{Edwards}, {Wong}, {Lam}, {Coogan},
+  {Foreman-Mackey}, {Isi}  \& {Zimmerman}}{{Edwards}
+  et~al.}{2024}]{Edwards2023Ripple}
+{Edwards} T. D.~P.,  {Wong} K. W.~K.,  {Lam} K. K.~H.,  {Coogan} A.,
+  {Foreman-Mackey} D.,  {Isi} M.,   {Zimmerman} A.,  2024, \mn@doi [Physical
+  Review D] {10.1103/PhysRevD.110.064028}, 110, 064028
+
+\bibitem[\protect\citeauthoryear{{Finn} \& {Chernoff}}{{Finn} \&
+  {Chernoff}}{1993}]{FinnChernoff1993}
+{Finn} L.~S.,  {Chernoff} D.~F.,  1993, \mn@doi [Phys. Rev. D]
+  {10.1103/PhysRevD.47.2198}, 47, 2198
+
+\bibitem[\protect\citeauthoryear{{Holz} \& {Hughes}}{{Holz} \&
+  {Hughes}}{2005}]{HolzHughes2005}
+{Holz} D.~E.,  {Hughes} S.~A.,  2005, \mn@doi [The Astrophysical Journal]
+  {10.1086/431341}, 629, 15
+
+\bibitem[\protect\citeauthoryear{{Hotokezaka}, {Nakar}, {Gottlieb}, {Nissanke},
+  {Masuda}, {Hallinan}, {Mooley}  \& {Deller}}{{Hotokezaka}
+  et~al.}{2019}]{Hotokezaka2019}
+{Hotokezaka} K.,  {Nakar} E.,  {Gottlieb} O.,  {Nissanke} S.,  {Masuda} K.,
+  {Hallinan} G.,  {Mooley} K.~P.,   {Deller} A.~T.,  2019, \mn@doi [Nature
+  Astronomy] {10.1038/s41550-019-0820-1}, 3, 940
+
+\bibitem[\protect\citeauthoryear{{Howlett} \& {Davis}}{{Howlett} \&
+  {Davis}}{2020}]{HowlettDavis2020}
+{Howlett} C.,  {Davis} T.~M.,  2020, \mn@doi [Monthly Notices of the Royal
+  Astronomical Society] {10.1093/mnras/staa049}, 492, 3803
 
 \bibitem[\protect\citeauthoryear{{Hu} \& {Veitch}}{{Hu} \&
   {Veitch}}{2025}]{HuVeitch2025}
-{Hu} Q.,  {Veitch} J.,  2025, {Computational costs of gravitational-wave
-  parameter estimation in the third-generation detector era}
+{Hu} Q.,  {Veitch} J.,  2025, \mn@doi [Physical Review D] {10.1103/dj7k-tk37},
+  112, 084039
 
-\bibitem[\protect\citeauthoryear{{Krishna} et~al.}{{Krishna}
+\bibitem[\protect\citeauthoryear{{Kish}}{{Kish}}{1965}]{Kish1965}
+{Kish} L.,  1965, {Survey Sampling}.
+John Wiley \& Sons, New York
+
+\bibitem[\protect\citeauthoryear{{Krishna}, {Vijaykumar}, {Ganguly}, {Talbot},
+  {Biscoveanu}, {George}, {Williams}  \& {Zimmerman}}{{Krishna}
   et~al.}{2023}]{Krishna2023RelativeBinningBilby}
-{Krishna} K.,  et~al., 2023, {Accelerated parameter estimation with relative
-  binning in Bilby} (\mn@eprint {arXiv} {2312.06009})
+{Krishna} K.,  {Vijaykumar} A.,  {Ganguly} A.,  {Talbot} C.,  {Biscoveanu} S.,
+  {George} R.~N.,  {Williams} N.,   {Zimmerman} A.,  2023, {Accelerated
+  parameter estimation in Bilby with relative binning} (\mn@eprint {arXiv}
+  {2312.06009})
 
 \bibitem[\protect\citeauthoryear{{LIGO Scientific Collaboration} \& {Virgo
   Collaboration}}{{LIGO Scientific Collaboration} \& {Virgo
@@ -98,16 +146,50 @@
   -- Parameter Estimation Data Release}, Zenodo,
   \url{https://doi.org/10.5281/zenodo.6513631}, \mn@doi{10.5281/zenodo.6513631}
 
-\bibitem[\protect\citeauthoryear{{Planck Collaboration}}{{Planck
-  Collaboration}}{2016}]{Planck2016}
-{Planck Collaboration} 2016, \mn@doi [Astronomy and Astrophysics]
-  {10.1051/0004-6361/201525830}, 594, A13
+\bibitem[\protect\citeauthoryear{{Mooley} et~al.,}{{Mooley}
+  et~al.}{2018}]{Mooley2018Nature}
+{Mooley} K.~P.,  et~al., 2018, \mn@doi [Nature] {10.1038/s41586-018-0486-3},
+  561, 355
 
-\bibitem[\protect\citeauthoryear{{Prathaban} et~al.}{{Prathaban}
-  et~al.}{2025}]{Prathaban2025GPUSpeed}
-{Prathaban} M.,  et~al., 2025, {Gravitational-wave inference at GPU speed: A
-  bilby-like nested sampling kernel within blackjax-ns} (\mn@eprint {arXiv}
-  {2509.04336})
+\bibitem[\protect\citeauthoryear{{Mukherjee}, {Lavaux}, {Bouchet}, {Jasche},
+  {Wandelt}, {Nissanke}, {Leclercq}  \& {Hotokezaka}}{{Mukherjee}
+  et~al.}{2021}]{Mukherjee2021Velocity}
+{Mukherjee} S.,  {Lavaux} G.,  {Bouchet} F.~R.,  {Jasche} J.,  {Wandelt} B.~D.,
+   {Nissanke} S.,  {Leclercq} F.,   {Hotokezaka} K.,  2021, \mn@doi [Astronomy
+  and Astrophysics] {10.1051/0004-6361/201936724}, 646, A65
+
+\bibitem[\protect\citeauthoryear{{Nicolaou}, {Lahav}, {Lemos}, {Hartley}  \&
+  {Braden}}{{Nicolaou} et~al.}{2020}]{Nicolaou2020}
+{Nicolaou} C.,  {Lahav} O.,  {Lemos} P.,  {Hartley} W.,   {Braden} J.,  2020,
+  \mn@doi [Monthly Notices of the Royal Astronomical Society]
+  {10.1093/mnras/staa1120}, 495, 90
+
+\bibitem[\protect\citeauthoryear{{Palmese} \& {Mastrogiovanni}}{{Palmese} \&
+  {Mastrogiovanni}}{2025}]{PalmeseMastrogiovanni2025}
+{Palmese} A.,  {Mastrogiovanni} S.,  2025, {Gravitational Wave Cosmology}
+  (\mn@eprint {arXiv} {2502.00239})
+
+\bibitem[\protect\citeauthoryear{{Palmese}, {Kaur}, {Hajela}, {Margutti},
+  {McDowell}  \& {MacFadyen}}{{Palmese} et~al.}{2024}]{Palmese2024GW170817H0}
+{Palmese} A.,  {Kaur} R.,  {Hajela} A.,  {Margutti} R.,  {McDowell} A.,
+  {MacFadyen} A.,  2024, \mn@doi [Physical Review D]
+  {10.1103/PhysRevD.109.063508}, 109, 063508
+
+\bibitem[\protect\citeauthoryear{{Payne}, {Talbot}  \& {Thrane}}{{Payne}
+  et~al.}{2019}]{Payne2019Reweighting}
+{Payne} E.,  {Talbot} C.,   {Thrane} E.,  2019, \mn@doi [Physical Review D]
+  {10.1103/PhysRevD.100.123017}, 100, 123017
+
+\bibitem[\protect\citeauthoryear{{Planck Collaboration}}{{Planck
+  Collaboration}}{2020}]{Planck2020}
+{Planck Collaboration} 2020, \mn@doi [Astronomy and Astrophysics]
+  {10.1051/0004-6361/201833910}, 641, A6
+
+\bibitem[\protect\citeauthoryear{{Prathaban}, {Yallup}, {Alvey}, {Yang},
+  {Templeton}  \& {Handley}}{{Prathaban} et~al.}{2025}]{Prathaban2025GPUSpeed}
+{Prathaban} M.,  {Yallup} D.,  {Alvey} J.,  {Yang} M.,  {Templeton} W.,
+  {Handley} W.,  2025, {Gravitational-wave inference at GPU speed: A bilby-like
+  nested sampling kernel within blackjax-ns} (\mn@eprint {arXiv} {2509.04336})
 
 \bibitem[\protect\citeauthoryear{{Pratten} et~al.}{{Pratten}
   et~al.}{2021}]{Pratten2021XPHM}
@@ -124,6 +206,11 @@
 {Riess} A.~G.,  et~al., 2022, \mn@doi [The Astrophysical Journal Letters]
   {10.3847/2041-8213/ac5c5b}, 934, L7
 
+\bibitem[\protect\citeauthoryear{{Salvarese} \& {Chen}}{{Salvarese} \&
+  {Chen}}{2024}]{SalvareseChen2024}
+{Salvarese} A.,  {Chen} H.-Y.,  2024, \mn@doi [The Astrophysical Journal
+  Letters] {10.3847/2041-8213/ad7bbc}, 974, L16
+
 \bibitem[\protect\citeauthoryear{{Schutz}}{{Schutz}}{1986}]{Schutz1986}
 {Schutz} B.~F.,  1986, \mn@doi [Nature] {10.1038/323310a0}, 323, 310
 
@@ -134,20 +221,37 @@
 {Speagle} J.~S.,  2020, \mn@doi [Monthly Notices of the Royal Astronomical
   Society] {10.1093/mnras/staa278}, 493, 3132
 
-\bibitem[\protect\citeauthoryear{{Wong} et~al.}{{Wong}
+\bibitem[\protect\citeauthoryear{{Vehtari}, {Simpson}, {Gelman}, {Yao}  \&
+  {Gabry}}{{Vehtari} et~al.}{2024}]{Vehtari2024PSIS}
+{Vehtari} A.,  {Simpson} D.,  {Gelman} A.,  {Yao} Y.,   {Gabry} J.,  2024,
+  Journal of Machine Learning Research, 25, 1
+
+\bibitem[\protect\citeauthoryear{{Williams}, {Veitch}  \&
+  {Messenger}}{{Williams} et~al.}{2021}]{Williams2021Nessai}
+{Williams} M.~J.,  {Veitch} J.,   {Messenger} C.,  2021, \mn@doi [Physical
+  Review D] {10.1103/PhysRevD.103.103006}, 103, 103006
+
+\bibitem[\protect\citeauthoryear{{Wong}, {Isi}  \& {Edwards}}{{Wong}
   et~al.}{2023}]{Wong2023Jim}
-{Wong} K.,  et~al., 2023, {Jim: A JAX-based gravitational-wave inference
-  library}
+{Wong} K. W.~K.,  {Isi} M.,   {Edwards} T. D.~P.,  2023, \mn@doi [The
+  Astrophysical Journal] {10.3847/1538-4357/acf5cd}, 958, 129
 
-\bibitem[\protect\citeauthoryear{{Wouters} et~al.}{{Wouters}
-  et~al.}{2024}]{Wouters2024JimBNS}
-{Wouters} T.,  et~al., 2024, {Accelerated gravitational-wave inference for
-  binary neutron stars with Jim} (\mn@eprint {arXiv} {2404.11397})
+\bibitem[\protect\citeauthoryear{{Wouters}, {Pang}, {Dietrich}  \& {Van Den
+  Broeck}}{{Wouters} et~al.}{2024}]{Wouters2024JimBNS}
+{Wouters} T.,  {Pang} P. T.~H.,  {Dietrich} T.,   {Van Den Broeck} C.,  2024,
+  \mn@doi [Physical Review D] {10.1103/PhysRevD.110.083033}, 110, 083033
 
-\bibitem[\protect\citeauthoryear{{Yallup} et~al.}{{Yallup}
-  et~al.}{2025}]{Yallup2025BlackJAXNS}
-{Yallup} D.,  et~al., 2025, {GPU nested slice sampling for gravitational-wave
-  inference} (\mn@eprint {arXiv} {2509.24949})
+\bibitem[\protect\citeauthoryear{{Yallup}, {Prathaban}, {Alvey}  \&
+  {Handley}}{{Yallup} et~al.}{2025}]{Yallup2025BlackJAXNS}
+{Yallup} D.,  {Prathaban} M.,  {Alvey} J.,   {Handley} W.,  2025, {Parallel
+  Nested Slice Sampling for Gravitational Wave Parameter Estimation}
+  (\mn@eprint {arXiv} {2509.24949})
+
+\bibitem[\protect\citeauthoryear{{Yang}, {Prathaban}, {Yallup}  \&
+  {Handley}}{{Yang} et~al.}{2026}]{Yang2026DataRelease}
+{Yang} M.,  {Prathaban} M.,  {Yallup} D.,   {Handley} W.,  2026, {GW170817
+  bright-siren $H_0$: data and analysis release},
+  \url{https://github.com/ming-256/GW170817-bright-siren-H0}
 
 \bibitem[\protect\citeauthoryear{{Zackay}, {Dai}  \& {Venumadhav}}{{Zackay}
   et~al.}{2018}]{Zackay2018RelativeBinning}

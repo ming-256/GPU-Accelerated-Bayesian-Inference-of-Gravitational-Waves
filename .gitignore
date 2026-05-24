@@ -60,3 +60,9 @@ docs/_build/
 # Packages
 package-lock.json
 package.json
+
+# Superseded by the curated github.com/ming-256/GW170817-bright-siren-H0 release
+paper-reproduce/
+
+# Claude Code transient state
+.claude/

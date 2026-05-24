@@ -107,6 +107,10 @@ parser.add_argument('--seed', type=int, default=0,
 parser.add_argument('--ref-modeB', action='store_true',
                     help='Shorthand: anchor heterodyne reference to Mode-B (d_L=20 Mpc, iota=2.0 rad). '
                          'Equivalent to --ref-dl 20.0 --ref-iota 2.0.')
+parser.add_argument('--n-mcmc', type=int, default=None, dest='n_mcmc',
+                    help='Override the BlackJAX-NS num_inner_steps slice-step count. '
+                         'Default: 8 * NUM_DIMS (=112 for phase-marginalised 14-d GW170817). '
+                         'Used for the M7 convergence sweep at {5, 10, 20} * NUM_DIMS.')
 args = parser.parse_args()
 # --dL-lo / --dL-hi are aliases for --dl-min / --dl-max
 if args.dl_lo is not None:
@@ -974,7 +978,9 @@ def loglikelihood_fn(x):
 
 num_live = args.n_live
 num_delete = args.num_delete if args.num_delete is not None else int(num_live * 0.3)
-num_mcmc_steps = int(NUM_DIMS * 8)
+num_mcmc_steps = int(args.n_mcmc) if args.n_mcmc is not None else int(NUM_DIMS * 8)
+print(f"num_mcmc_steps (slice steps per update): {num_mcmc_steps}  "
+      f"({'CLI override' if args.n_mcmc is not None else f'default 8*NUM_DIMS={8*NUM_DIMS}'})")
 
 @jax.jit
 def stepper_fn(x, d, t):

@@ -63,6 +63,13 @@ def map_h0(x, w):
     return float(H0_CENTRES[int(np.argmax(counts))])
 
 
+def weighted_median(x, w):
+    """Median from weighted samples (referee m14: robust to MAP bin noise)."""
+    idx = np.argsort(x)
+    cum = np.cumsum(w[idx]) / w.sum()
+    return float(np.interp(0.5, cum, x[idx]))
+
+
 def hpd(x, w, frac):
     idx = np.argsort(x)
     xs = x[idx]; ws = w[idx]/w.sum()
@@ -96,9 +103,9 @@ def n_eff(w):
 TABLE5_PRIOR_SENSITIVITY = [
     ('Baseline ($\\pi(d_L)\\propto d_L^{2}$)',
         's14__gw170817__imrphenomxas_nrtidalv3__baseline__seed0000'),
-    ('Flat-in-$z$, direct',
+    ('Uniform-in-$d_L$, direct',
         's14__gw170817__imrphenomxas_nrtidalv3__flatz__seed0000'),
-    ('Flat-in-$z$, reweighted',
+    ('Uniform-in-$d_L$, reweighted',
         's14__gw170817__imrphenomxas_nrtidalv3__reweighted_flatz__seed0000'),
     ('$\\sigma_{v_p}=250\\,\\mathrm{km\\,s^{-1}}$',
         's14__gw170817__imrphenomxas_nrtidalv3__vp250__seed0000'),
@@ -155,6 +162,7 @@ def build_h0_row(label, run_dir):
     return dict(
         label=label, run=run_dir,
         MAP=map_h0(x, w),
+        median=weighted_median(x, w),
         HPD68_lo=hpd(x, w, 0.68269)[0], HPD68_hi=hpd(x, w, 0.68269)[1],
         HPD95_lo=hpd(x, w, 0.95450)[0], HPD95_hi=hpd(x, w, 0.95450)[1],
         P_gt_120=tail(x, w, 120), P_gt_150=tail(x, w, 150),
@@ -224,9 +232,10 @@ def write_table5(rows, path):
         if i == 4:  # separator before vp-mean sweep group
             body += '    \\midrule\n'
         lz = _lnz_str(r['lnZ'], r['dlnZ']) if 'reweighted' not in r['run'] else '(post-hoc)'
-        body += (f"    {r['label']:<46} & {r['MAP']:.1f} & "
+        body += (f"    {r['label']:<46} & {r['MAP']:.1f} & {r['median']:.1f} & "
                  f"{_hpd_str(r['HPD68_lo'], r['HPD68_hi'])} & "
                  f"{_tail_str(r['P_gt_120'])} & {_tail_str(r['P_gt_150'])} & {lz} \\\\\n")
+    body += '    \\bottomrule\n'
     with open(path, 'w') as f:
         f.write(body)
 
@@ -239,6 +248,7 @@ def write_table6(rows, path):
         body += (f"    {r['label']:<14} & {r['dL_range']} & {r['MAP']:.1f} & "
                  f"{_hpd_str(r['HPD68_lo'], r['HPD68_hi'])} & "
                  f"{_tail_str(r['P_gt_120'])} & {_lnz_str(r['lnZ'], r['dlnZ'])} \\\\\n")
+    body += '    \\bottomrule\n'
     with open(path, 'w') as f:
         f.write(body)
 
@@ -253,6 +263,7 @@ def write_gw150914(rows, path):
                  f"{r['M_c_med']:.2f} & {r['q_med']:.2f} & "
                  f"{r['d_L_med']:.0f} & {r['iota_med']:.2f} & "
                  f"{_lnz_str(r['lnZ'], r['dlnZ'])} \\\\\n")
+    body += '    \\bottomrule\n'
     with open(path, 'w') as f:
         f.write(body)
 
