@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex main"] 1779613010 "main.aux" "main.bbl" "main" 1779613011 0
-  "./references.bib" 1779612997 14748 83d1dfa0014d37f5f5f557d8ba489158 ""
+["bibtex main"] 1779637204 "main.aux" "main.bbl" "main" 1779637205 0
+  "./references.bib" 1779636449 15081 7e1a675e82b42f519c7985b52322c3bf ""
   "/usr/local/texlive/2023/texmf-dist/bibtex/bst/mnras/mnras.bst" 1593726342 43376 8463aa2cc1948e346d5641ca59bb4619 ""
-  "main.aux" 1779613010 26731 a074ad4bdb8755e0fb1d86e65a2a6765 "pdflatex"
+  "main.aux" 1779637205 26849 71aa520b9208ed88c312ded4b62c4767 "pdflatex"
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1779613010 "main.tex" "main.pdf" "main" 1779613011 0
+["pdflatex"] 1779637204 "main.tex" "main.pdf" "main" 1779637205 0
   "../Results/gwtc1_phasemarg/plots//H0_prior_sensitivity.pdf" 1779610002 45444 f9e0bdfd8f8500a8ab45f53ca4beffb6 ""
   "../Results/gwtc1_phasemarg/plots//H0_waveform_comparison.pdf" 1779610530 26557 0a86fb7d3556045b0df23738502faecf ""
   "../Results/gwtc1_phasemarg/plots//bimodality.pdf" 1779610782 55482 b36bc6dd4e60e3b58b4f64c5e951e7c8 ""
@@ -174,10 +174,10 @@
   "/usr/local/texlive/2023/texmf-var/web2c/pdftex/pdflatex.fmt" 1694987891 7883453 13d3b4f666cacade2b654adc70b081f9 ""
   "/usr/local/texlive/2023/texmf.cnf" 1678822455 577 1b2b1af17af2508fb20dd85783af4050 ""
   "figures//bimodality_imr_vs_imrx.pdf" 1779610797 30458 7319ad182c04be8cdb7a65d33d1e2a9e ""
-  "main.aux" 1779613010 26731 a074ad4bdb8755e0fb1d86e65a2a6765 "pdflatex"
-  "main.bbl" 1779613010 12486 33b43f569154e47c39d65e4009812350 "bibtex main"
-  "main.out" 1779613010 4654 ec1f12bd6b9b831f39e41e4ecf725542 "pdflatex"
-  "main.tex" 1779612956 61835 f3d251deb3c6447029055a114677b895 ""
+  "main.aux" 1779637205 26849 71aa520b9208ed88c312ded4b62c4767 "pdflatex"
+  "main.bbl" 1779637204 12667 aef11d64c2581b19b9916e7fbdb1638f "bibtex main"
+  "main.out" 1779637205 4654 ec1f12bd6b9b831f39e41e4ecf725542 "pdflatex"
+  "main.tex" 1779636437 62769 0c1fe9a8df5b0104eeb3485dbcdcfd80 ""
   (generated)
   "main.aux"
   "main.log"
