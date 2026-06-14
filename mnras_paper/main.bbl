@@ -51,6 +51,11 @@
 {Abbott} R.,  et~al., 2024, \mn@doi [Physical Review D]
   {10.1103/PhysRevD.109.022001}, 109, 022001
 
+\bibitem[\protect\citeauthoryear{{Ashton}}{{Ashton}}{2025}]{Ashton2025Reweighting}
+{Ashton} G.,  2025, {Reconstructing and resampling: a guide to utilising
+  posterior samples from gravitational wave observations} (\mn@eprint {arXiv}
+  {2510.11197})
+
 \bibitem[\protect\citeauthoryear{{Ashton} et~al.}{{Ashton}
   et~al.}{2019}]{Ashton2019Bilby}
 {Ashton} G.,  et~al., 2019, \mn@doi [The Astrophysical Journal Supplement
@@ -60,6 +65,11 @@
   et~al.}{2018}]{Bradbury2018JAX}
 {Bradbury} J.,  et~al., 2018, {JAX: composable transformations of Python+NumPy
   programs}, \url{https://github.com/jax-ml/jax}
+
+\bibitem[\protect\citeauthoryear{{Branchesi} et~al.}{{Branchesi}
+  et~al.}{2023}]{Branchesi2023ET}
+{Branchesi} M.,  et~al., 2023, \mn@doi [Journal of Cosmology and Astroparticle
+  Physics] {10.1088/1475-7516/2023/07/068}, 2023, 068
 
 \bibitem[\protect\citeauthoryear{{Cabezas}, {Corenflos}, {Lao}, {Louf}
   et~al.}{{Cabezas} et~al.}{2024}]{BlackJAX}
