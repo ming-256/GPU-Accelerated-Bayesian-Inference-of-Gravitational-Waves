@@ -56,10 +56,9 @@
 {Abbott} R.,  et~al., 2024, \mn@doi [Physical Review D]
   {10.1103/PhysRevD.109.022001}, 109, 022001
 
-\bibitem[\protect\citeauthoryear{{Ashton}}{{Ashton}}{2025}]{Ashton2025Reweighting}
-{Ashton} G.,  2025, {Reconstructing and resampling: a guide to utilising
-  posterior samples from gravitational wave observations} (\mn@eprint {arXiv}
-  {2510.11197})
+\bibitem[\protect\citeauthoryear{{Ashton}}{{Ashton}}{2026}]{Ashton2025Reweighting}
+{Ashton} G.,  2026, \mn@doi [RAS Techniques and Instruments]
+  {10.1093/rasti/rzag012}, 5, rzag012
 
 \bibitem[\protect\citeauthoryear{{Ashton} et~al.}{{Ashton}
   et~al.}{2019}]{Ashton2019Bilby}
@@ -161,14 +160,14 @@ John Wiley \& Sons, New York
   binary neutron star merger GW170817 -- Data Release}, LIGO Document P1800061;
   \url{https://dcc.ligo.org/LIGO-P1800061/public}
 
-\bibitem[\protect\citeauthoryear{{LIGO Scientific Collaboration}, {Virgo
-  Collaboration}  \& {KAGRA Collaboration}}{{LIGO Scientific Collaboration}
-  et~al.}{2022}]{GWTC2p1_GW150914_Zenodo}
-{LIGO Scientific Collaboration} {Virgo Collaboration}  {KAGRA Collaboration}
-  2022, {GWTC-2.1: Deep Extended Catalog of Compact Binary Coalescences
-  Observed by LIGO and Virgo During the First Half of the Third Observing Run
-  -- Parameter Estimation Data Release}, Zenodo,
-  \url{https://doi.org/10.5281/zenodo.6513631}, \mn@doi{10.5281/zenodo.6513631}
+\bibitem[\protect\citeauthoryear{{LIGO Scientific Collaboration} \& {Virgo
+  Collaboration}}{{LIGO Scientific Collaboration} \& {Virgo
+  Collaboration}}{2022}]{GWTC2p1_GW150914_Zenodo}
+{LIGO Scientific Collaboration} {Virgo Collaboration} 2022, {GWTC-2.1: Deep
+  Extended Catalog of Compact Binary Coalescences Observed by LIGO and Virgo
+  During the First Half of the Third Observing Run -- Parameter Estimation Data
+  Release}, Zenodo, \url{https://doi.org/10.5281/zenodo.6513631},
+  \mn@doi{10.5281/zenodo.6513631}
 
 \bibitem[\protect\citeauthoryear{{LIGO Scientific Collaboration}, {Virgo
   Collaboration}  \& {KAGRA Collaboration}}{{LIGO Scientific Collaboration}
@@ -226,10 +225,10 @@ John Wiley \& Sons, New York
   {10.1051/0004-6361/201833910}, 641, A6
 
 \bibitem[\protect\citeauthoryear{{Prathaban}, {Yallup}, {Alvey}, {Yang},
-  {Templeton}  \& {Handley}}{{Prathaban} et~al.}{2025}]{Prathaban2025GPUSpeed}
-{Prathaban} M.,  {Yallup} D.,  {Alvey} J.,  {Yang} M.,  {Templeton} W.,
-  {Handley} W.,  2025, {Gravitational-wave inference at GPU speed: A bilby-like
-  nested sampling kernel within blackjax-ns} (\mn@eprint {arXiv} {2509.04336})
+  {Templeton}  \& {Handley}}{{Prathaban} et~al.}{2026}]{Prathaban2025GPUSpeed}
+{Prathaban} M.,  {Yallup} D.,  {Alvey} J.,  {Yang} M.~H.,  {Templeton} W.,
+  {Handley} W.,  2026, \mn@doi [RAS Techniques and Instruments]
+  {10.1093/rasti/rzag034}, 5, rzag034
 
 \bibitem[\protect\citeauthoryear{{Pratten}, {Husa}, {Garc\'ia-Quir\'os},
   {Colleoni}, {Ramos-Buades}, {Estell\'es}  \& {Jaume}}{{Pratten}
@@ -318,7 +317,7 @@ John Wiley \& Sons, New York
 
 \bibitem[\protect\citeauthoryear{{Yang}, {Prathaban}, {Yallup}  \&
   {Handley}}{{Yang} et~al.}{2026}]{Yang2026DataRelease}
-{Yang} M.,  {Prathaban} M.,  {Yallup} D.,   {Handley} W.,  2026, {GW170817
+{Yang} M.~H.,  {Prathaban} M.,  {Yallup} D.,   {Handley} W.,  2026, {GW170817
   bright-siren $H_0$: data and analysis release},
   \url{https://github.com/ming-256/GW170817-bright-siren-H0}
 
