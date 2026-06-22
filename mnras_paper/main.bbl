@@ -17,6 +17,11 @@
   {mn@eprint@\@tempb}{\@tempb:\@tempc}{\expandafter \expandafter \csname
   mn@eprint@\@tempb\endcsname \expandafter{\@tempc}}}
 
+\bibitem[\protect\citeauthoryear{{Abac}, {Dietrich}, {Buonanno}, {Steinhoff}
+  \& {Ujevic}}{{Abac} et~al.}{2024}]{Abac2024NRTidalv3}
+{Abac} A.,  {Dietrich} T.,  {Buonanno} A.,  {Steinhoff} J.,   {Ujevic} M.,
+  2024, \mn@doi [Physical Review D] {10.1103/PhysRevD.109.024062}, 109, 024062
+
 \bibitem[\protect\citeauthoryear{{Abbott} et~al.}{{Abbott}
   et~al.}{2016}]{Abbott2016GW150914}
 {Abbott} B.~P.,  et~al., 2016, \mn@doi [Physical Review Letters]
@@ -85,6 +90,15 @@
 \bibitem[\protect\citeauthoryear{{Cornish}}{{Cornish}}{2010}]{Cornish2010}
 {Cornish} N.~J.,  2010, {Fast Fisher Matrices and Lazy Likelihoods} (\mn@eprint
   {arXiv} {1007.4820})
+
+\bibitem[\protect\citeauthoryear{{Dax} et~al.,}{{Dax}
+  et~al.}{2025}]{Dax2025DingoBNS}
+{Dax} M.,  et~al., 2025, \mn@doi [Nature] {10.1038/s41586-025-08593-z}, 639, 49
+
+\bibitem[\protect\citeauthoryear{{Di Valentino} et~al.}{{Di Valentino}
+  et~al.}{2021}]{DiValentino2021HubbleReview}
+{Di Valentino} E.,  et~al., 2021, \mn@doi [Classical and Quantum Gravity]
+  {10.1088/1361-6382/ac086d}, 38, 153001
 
 \bibitem[\protect\citeauthoryear{{Edwards}, {Wong}, {Lam}, {Coogan},
   {Foreman-Mackey}, {Isi}  \& {Zimmerman}}{{Edwards}
@@ -156,10 +170,22 @@ John Wiley \& Sons, New York
   -- Parameter Estimation Data Release}, Zenodo,
   \url{https://doi.org/10.5281/zenodo.6513631}, \mn@doi{10.5281/zenodo.6513631}
 
+\bibitem[\protect\citeauthoryear{{LIGO Scientific Collaboration}, {Virgo
+  Collaboration}  \& {KAGRA Collaboration}}{{LIGO Scientific Collaboration}
+  et~al.}{2026}]{LVK2026GWTC5Cosmology}
+{LIGO Scientific Collaboration} {Virgo Collaboration}  {KAGRA Collaboration}
+  2026, {GWTC-5.0: Constraints on the Cosmic Expansion Rate and Modified
+  Gravitational-wave Propagation} (\mn@eprint {arXiv} {2605.27227}),
+  \mn@doi{10.48550/arXiv.2605.27227}
+
 \bibitem[\protect\citeauthoryear{{Mooley} et~al.,}{{Mooley}
   et~al.}{2018}]{Mooley2018Nature}
 {Mooley} K.~P.,  et~al., 2018, \mn@doi [Nature] {10.1038/s41586-018-0486-3},
   561, 355
+
+\bibitem[\protect\citeauthoryear{{Morisaki}}{{Morisaki}}{2021}]{Morisaki2021Multiband}
+{Morisaki} S.,  2021, \mn@doi [Physical Review D]
+  {10.1103/PhysRevD.104.044062}, 104, 044062
 
 \bibitem[\protect\citeauthoryear{{Mukherjee}, {Lavaux}, {Bouchet}, {Jasche},
   {Wandelt}, {Nissanke}, {Leclercq}  \& {Hotokezaka}}{{Mukherjee}
@@ -205,6 +231,13 @@ John Wiley \& Sons, New York
   {Handley} W.,  2025, {Gravitational-wave inference at GPU speed: A bilby-like
   nested sampling kernel within blackjax-ns} (\mn@eprint {arXiv} {2509.04336})
 
+\bibitem[\protect\citeauthoryear{{Pratten}, {Husa}, {Garc\'ia-Quir\'os},
+  {Colleoni}, {Ramos-Buades}, {Estell\'es}  \& {Jaume}}{{Pratten}
+  et~al.}{2020}]{Pratten2020XAS}
+{Pratten} G.,  {Husa} S.,  {Garc\'ia-Quir\'os} C.,  {Colleoni} M.,
+  {Ramos-Buades} A.,  {Estell\'es} H.,   {Jaume} R.,  2020, \mn@doi [Physical
+  Review D] {10.1103/PhysRevD.102.064001}, 102, 064001
+
 \bibitem[\protect\citeauthoryear{{Pratten} et~al.}{{Pratten}
   et~al.}{2021}]{Pratten2021XPHM}
 {Pratten} G.,  et~al., 2021, \mn@doi [Physical Review D]
@@ -231,6 +264,12 @@ John Wiley \& Sons, New York
 \bibitem[\protect\citeauthoryear{{Skilling}}{{Skilling}}{2006}]{Skilling2006Nested}
 {Skilling} J.,  2006, \mn@doi [Bayesian Analysis] {10.1214/06-BA127}, 1, 833
 
+\bibitem[\protect\citeauthoryear{{Smith}, {Field}, {Blackburn}, {Haster},
+  {P\"urrer}, {Raymond}  \& {Schmidt}}{{Smith} et~al.}{2016}]{Smith2016ROQ}
+{Smith} R.,  {Field} S.~E.,  {Blackburn} K.,  {Haster} C.-J.,  {P\"urrer} M.,
+  {Raymond} V.,   {Schmidt} P.,  2016, \mn@doi [Physical Review D]
+  {10.1103/PhysRevD.94.044031}, 94, 044031
+
 \bibitem[\protect\citeauthoryear{{Speagle}}{{Speagle}}{2020}]{Speagle2020Dynesty}
 {Speagle} J.~S.,  2020, \mn@doi [Monthly Notices of the Royal Astronomical
   Society] {10.1093/mnras/staa278}, 493, 3132
@@ -240,10 +279,21 @@ John Wiley \& Sons, New York
 {Vehtari} A.,  {Simpson} D.,  {Gelman} A.,  {Yao} Y.,   {Gabry} J.,  2024,
   Journal of Machine Learning Research, 25, 1
 
+\bibitem[\protect\citeauthoryear{{Vinciguerra}, {Veitch}  \&
+  {Mandel}}{{Vinciguerra} et~al.}{2017}]{Vinciguerra2017Multiband}
+{Vinciguerra} S.,  {Veitch} J.,   {Mandel} I.,  2017, \mn@doi [Classical and
+  Quantum Gravity] {10.1088/1361-6382/aa6d44}, 34, 115006
+
 \bibitem[\protect\citeauthoryear{{Williams}, {Veitch}  \&
   {Messenger}}{{Williams} et~al.}{2021}]{Williams2021Nessai}
 {Williams} M.~J.,  {Veitch} J.,   {Messenger} C.,  2021, \mn@doi [Physical
   Review D] {10.1103/PhysRevD.103.103006}, 103, 103006
+
+\bibitem[\protect\citeauthoryear{{Williams}, {Karamanis}, {Luo}  \&
+  {Seljak}}{{Williams} et~al.}{2025}]{Williams2025SMC}
+{Williams} M.~J.,  {Karamanis} M.,  {Luo} Y.,   {Seljak} U.,  2025, \mn@doi
+  [Monthly Notices of the Royal Astronomical Society] {10.1093/mnras/staf1458},
+  543, 1479
 
 \bibitem[\protect\citeauthoryear{{Wong}, {Isi}  \& {Edwards}}{{Wong}
   et~al.}{2023}]{Wong2023Jim}
@@ -260,6 +310,11 @@ John Wiley \& Sons, New York
 {Yallup} D.,  {Prathaban} M.,  {Alvey} J.,   {Handley} W.,  2025, {Parallel
   Nested Slice Sampling for Gravitational Wave Parameter Estimation}
   (\mn@eprint {arXiv} {2509.24949})
+
+\bibitem[\protect\citeauthoryear{{Yallup}, {Kroupa}  \& {Handley}}{{Yallup}
+  et~al.}{2026}]{Yallup2026BlackjaxNS}
+{Yallup} D.,  {Kroupa} N.,   {Handley} W.,  2026, \mn@doi [Transactions on
+  Machine Learning Research] {10.48550/arXiv.2601.23252}
 
 \bibitem[\protect\citeauthoryear{{Yang}, {Prathaban}, {Yallup}  \&
   {Handley}}{{Yang} et~al.}{2026}]{Yang2026DataRelease}
