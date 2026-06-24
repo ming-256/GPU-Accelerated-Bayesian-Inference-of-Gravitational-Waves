@@ -1,0 +1,564 @@
+path,classification,reason,recommended_action
+Plots/Old/PlotGW170817_Bilby_LVK_Hetero.py,needed-paper,utility script,include
+Plots/Old/PlotH0.py,needed-paper,utility script,include
+Plots/PlotExtendedFig_25_250.py,dead,deprecated extended figure,exclude
+Plots/PlotExtendedFig_40_140.py,dead,deprecated extended figure,exclude
+Plots/_plot_utils.py,needed-paper,feeds paper tables/figures,include
+Plots/build_full_summary.py,needed-verification,review/summary utility,include
+Plots/build_paper_tables.py,needed-paper,feeds paper tables/figures,include
+Plots/build_review_pdf.py,needed-verification,review/summary utility,include
+Plots/build_scaling_table.py,needed-verification,review/summary utility,include
+Plots/compare_bins.py,dead,comparison/exploratory script,exclude
+Plots/compute_evidence_table.py,needed-paper,feeds paper tables/figures,include
+Plots/compute_prior_sensitivity.py,needed-paper,feeds paper tables/figures,include
+Plots/compute_summary_stats.py,needed-paper,feeds paper tables/figures,include
+Plots/compute_waveform_systematics.py,needed-paper,feeds paper tables/figures,include
+Plots/newplotter.py,needed-paper,utility script,include
+Plots/plot_GW150914.py,dead,output PDF not cited in paper,exclude
+Plots/plot_GW150914_waveform_comparison.py,needed-paper,generates corner_GW150914_waveform_comparison.pdf,include
+Plots/plot_GW170817_waveform_corner.py,needed-paper,generates corner_GW170817_waveform_comparison.pdf,include
+Plots/plot_H0.py,dead,output PDF not cited in paper,exclude
+Plots/plot_H0_GW170817_waveform_comparison.py,needed-paper,generates H0_waveform_comparison.pdf,include
+Plots/plot_H0_IMRPhenomD_reweighted.py,dead,output PDF not cited in paper,exclude
+Plots/plot_H0_IMRPhenomD_variants.py,dead,output PDF not cited in paper,exclude
+Plots/plot_H0_TaylorF2_reweighted.py,dead,output PDF not cited in paper,exclude
+Plots/plot_H0_TaylorF2_variants.py,dead,output PDF not cited in paper,exclude
+Plots/plot_H0_abbott_reproduction.py,dead,output PDF not cited in paper,exclude
+Plots/plot_H0_baseline_IMRPhenomD.py,dead,output PDF not cited in paper,exclude
+Plots/plot_H0_baseline_TaylorF2.py,dead,output PDF not cited in paper,exclude
+Plots/plot_H0_prior_sensitivity.py,needed-paper,generates H0_prior_sensitivity.pdf,include
+Plots/plot_H0_reweight_comparison.py,dead,output PDF not cited in paper,exclude
+Plots/plot_H0_summary.py,dead,output PDF not cited in paper,exclude
+Plots/plot_H0_synoptic.py,dead,output PDF not cited in paper,exclude
+Plots/plot_bimodality.py,needed-paper,generates bimodality.pdf,include
+Plots/plot_by_waveform.py,dead,output PDF not cited in paper,exclude
+Plots/plot_corner_GW170817_XAS_vs_LVK.py,dead,output PDF not cited in paper,exclude
+Plots/plot_corner_GW170817_precession_test.py,dead,output PDF not cited in paper,exclude
+Plots/plot_corner_IMRPhenomD_hetero_vs_unhetero.py,dead,output PDF not cited in paper,exclude
+Plots/plot_corner_TaylorF2_hetero_vs_unhetero.py,dead,output PDF not cited in paper,exclude
+Plots/plot_corner_combined_waveforms.py,dead,output PDF not cited in paper,exclude
+Plots/plot_corner_reweighted_vs_sampled_flatZ.py,dead,output PDF not cited in paper,exclude
+Plots/plot_dL_posterior.py,dead,output PDF not cited in paper,exclude
+Plots/plot_full_sky_vs_narrow.py,dead,output PDF not cited in paper,exclude
+Plots/plot_h0_prior_comparison.py,dead,output PDF not cited in paper,exclude
+Plots/plot_paper_phasemarg_local.py,dead,output PDF not cited in paper,exclude
+Plots/plot_phase_marginalization_schematic.py,dead,output PDF not cited in paper,exclude
+Plots/plot_phasemarg_comparison_gwtc.py,dead,output PDF not cited in paper,exclude
+Plots/plot_prior_vs_posterior_H0.py,dead,output PDF not cited in paper,exclude
+Plots/plot_q_overlay_s16.py,dead,output PDF not cited in paper,exclude
+Plots/plot_q_prior_sensitivity.py,dead,output PDF not cited in paper,exclude
+Plots/plot_scaling_full.py,dead,output PDF not cited in paper,exclude
+Plots/plot_scaling_study.py,needed-paper,generates scaling_study_full.pdf,include
+Plots/plot_sky_prior_runtime.py,dead,output PDF not cited in paper,exclude
+Plots/plot_speedup_comparison.py,dead,output PDF not cited in paper,exclude
+Plots/plot_unheterodyned_vs_gwtc.py,dead,output PDF not cited in paper,exclude
+Plots/plot_waveform_comparison_gwtc.py,dead,output PDF not cited in paper,exclude
+Plots/reweight_dL_to_flat_z.py,needed-paper,utility script,include
+Plots/run_all_plots.sh,needed-paper,orchestrates paper figure generation,include
+Results/gwtc1_phasemarg/GW15_PhaseMarg_Heterodyned_IMRPhenomD_local_psd-gwtc2p1_ref-gwtc1.csv,needed-paper,paper results data,include
+Results/gwtc1_phasemarg/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_baseline.csv,needed-paper,paper results data,include
+Results/gwtc1_phasemarg/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_flatZ.csv,needed-paper,paper results data,include
+Results/gwtc1_phasemarg/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_reweighted_flatZ.csv,needed-paper,paper results data,include
+Results/gwtc1_phasemarg/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_vp250.csv,needed-paper,paper results data,include
+Results/gwtc1_phasemarg/PhaseMarg_Heterodyned_TaylorF2_local_psd-gwtc1_ref-gwtc1_baseline.csv,needed-paper,paper results data,include
+Results/gwtc1_phasemarg/PhaseMarg_Heterodyned_TaylorF2_local_psd-gwtc1_ref-gwtc1_flatZ.csv,needed-paper,paper results data,include
+Results/gwtc1_phasemarg/PhaseMarg_Heterodyned_TaylorF2_local_psd-gwtc1_ref-gwtc1_reweighted_flatZ.csv,needed-paper,paper results data,include
+Results/gwtc1_phasemarg/PhaseMarg_Heterodyned_TaylorF2_local_psd-gwtc1_ref-gwtc1_vp250.csv,needed-paper,paper results data,include
+Results/gwtc1_phasemarg/PhaseMarg_Unheterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1.csv,needed-paper,paper results data,include
+Results/gwtc1_phasemarg/PhaseMarg_Unheterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_full_sky.csv,needed-paper,paper results data,include
+Results/gwtc1_phasemarg/PhaseMarg_Unheterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_small_h0_prior.csv,needed-paper,paper results data,include
+Results/gwtc1_phasemarg/PhaseMarg_Unheterodyned_TaylorF2_local_psd-gwtc1.csv,needed-paper,paper results data,include
+Results/gwtc1_phasemarg/PhaseMarg_Unheterodyned_TaylorF2_local_psd-gwtc1_full_sky.csv,needed-paper,paper results data,include
+Results/gwtc1_phasemarg/PhaseMarg_Unheterodyned_TaylorF2_local_psd-gwtc1_small_h0_prior.csv,needed-paper,paper results data,include
+Results/gwtc1_phasemarg/evidence_table.csv,needed-paper,source for paper tables/evidence,include
+Results/gwtc1_phasemarg/paper_diagnostics.csv,needed-paper,source for paper tables/evidence,include
+Results/gwtc1_phasemarg/paper_tables.csv,needed-paper,source for paper tables/evidence,include
+Results/gwtc1_phasemarg/plots/H0_IMRPhenomD_reweighted.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/H0_IMRPhenomD_reweighted.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/H0_IMRPhenomD_variants.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/H0_IMRPhenomD_variants.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/H0_TaylorF2_reweighted.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/H0_TaylorF2_reweighted.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/H0_TaylorF2_variants.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/H0_TaylorF2_variants.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/H0_abbott_reproduction.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/H0_abbott_reproduction.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/H0_baseline_IMRPhenomD.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/H0_baseline_IMRPhenomD.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/H0_baseline_TaylorF2.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/H0_baseline_TaylorF2.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/H0_boundary_analysis.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/H0_boundary_analysis.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/H0_full_sky_vs_narrow.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/H0_full_sky_vs_narrow.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/H0_prior_comparison.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/H0_prior_comparison.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/H0_prior_sensitivity.pdf,needed-paper,cited paper figure,include
+Results/gwtc1_phasemarg/plots/H0_prior_sensitivity.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/H0_prior_vs_posterior.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/H0_prior_vs_posterior.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/H0_reweight_comparison.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/H0_reweight_comparison.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/H0_reweighted_vs_sampled_flatZ.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/H0_reweighted_vs_sampled_flatZ.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/H0_summary_all_methods.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/H0_summary_all_methods.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/H0_synoptic.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/H0_synoptic.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/H0_unheterodyned_vs_gwtc.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/H0_unheterodyned_vs_gwtc.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/H0_waveform_comparison.pdf,needed-paper,cited paper figure,include
+Results/gwtc1_phasemarg/plots/H0_waveform_comparison.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/REVIEW_bundle.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/bimodality.pdf,needed-paper,cited paper figure,include
+Results/gwtc1_phasemarg/plots/bimodality.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/bin_comparison_fig2.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/bin_comparison_fig3b.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/bin_comparison_fig4.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/corner_GW150914.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/corner_GW150914.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/corner_GW150914_waveform_comparison.pdf,needed-paper,cited paper figure,include
+Results/gwtc1_phasemarg/plots/corner_GW150914_waveform_comparison.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/corner_GW170817_XAS_vs_LVK.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/corner_GW170817_XAS_vs_LVK.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/corner_GW170817_precession_test.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/corner_GW170817_precession_test.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/corner_GW170817_waveform_comparison.pdf,needed-paper,cited paper figure,include
+Results/gwtc1_phasemarg/plots/corner_GW170817_waveform_comparison.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/corner_IMRPhenomD_hetero_vs_unhetero.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/corner_IMRPhenomD_hetero_vs_unhetero.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/corner_TaylorF2_hetero_vs_unhetero.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/corner_TaylorF2_hetero_vs_unhetero.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/corner_combined_waveforms.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/corner_combined_waveforms.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/corner_full_sky_vs_narrow.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/corner_full_sky_vs_narrow.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/corner_h0_prior_IMRPhenomD.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/corner_h0_prior_IMRPhenomD.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/corner_h0_prior_TaylorF2.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/corner_h0_prior_TaylorF2.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/corner_reweighted_vs_sampled_flatZ_IMRPhenomD.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/corner_reweighted_vs_sampled_flatZ_IMRPhenomD.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/corner_reweighted_vs_sampled_flatZ_TaylorF2.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/corner_reweighted_vs_sampled_flatZ_TaylorF2.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/corner_reweighted_vs_sampled_flatZ_XAS.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/corner_reweighted_vs_sampled_flatZ_XAS.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/corner_sky_localization.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/corner_sky_localization.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/corner_speedup_hetero_vs_unhetero.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/corner_speedup_hetero_vs_unhetero.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/corner_unheterodyned_vs_gwtc.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/corner_unheterodyned_vs_gwtc.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/dL_posterior.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/dL_posterior.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/dL_reweight_comparison_IMRPhenomD_NRTidalv2.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/dL_reweight_comparison_IMRPhenomD_NRTidalv2.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/dL_reweight_comparison_TaylorF2.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/dL_reweight_comparison_TaylorF2.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/ess_comparison_hetero_vs_unhetero.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/ess_comparison_hetero_vs_unhetero.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/gpu_vs_cpu_projection.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/gpu_vs_cpu_projection.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/phase_marginalization_schematic.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/phase_marginalization_schematic.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/prior_functions_IMRPhenomD_NRTidalv2.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/prior_functions_IMRPhenomD_NRTidalv2.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/prior_functions_TaylorF2.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/prior_functions_TaylorF2.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/prior_sensitivity_H0_IMRPhenomD_NRTidalv2.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/prior_sensitivity_H0_IMRPhenomD_NRTidalv2.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/prior_sensitivity_H0_TaylorF2.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/prior_sensitivity_H0_TaylorF2.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/prior_sensitivity_annotated_IMRPhenomD_NRTidalv2.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/prior_sensitivity_annotated_IMRPhenomD_NRTidalv2.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/prior_sensitivity_annotated_TaylorF2.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/prior_sensitivity_annotated_TaylorF2.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/q_overlay_s16.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/q_overlay_s16.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/scaling_study.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/scaling_study.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/scaling_study_full.pdf,needed-paper,cited paper figure,include
+Results/gwtc1_phasemarg/plots/scaling_study_full.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/sky_prior_runtime.pdf,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/plots/sky_prior_runtime.png,dead,exploratory figure,exclude
+Results/gwtc1_phasemarg/prior_sensitivity.csv,needed-paper,prior sensitivity analysis,include
+Results/gwtc1_phasemarg/prior_sensitivity_full.json,needed-paper,prior sensitivity analysis,include
+Results/gwtc1_phasemarg/prior_sensitivity_pdfs.csv,needed-paper,prior sensitivity analysis,include
+Results/gwtc1_phasemarg/summary_stats.csv,needed-paper,summary statistics for results,include
+Results/gwtc1_phasemarg/summary_stats_full.csv,needed-paper,summary statistics for results,include
+Results/gwtc1_phasemarg/table1_gw150914.tex,needed-paper,cited via \input in main.tex,include
+Results/gwtc1_phasemarg/table4_cross_waveform.tex,needed-paper,waveform comparison table,include
+Results/gwtc1_phasemarg/table5_prior_sensitivity.tex,needed-paper,cited via \input in main.tex,include
+Results/gwtc1_phasemarg/table6_bimodality.tex,needed-paper,cited via \input in main.tex,include
+Results/gwtc1_phasemarg/texput.log,dead,latex artifact,exclude
+Results/gwtc1_phasemarg/waveform_systematics.csv,needed-paper,waveform cross-check data,include
+Results/test_suite/20260509_074425_s19_fixedsky_IMRPhenomD_NRTidalv2.log,dead,cache/artifact,exclude
+Results/test_suite/20260509_074425_s19_fixedsky_IMRPhenomXAS_NRTidalv3.log,dead,cache/artifact,exclude
+Results/test_suite/REVIEW.md/PhaseMarg_Heterodyned_TaylorF2_local_psd-gwtc1_ref-gwtc1_baseline.csv,dead,misc file,exclude
+Results/test_suite/REVIEW.md/config.json,dead,misc file,exclude
+Results/test_suite/REVIEW.md/finish.json,dead,misc file,exclude
+Results/test_suite/REVIEW.md/sampler.log,dead,cache/artifact,exclude
+Results/test_suite/REVIEW.md/samples.csv,dead,misc file,exclude
+Results/test_suite/bimodality_imrx_summary.csv,needed-paper,bimodality analysis data,include
+Results/test_suite/bimodality_summary.csv,needed-paper,bimodality analysis data,include
+Results/test_suite/bimodality_waveform_check.csv,needed-paper,bimodality analysis data,include
+Results/test_suite/gw150914_waveform_comparison.csv,needed-paper,waveform comparison data,include
+Results/test_suite/gw170817_waveform_comparison.csv,needed-paper,waveform comparison data,include
+Results/test_suite/het_bins_sweep_summary.csv,needed-verification,heterodyne bins sweep analysis,archive-locally
+Results/test_suite/het_bins_sweep_wasserstein.csv,needed-verification,heterodyne bins sweep analysis,archive-locally
+Results/test_suite/num_delete_sweep_summary.csv,needed-verification,num_delete parameter sweep,archive-locally
+Results/test_suite/psd_sensitivity_summary.csv,needed-verification,PSD sensitivity analysis,archive-locally
+Results/test_suite/s04__gw170817__imrphenomd_nrtidalv2__unheterodyned__nlive02500__seed0000/config.json,dead,s4 uncited,exclude
+Results/test_suite/s04__gw170817__imrphenomd_nrtidalv2__unheterodyned__nlive02500__seed0000/finish.json,dead,s4 uncited,exclude
+Results/test_suite/s04__gw170817__imrphenomd_nrtidalv2__unheterodyned__nlive02500__seed0000/sampler.log,dead,uncited s4 run,exclude
+Results/test_suite/s04__gw170817__imrphenomd_nrtidalv2__unheterodyned__nlive02500__seed0000/samples 2.csv,dead,s4 uncited,exclude
+Results/test_suite/s04__gw170817__imrphenomd_nrtidalv2__unheterodyned__nlive02500__seed0000/samples.csv,dead,sample data for uncited s4 run,exclude
+Results/test_suite/s05__gw170817__imrphenomd_nrtidalv2__baseline__refOptimize__seed0000/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-optimize_baseline.csv,needed-verification,s5 diagnostic data,archive-locally
+Results/test_suite/s05__gw170817__imrphenomd_nrtidalv2__baseline__refOptimize__seed0000/config.json,dead,cache/artifact,exclude
+Results/test_suite/s05__gw170817__imrphenomd_nrtidalv2__baseline__refOptimize__seed0000/sampler.log,needed-paper,evidence log for cited s5 run,include
+Results/test_suite/s05__gw170817__imrphenomd_nrtidalv2__baseline__refOptimize__seed0000/samples.csv,needed-paper,sample data for cited s5 run,include
+Results/test_suite/s05__gw170817__imrphenomd_nrtidalv2__unheterodyned__nlive00500__seed0000/PhaseMarg_Unheterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1.csv,needed-verification,s5 diagnostic data,archive-locally
+Results/test_suite/s05__gw170817__imrphenomd_nrtidalv2__unheterodyned__nlive00500__seed0000/config.json,dead,cache/artifact,exclude
+Results/test_suite/s05__gw170817__imrphenomd_nrtidalv2__unheterodyned__nlive00500__seed0000/finish.json,dead,cache/artifact,exclude
+Results/test_suite/s05__gw170817__imrphenomd_nrtidalv2__unheterodyned__nlive00500__seed0000/sampler.log,needed-paper,evidence log for cited s5 run,include
+Results/test_suite/s05__gw170817__imrphenomd_nrtidalv2__unheterodyned__nlive00500__seed0000/samples.csv,needed-paper,sample data for cited s5 run,include
+Results/test_suite/s05__gw170817__taylorf2__baseline__psdBilby__seed0000/PhaseMarg_Heterodyned_TaylorF2_local_psd-bilby_ref-gwtc1_baseline.csv,needed-verification,s5 diagnostic data,archive-locally
+Results/test_suite/s05__gw170817__taylorf2__baseline__psdBilby__seed0000/config.json,dead,cache/artifact,exclude
+Results/test_suite/s05__gw170817__taylorf2__baseline__psdBilby__seed0000/sampler.log,needed-paper,evidence log for cited s5 run,include
+Results/test_suite/s05__gw170817__taylorf2__baseline__psdBilby__seed0000/samples.csv,needed-paper,sample data for cited s5 run,include
+Results/test_suite/s05__gw170817__taylorf2__baseline__psdKazewong__seed0000/PhaseMarg_Heterodyned_TaylorF2_local_psd-kazewong_ref-gwtc1_baseline.csv,needed-verification,s5 diagnostic data,archive-locally
+Results/test_suite/s05__gw170817__taylorf2__baseline__psdKazewong__seed0000/config.json,dead,cache/artifact,exclude
+Results/test_suite/s05__gw170817__taylorf2__baseline__psdKazewong__seed0000/sampler.log,needed-paper,evidence log for cited s5 run,include
+Results/test_suite/s05__gw170817__taylorf2__baseline__psdKazewong__seed0000/samples.csv,needed-paper,sample data for cited s5 run,include
+Results/test_suite/s06__gw150914__imrphenomxphm__lvkbounds__seed0000/GW15_PhaseMarg_Heterodyned_IMRPhenomXPHM_local_psd-gwtc2p1_ref-gwtc1.csv,needed-verification,s6 diagnostic data,archive-locally
+Results/test_suite/s06__gw150914__imrphenomxphm__lvkbounds__seed0000/config.json,dead,cache/artifact,exclude
+Results/test_suite/s06__gw150914__imrphenomxphm__lvkbounds__seed0000/finish.json,dead,cache/artifact,exclude
+Results/test_suite/s06__gw150914__imrphenomxphm__lvkbounds__seed0000/sampler.log,needed-paper,evidence log for cited s6 run,include
+Results/test_suite/s06__gw150914__imrphenomxphm__lvkbounds__seed0000/samples.csv,needed-paper,sample data for cited s6 run,include
+Results/test_suite/s07__gw170817__imrphenomd_nrtidalv2__baseline_lvkbounds__seed0000/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_baseline.csv,needed-verification,s7 diagnostic data,archive-locally
+Results/test_suite/s07__gw170817__imrphenomd_nrtidalv2__baseline_lvkbounds__seed0000/config.json,dead,cache/artifact,exclude
+Results/test_suite/s07__gw170817__imrphenomd_nrtidalv2__baseline_lvkbounds__seed0000/finish.json,dead,cache/artifact,exclude
+Results/test_suite/s07__gw170817__imrphenomd_nrtidalv2__baseline_lvkbounds__seed0000/sampler.log,needed-paper,evidence log for cited s7 run,include
+Results/test_suite/s07__gw170817__imrphenomd_nrtidalv2__baseline_lvkbounds__seed0000/samples.csv,needed-paper,sample data for cited s7 run,include
+Results/test_suite/s07__gw170817__imrphenompv2__baseline_lvkbounds__seed0000/PhaseMarg_Heterodyned_IMRPhenomPv2_local_psd-gwtc1_ref-gwtc1_baseline.csv,needed-verification,s7 diagnostic data,archive-locally
+Results/test_suite/s07__gw170817__imrphenompv2__baseline_lvkbounds__seed0000/config.json,dead,cache/artifact,exclude
+Results/test_suite/s07__gw170817__imrphenompv2__baseline_lvkbounds__seed0000/finish.json,dead,cache/artifact,exclude
+Results/test_suite/s07__gw170817__imrphenompv2__baseline_lvkbounds__seed0000/sampler.log,needed-paper,evidence log for cited s7 run,include
+Results/test_suite/s07__gw170817__imrphenompv2__baseline_lvkbounds__seed0000/samples.csv,needed-paper,sample data for cited s7 run,include
+Results/test_suite/s07__gw170817__imrphenomxas_nrtidalv3__baseline_lvkbounds__seed0000/PhaseMarg_Heterodyned_IMRPhenomXAS_NRTidalv3_local_psd-gwtc1_ref-gwtc1_baseline.csv,needed-verification,s7 diagnostic data,archive-locally
+Results/test_suite/s07__gw170817__imrphenomxas_nrtidalv3__baseline_lvkbounds__seed0000/config.json,dead,cache/artifact,exclude
+Results/test_suite/s07__gw170817__imrphenomxas_nrtidalv3__baseline_lvkbounds__seed0000/finish.json,dead,cache/artifact,exclude
+Results/test_suite/s07__gw170817__imrphenomxas_nrtidalv3__baseline_lvkbounds__seed0000/sampler.log,needed-paper,evidence log for cited s7 run,include
+Results/test_suite/s07__gw170817__imrphenomxas_nrtidalv3__baseline_lvkbounds__seed0000/samples.csv,needed-paper,sample data for cited s7 run,include
+Results/test_suite/s07__gw170817__taylorf2__baseline_lvkbounds__seed0000/PhaseMarg_Heterodyned_TaylorF2_local_psd-gwtc1_ref-gwtc1_baseline.csv,needed-verification,s7 diagnostic data,archive-locally
+Results/test_suite/s07__gw170817__taylorf2__baseline_lvkbounds__seed0000/config.json,dead,cache/artifact,exclude
+Results/test_suite/s07__gw170817__taylorf2__baseline_lvkbounds__seed0000/finish.json,dead,cache/artifact,exclude
+Results/test_suite/s07__gw170817__taylorf2__baseline_lvkbounds__seed0000/sampler.log,needed-paper,evidence log for cited s7 run,include
+Results/test_suite/s07__gw170817__taylorf2__baseline_lvkbounds__seed0000/samples.csv,needed-paper,sample data for cited s7 run,include
+Results/test_suite/s08__gw170817__imrphenomd_nrtidalv2__baseline__ndelete00500__seed0000/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_baseline.csv,needed-verification,s8 diagnostic data,archive-locally
+Results/test_suite/s08__gw170817__imrphenomd_nrtidalv2__baseline__ndelete00500__seed0000/config.json,dead,cache/artifact,exclude
+Results/test_suite/s08__gw170817__imrphenomd_nrtidalv2__baseline__ndelete00500__seed0000/finish.json,dead,cache/artifact,exclude
+Results/test_suite/s08__gw170817__imrphenomd_nrtidalv2__baseline__ndelete00500__seed0000/sampler.log,needed-paper,evidence log for cited s8 run,include
+Results/test_suite/s08__gw170817__imrphenomd_nrtidalv2__baseline__ndelete00500__seed0000/samples.csv,needed-paper,sample data for cited s8 run,include
+Results/test_suite/s08__gw170817__imrphenomd_nrtidalv2__baseline__ndelete01250__seed0000/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_baseline.csv,needed-verification,s8 diagnostic data,archive-locally
+Results/test_suite/s08__gw170817__imrphenomd_nrtidalv2__baseline__ndelete01250__seed0000/config.json,dead,cache/artifact,exclude
+Results/test_suite/s08__gw170817__imrphenomd_nrtidalv2__baseline__ndelete01250__seed0000/finish.json,dead,cache/artifact,exclude
+Results/test_suite/s08__gw170817__imrphenomd_nrtidalv2__baseline__ndelete01250__seed0000/sampler.log,needed-paper,evidence log for cited s8 run,include
+Results/test_suite/s08__gw170817__imrphenomd_nrtidalv2__baseline__ndelete01250__seed0000/samples.csv,needed-paper,sample data for cited s8 run,include
+Results/test_suite/s08__gw170817__imrphenomd_nrtidalv2__baseline__ndelete02500__seed0000/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_baseline.csv,needed-verification,s8 diagnostic data,archive-locally
+Results/test_suite/s08__gw170817__imrphenomd_nrtidalv2__baseline__ndelete02500__seed0000/config.json,dead,cache/artifact,exclude
+Results/test_suite/s08__gw170817__imrphenomd_nrtidalv2__baseline__ndelete02500__seed0000/finish.json,dead,cache/artifact,exclude
+Results/test_suite/s08__gw170817__imrphenomd_nrtidalv2__baseline__ndelete02500__seed0000/sampler.log,needed-paper,evidence log for cited s8 run,include
+Results/test_suite/s08__gw170817__imrphenomd_nrtidalv2__baseline__ndelete02500__seed0000/samples.csv,needed-paper,sample data for cited s8 run,include
+Results/test_suite/s08__gw170817__imrphenomd_nrtidalv2__baseline__ndelete03750__seed0000/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_baseline.csv,needed-verification,s8 diagnostic data,archive-locally
+Results/test_suite/s08__gw170817__imrphenomd_nrtidalv2__baseline__ndelete03750__seed0000/config.json,dead,cache/artifact,exclude
+Results/test_suite/s08__gw170817__imrphenomd_nrtidalv2__baseline__ndelete03750__seed0000/finish.json,dead,cache/artifact,exclude
+Results/test_suite/s08__gw170817__imrphenomd_nrtidalv2__baseline__ndelete03750__seed0000/sampler.log,needed-paper,evidence log for cited s8 run,include
+Results/test_suite/s08__gw170817__imrphenomd_nrtidalv2__baseline__ndelete03750__seed0000/samples.csv,needed-paper,sample data for cited s8 run,include
+Results/test_suite/s09__gw170817__imrphenomd_nrtidalv2__baseline__nbins00251__seed0000/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_baseline.csv,needed-verification,s9 diagnostic data,archive-locally
+Results/test_suite/s09__gw170817__imrphenomd_nrtidalv2__baseline__nbins00251__seed0000/config.json,dead,cache/artifact,exclude
+Results/test_suite/s09__gw170817__imrphenomd_nrtidalv2__baseline__nbins00251__seed0000/finish.json,dead,cache/artifact,exclude
+Results/test_suite/s09__gw170817__imrphenomd_nrtidalv2__baseline__nbins00251__seed0000/sampler.log,needed-paper,evidence log for cited s9 run,include
+Results/test_suite/s09__gw170817__imrphenomd_nrtidalv2__baseline__nbins00251__seed0000/samples.csv,needed-paper,sample data for cited s9 run,include
+Results/test_suite/s09__gw170817__imrphenomd_nrtidalv2__baseline__nbins00501__seed0000/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_baseline.csv,needed-verification,s9 diagnostic data,archive-locally
+Results/test_suite/s09__gw170817__imrphenomd_nrtidalv2__baseline__nbins00501__seed0000/config.json,dead,cache/artifact,exclude
+Results/test_suite/s09__gw170817__imrphenomd_nrtidalv2__baseline__nbins00501__seed0000/finish.json,dead,cache/artifact,exclude
+Results/test_suite/s09__gw170817__imrphenomd_nrtidalv2__baseline__nbins00501__seed0000/sampler.log,needed-paper,evidence log for cited s9 run,include
+Results/test_suite/s09__gw170817__imrphenomd_nrtidalv2__baseline__nbins00501__seed0000/samples.csv,needed-paper,sample data for cited s9 run,include
+Results/test_suite/s09__gw170817__imrphenomd_nrtidalv2__baseline__nbins01001__seed0000/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_baseline.csv,needed-verification,s9 diagnostic data,archive-locally
+Results/test_suite/s09__gw170817__imrphenomd_nrtidalv2__baseline__nbins01001__seed0000/config.json,dead,cache/artifact,exclude
+Results/test_suite/s09__gw170817__imrphenomd_nrtidalv2__baseline__nbins01001__seed0000/finish.json,dead,cache/artifact,exclude
+Results/test_suite/s09__gw170817__imrphenomd_nrtidalv2__baseline__nbins01001__seed0000/sampler.log,needed-paper,evidence log for cited s9 run,include
+Results/test_suite/s09__gw170817__imrphenomd_nrtidalv2__baseline__nbins01001__seed0000/samples.csv,needed-paper,sample data for cited s9 run,include
+Results/test_suite/s10__gw170817__imrphenomd_nrtidalv2__flatz__dL10-30__refGWTC1__seed0000/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_flatZ.csv,needed-verification,s10 diagnostic data,archive-locally
+Results/test_suite/s10__gw170817__imrphenomd_nrtidalv2__flatz__dL10-30__refGWTC1__seed0000/config.json,dead,cache/artifact,exclude
+Results/test_suite/s10__gw170817__imrphenomd_nrtidalv2__flatz__dL10-30__refGWTC1__seed0000/finish.json,dead,cache/artifact,exclude
+Results/test_suite/s10__gw170817__imrphenomd_nrtidalv2__flatz__dL10-30__refGWTC1__seed0000/sampler.log,needed-paper,evidence log for cited s10 run,include
+Results/test_suite/s10__gw170817__imrphenomd_nrtidalv2__flatz__dL10-30__refGWTC1__seed0000/samples.csv,needed-paper,sample data for cited s10 run,include
+Results/test_suite/s10__gw170817__imrphenomd_nrtidalv2__flatz__dL10-75__refModeB__seed0000/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_flatZ.csv,needed-verification,s10 diagnostic data,archive-locally
+Results/test_suite/s10__gw170817__imrphenomd_nrtidalv2__flatz__dL10-75__refModeB__seed0000/config.json,dead,cache/artifact,exclude
+Results/test_suite/s10__gw170817__imrphenomd_nrtidalv2__flatz__dL10-75__refModeB__seed0000/finish.json,dead,cache/artifact,exclude
+Results/test_suite/s10__gw170817__imrphenomd_nrtidalv2__flatz__dL10-75__refModeB__seed0000/sampler.log,needed-paper,evidence log for cited s10 run,include
+Results/test_suite/s10__gw170817__imrphenomd_nrtidalv2__flatz__dL10-75__refModeB__seed0000/samples.csv,needed-paper,sample data for cited s10 run,include
+Results/test_suite/s10__gw170817__imrphenomd_nrtidalv2__flatz__dL30-75__refGWTC1__seed0000/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_flatZ.csv,needed-verification,s10 diagnostic data,archive-locally
+Results/test_suite/s10__gw170817__imrphenomd_nrtidalv2__flatz__dL30-75__refGWTC1__seed0000/config.json,dead,cache/artifact,exclude
+Results/test_suite/s10__gw170817__imrphenomd_nrtidalv2__flatz__dL30-75__refGWTC1__seed0000/finish.json,dead,cache/artifact,exclude
+Results/test_suite/s10__gw170817__imrphenomd_nrtidalv2__flatz__dL30-75__refGWTC1__seed0000/sampler.log,needed-paper,evidence log for cited s10 run,include
+Results/test_suite/s10__gw170817__imrphenomd_nrtidalv2__flatz__dL30-75__refGWTC1__seed0000/samples.csv,needed-paper,sample data for cited s10 run,include
+Results/test_suite/s11__gw170817__imrphenomd_nrtidalv2__baseline__nlive20000__tol1e-4__seed0000/config.json,dead,s11 uncited,exclude
+Results/test_suite/s11__gw170817__imrphenomd_nrtidalv2__baseline__nlive20000__tol1e-4__seed0000/finish.json,dead,s11 uncited,exclude
+Results/test_suite/s11__gw170817__imrphenomd_nrtidalv2__baseline__nlive20000__tol1e-4__seed0000/sampler.log,dead,uncited s11 run,exclude
+Results/test_suite/s12__gw170817__imrphenomd_nrtidalv2__gw_only__seed0000/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_gw_only.csv,needed-verification,s12 diagnostic data,archive-locally
+Results/test_suite/s12__gw170817__imrphenomd_nrtidalv2__gw_only__seed0000/config.json,dead,cache/artifact,exclude
+Results/test_suite/s12__gw170817__imrphenomd_nrtidalv2__gw_only__seed0000/finish.json,dead,cache/artifact,exclude
+Results/test_suite/s12__gw170817__imrphenomd_nrtidalv2__gw_only__seed0000/sampler.log,needed-paper,evidence log for cited s12 run,include
+Results/test_suite/s12__gw170817__imrphenomd_nrtidalv2__gw_only__seed0000/samples.csv,needed-paper,sample data for cited s12 run,include
+Results/test_suite/s12__gw170817__imrphenomxas_nrtidalv3__gw_only__seed0000/PhaseMarg_Heterodyned_IMRPhenomXAS_NRTidalv3_local_psd-gwtc1_ref-gwtc1_gw_only.csv,needed-verification,s12 diagnostic data,archive-locally
+Results/test_suite/s12__gw170817__imrphenomxas_nrtidalv3__gw_only__seed0000/config.json,dead,cache/artifact,exclude
+Results/test_suite/s12__gw170817__imrphenomxas_nrtidalv3__gw_only__seed0000/finish.json,dead,cache/artifact,exclude
+Results/test_suite/s12__gw170817__imrphenomxas_nrtidalv3__gw_only__seed0000/sampler.log,needed-paper,evidence log for cited s12 run,include
+Results/test_suite/s12__gw170817__imrphenomxas_nrtidalv3__gw_only__seed0000/samples.csv,needed-paper,sample data for cited s12 run,include
+Results/test_suite/s13__gw170817__imrphenomd_nrtidalv2__baseline__nlive00500__seed0000/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_baseline.csv,needed-verification,s13 diagnostic data,archive-locally
+Results/test_suite/s13__gw170817__imrphenomd_nrtidalv2__baseline__nlive00500__seed0000/config.json,dead,cache/artifact,exclude
+Results/test_suite/s13__gw170817__imrphenomd_nrtidalv2__baseline__nlive00500__seed0000/finish.json,dead,cache/artifact,exclude
+Results/test_suite/s13__gw170817__imrphenomd_nrtidalv2__baseline__nlive00500__seed0000/sampler.log,needed-paper,evidence log for cited s13 run,include
+Results/test_suite/s13__gw170817__imrphenomd_nrtidalv2__baseline__nlive00500__seed0000/samples.csv,needed-paper,sample data for cited s13 run,include
+Results/test_suite/s13__gw170817__imrphenomd_nrtidalv2__baseline__nlive01000__seed0000/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_baseline.csv,needed-verification,s13 diagnostic data,archive-locally
+Results/test_suite/s13__gw170817__imrphenomd_nrtidalv2__baseline__nlive01000__seed0000/config.json,dead,cache/artifact,exclude
+Results/test_suite/s13__gw170817__imrphenomd_nrtidalv2__baseline__nlive01000__seed0000/finish.json,dead,cache/artifact,exclude
+Results/test_suite/s13__gw170817__imrphenomd_nrtidalv2__baseline__nlive01000__seed0000/sampler.log,needed-paper,evidence log for cited s13 run,include
+Results/test_suite/s13__gw170817__imrphenomd_nrtidalv2__baseline__nlive01000__seed0000/samples.csv,needed-paper,sample data for cited s13 run,include
+Results/test_suite/s13__gw170817__imrphenomd_nrtidalv2__baseline__nlive02500__seed0000/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_baseline.csv,needed-verification,s13 diagnostic data,archive-locally
+Results/test_suite/s13__gw170817__imrphenomd_nrtidalv2__baseline__nlive02500__seed0000/config.json,dead,cache/artifact,exclude
+Results/test_suite/s13__gw170817__imrphenomd_nrtidalv2__baseline__nlive02500__seed0000/finish.json,dead,cache/artifact,exclude
+Results/test_suite/s13__gw170817__imrphenomd_nrtidalv2__baseline__nlive02500__seed0000/sampler.log,needed-paper,evidence log for cited s13 run,include
+Results/test_suite/s13__gw170817__imrphenomd_nrtidalv2__baseline__nlive02500__seed0000/samples.csv,needed-paper,sample data for cited s13 run,include
+Results/test_suite/s13__gw170817__imrphenomd_nrtidalv2__baseline__nlive10000__seed0000/config.json,dead,cache/artifact,exclude
+Results/test_suite/s13__gw170817__imrphenomd_nrtidalv2__baseline__nlive10000__seed0000/finish.json,dead,cache/artifact,exclude
+Results/test_suite/s13__gw170817__imrphenomd_nrtidalv2__baseline__nlive10000__seed0000/sampler.log,needed-paper,evidence log for cited s13 run,include
+Results/test_suite/s13__gw170817__imrphenomd_nrtidalv2__baseline__nlive20000__seed0000/config.json,dead,cache/artifact,exclude
+Results/test_suite/s13__gw170817__imrphenomd_nrtidalv2__baseline__nlive20000__seed0000/finish.json,dead,cache/artifact,exclude
+Results/test_suite/s13__gw170817__imrphenomd_nrtidalv2__baseline__nlive20000__seed0000/sampler.log,needed-paper,evidence log for cited s13 run,include
+Results/test_suite/s14__gw170817__imrphenomxas_nrtidalv3__baseline__seed0000/PhaseMarg_Heterodyned_IMRPhenomXAS_NRTidalv3_local_psd-gwtc1_ref-gwtc1_baseline.csv,needed-verification,s14 diagnostic data,archive-locally
+Results/test_suite/s14__gw170817__imrphenomxas_nrtidalv3__baseline__seed0000/config.json,dead,cache/artifact,exclude
+Results/test_suite/s14__gw170817__imrphenomxas_nrtidalv3__baseline__seed0000/finish.json,dead,cache/artifact,exclude
+Results/test_suite/s14__gw170817__imrphenomxas_nrtidalv3__baseline__seed0000/sampler.log,needed-paper,evidence log for cited s14 run,include
+Results/test_suite/s14__gw170817__imrphenomxas_nrtidalv3__baseline__seed0000/samples.csv,needed-paper,sample data for cited s14 run,include
+Results/test_suite/s14__gw170817__imrphenomxas_nrtidalv3__flatz__seed0000/PhaseMarg_Heterodyned_IMRPhenomXAS_NRTidalv3_local_psd-gwtc1_ref-gwtc1_flatZ.csv,needed-verification,s14 diagnostic data,archive-locally
+Results/test_suite/s14__gw170817__imrphenomxas_nrtidalv3__flatz__seed0000/config.json,dead,cache/artifact,exclude
+Results/test_suite/s14__gw170817__imrphenomxas_nrtidalv3__flatz__seed0000/finish.json,dead,cache/artifact,exclude
+Results/test_suite/s14__gw170817__imrphenomxas_nrtidalv3__flatz__seed0000/sampler.log,needed-paper,evidence log for cited s14 run,include
+Results/test_suite/s14__gw170817__imrphenomxas_nrtidalv3__flatz__seed0000/samples.csv,needed-paper,sample data for cited s14 run,include
+Results/test_suite/s14__gw170817__imrphenomxas_nrtidalv3__reweighted_flatz__seed0000/config.json,dead,cache/artifact,exclude
+Results/test_suite/s14__gw170817__imrphenomxas_nrtidalv3__reweighted_flatz__seed0000/samples.csv,needed-paper,sample data for cited s14 run,include
+Results/test_suite/s14__gw170817__imrphenomxas_nrtidalv3__vp250__seed0000/PhaseMarg_Heterodyned_IMRPhenomXAS_NRTidalv3_local_psd-gwtc1_ref-gwtc1_vp250.csv,needed-verification,s14 diagnostic data,archive-locally
+Results/test_suite/s14__gw170817__imrphenomxas_nrtidalv3__vp250__seed0000/config.json,dead,cache/artifact,exclude
+Results/test_suite/s14__gw170817__imrphenomxas_nrtidalv3__vp250__seed0000/finish.json,dead,cache/artifact,exclude
+Results/test_suite/s14__gw170817__imrphenomxas_nrtidalv3__vp250__seed0000/sampler.log,needed-paper,evidence log for cited s14 run,include
+Results/test_suite/s14__gw170817__imrphenomxas_nrtidalv3__vp250__seed0000/samples.csv,needed-paper,sample data for cited s14 run,include
+Results/test_suite/s15__gw170817__imrphenomd_nrtidalv2__baseline_lvkbounds_narrow__seed0000/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_baseline.csv,dead,s15 uncited,exclude
+Results/test_suite/s15__gw170817__imrphenomd_nrtidalv2__baseline_lvkbounds_narrow__seed0000/config.json,dead,s15 uncited,exclude
+Results/test_suite/s15__gw170817__imrphenomd_nrtidalv2__baseline_lvkbounds_narrow__seed0000/sampler.log,dead,uncited s15 run,exclude
+Results/test_suite/s15__gw170817__imrphenomd_nrtidalv2__baseline_lvkbounds_narrow__seed0000/samples.csv,dead,sample data for uncited s15 run,exclude
+Results/test_suite/s15__gw170817__imrphenomxas_nrtidalv3__baseline_lvkbounds_narrow__seed0000/PhaseMarg_Heterodyned_IMRPhenomXAS_NRTidalv3_local_psd-gwtc1_ref-gwtc1_baseline.csv,dead,s15 uncited,exclude
+Results/test_suite/s15__gw170817__imrphenomxas_nrtidalv3__baseline_lvkbounds_narrow__seed0000/config.json,dead,s15 uncited,exclude
+Results/test_suite/s15__gw170817__imrphenomxas_nrtidalv3__baseline_lvkbounds_narrow__seed0000/sampler.log,dead,uncited s15 run,exclude
+Results/test_suite/s15__gw170817__imrphenomxas_nrtidalv3__baseline_lvkbounds_narrow__seed0000/samples.csv,dead,sample data for uncited s15 run,exclude
+Results/test_suite/s16__gw170817__imrphenomd_nrtidalv2__qtest_spinball__seed0000/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_baseline.csv,dead,s16 uncited,exclude
+Results/test_suite/s16__gw170817__imrphenomd_nrtidalv2__qtest_spinball__seed0000/sampler.log,dead,uncited s16 run,exclude
+Results/test_suite/s16__gw170817__imrphenomxas_nrtidalv3__qtest_gwonly__seed0000/PhaseMarg_Heterodyned_IMRPhenomXAS_NRTidalv3_local_psd-gwtc1_ref-gwtc1_gw_only.csv,dead,s16 uncited,exclude
+Results/test_suite/s16__gw170817__imrphenomxas_nrtidalv3__qtest_gwonly__seed0000/sampler.log,dead,uncited s16 run,exclude
+Results/test_suite/s16__gw170817__imrphenomxas_nrtidalv3__qtest_nbins2001__seed0000/PhaseMarg_Heterodyned_IMRPhenomXAS_NRTidalv3_local_psd-gwtc1_ref-gwtc1_baseline.csv,dead,s16 uncited,exclude
+Results/test_suite/s16__gw170817__imrphenomxas_nrtidalv3__qtest_nbins2001__seed0000/sampler.log,dead,uncited s16 run,exclude
+Results/test_suite/s16__gw170817__imrphenomxas_nrtidalv3__qtest_nophasemarg__seed0000/NoMarg_Heterodyned_IMRPhenomXAS_NRTidalv3_local_psd-gwtc1_ref-gwtc1_baseline.csv,dead,s16 uncited,exclude
+Results/test_suite/s16__gw170817__imrphenomxas_nrtidalv3__qtest_nophasemarg__seed0000/sampler.log,dead,uncited s16 run,exclude
+Results/test_suite/s16__gw170817__imrphenomxas_nrtidalv3__qtest_spinball__seed0000/PhaseMarg_Heterodyned_IMRPhenomXAS_NRTidalv3_local_psd-gwtc1_ref-gwtc1_baseline.csv,dead,s16 uncited,exclude
+Results/test_suite/s16__gw170817__imrphenomxas_nrtidalv3__qtest_spinball__seed0000/sampler.log,dead,uncited s16 run,exclude
+Results/test_suite/s17a__gw150914__imrphenomxphm__nlive8000_mcmc160__seed0000/GW15_PhaseMarg_Heterodyned_IMRPhenomXPHM_local_psd-gwtc2p1_ref-gwtc1.csv,dead,misc file,exclude
+Results/test_suite/s17a__gw150914__imrphenomxphm__nlive8000_mcmc160__seed0000/config.json,dead,misc file,exclude
+Results/test_suite/s17a__gw150914__imrphenomxphm__nlive8000_mcmc160__seed0000/finish.json,dead,misc file,exclude
+Results/test_suite/s17a__gw150914__imrphenomxphm__nlive8000_mcmc160__seed0000/sampler.log,dead,cache/artifact,exclude
+Results/test_suite/s17a__gw150914__imrphenomxphm__nlive8000_mcmc160__seed0000/samples.csv,dead,misc file,exclude
+Results/test_suite/s18__gw170817__imrphenomd_nrtidalv2__flatz__dL10-30__refGWTC1__seed0001/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_flatZ.csv,needed-verification,s18 diagnostic data,archive-locally
+Results/test_suite/s18__gw170817__imrphenomd_nrtidalv2__flatz__dL10-30__refGWTC1__seed0001/config.json,dead,cache/artifact,exclude
+Results/test_suite/s18__gw170817__imrphenomd_nrtidalv2__flatz__dL10-30__refGWTC1__seed0001/finish.json,dead,cache/artifact,exclude
+Results/test_suite/s18__gw170817__imrphenomd_nrtidalv2__flatz__dL10-30__refGWTC1__seed0001/sampler.log,needed-paper,evidence log for cited s18 run,include
+Results/test_suite/s18__gw170817__imrphenomd_nrtidalv2__flatz__dL10-30__refGWTC1__seed0001/samples.csv,needed-paper,sample data for cited s18 run,include
+Results/test_suite/s18__gw170817__imrphenomd_nrtidalv2__flatz__dL10-75__refModeB__seed0001/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_flatZ.csv,needed-verification,s18 diagnostic data,archive-locally
+Results/test_suite/s18__gw170817__imrphenomd_nrtidalv2__flatz__dL10-75__refModeB__seed0001/config.json,dead,cache/artifact,exclude
+Results/test_suite/s18__gw170817__imrphenomd_nrtidalv2__flatz__dL10-75__refModeB__seed0001/finish.json,dead,cache/artifact,exclude
+Results/test_suite/s18__gw170817__imrphenomd_nrtidalv2__flatz__dL10-75__refModeB__seed0001/sampler.log,needed-paper,evidence log for cited s18 run,include
+Results/test_suite/s18__gw170817__imrphenomd_nrtidalv2__flatz__dL10-75__refModeB__seed0001/samples.csv,needed-paper,sample data for cited s18 run,include
+Results/test_suite/s18__gw170817__imrphenomd_nrtidalv2__flatz__dL30-75__refGWTC1__seed0001/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_flatZ.csv,needed-verification,s18 diagnostic data,archive-locally
+Results/test_suite/s18__gw170817__imrphenomd_nrtidalv2__flatz__dL30-75__refGWTC1__seed0001/config.json,dead,cache/artifact,exclude
+Results/test_suite/s18__gw170817__imrphenomd_nrtidalv2__flatz__dL30-75__refGWTC1__seed0001/finish.json,dead,cache/artifact,exclude
+Results/test_suite/s18__gw170817__imrphenomd_nrtidalv2__flatz__dL30-75__refGWTC1__seed0001/sampler.log,needed-paper,evidence log for cited s18 run,include
+Results/test_suite/s18__gw170817__imrphenomd_nrtidalv2__flatz__dL30-75__refGWTC1__seed0001/samples.csv,needed-paper,sample data for cited s18 run,include
+Results/test_suite/s18__gw170817__imrphenomxas_nrtidalv3__baseline__vpmean215__seed0000/PhaseMarg_Heterodyned_IMRPhenomXAS_NRTidalv3_local_psd-gwtc1_ref-gwtc1_baseline.csv,needed-verification,s18 diagnostic data,archive-locally
+Results/test_suite/s18__gw170817__imrphenomxas_nrtidalv3__baseline__vpmean215__seed0000/config.json,dead,cache/artifact,exclude
+Results/test_suite/s18__gw170817__imrphenomxas_nrtidalv3__baseline__vpmean215__seed0000/finish.json,dead,cache/artifact,exclude
+Results/test_suite/s18__gw170817__imrphenomxas_nrtidalv3__baseline__vpmean215__seed0000/sampler.log,needed-paper,evidence log for cited s18 run,include
+Results/test_suite/s18__gw170817__imrphenomxas_nrtidalv3__baseline__vpmean215__seed0000/samples.csv,needed-paper,sample data for cited s18 run,include
+Results/test_suite/s18__gw170817__imrphenomxas_nrtidalv3__baseline__vpmean310__seed0000/PhaseMarg_Heterodyned_IMRPhenomXAS_NRTidalv3_local_psd-gwtc1_ref-gwtc1_baseline.csv,needed-verification,s18 diagnostic data,archive-locally
+Results/test_suite/s18__gw170817__imrphenomxas_nrtidalv3__baseline__vpmean310__seed0000/config.json,dead,cache/artifact,exclude
+Results/test_suite/s18__gw170817__imrphenomxas_nrtidalv3__baseline__vpmean310__seed0000/finish.json,dead,cache/artifact,exclude
+Results/test_suite/s18__gw170817__imrphenomxas_nrtidalv3__baseline__vpmean310__seed0000/sampler.log,needed-paper,evidence log for cited s18 run,include
+Results/test_suite/s18__gw170817__imrphenomxas_nrtidalv3__baseline__vpmean310__seed0000/samples.csv,needed-paper,sample data for cited s18 run,include
+Results/test_suite/s18__gw170817__imrphenomxas_nrtidalv3__baseline__vpmean405__seed0000/PhaseMarg_Heterodyned_IMRPhenomXAS_NRTidalv3_local_psd-gwtc1_ref-gwtc1_baseline.csv,needed-verification,s18 diagnostic data,archive-locally
+Results/test_suite/s18__gw170817__imrphenomxas_nrtidalv3__baseline__vpmean405__seed0000/config.json,dead,cache/artifact,exclude
+Results/test_suite/s18__gw170817__imrphenomxas_nrtidalv3__baseline__vpmean405__seed0000/finish.json,dead,cache/artifact,exclude
+Results/test_suite/s18__gw170817__imrphenomxas_nrtidalv3__baseline__vpmean405__seed0000/sampler.log,needed-paper,evidence log for cited s18 run,include
+Results/test_suite/s18__gw170817__imrphenomxas_nrtidalv3__baseline__vpmean405__seed0000/samples.csv,needed-paper,sample data for cited s18 run,include
+Results/test_suite/s19__gw170817__imrphenomd_nrtidalv2__baseline_lvkbounds_fixedsky__seed0000/PhaseMarg_Heterodyned_IMRPhenomD_NRTidalv2_local_psd-gwtc1_ref-gwtc1_baseline.csv,dead,s19 uncited,exclude
+Results/test_suite/s19__gw170817__imrphenomd_nrtidalv2__baseline_lvkbounds_fixedsky__seed0000/samples 2.csv,dead,s19 uncited,exclude
+Results/test_suite/s19__gw170817__imrphenomd_nrtidalv2__baseline_lvkbounds_fixedsky__seed0000/samples.csv,dead,sample data for uncited s19 run,exclude
+Results/test_suite/s19__gw170817__imrphenomxas_nrtidalv3__baseline_lvkbounds_fixedsky__seed0000/PhaseMarg_Heterodyned_IMRPhenomXAS_NRTidalv3_local_psd-gwtc1_ref-gwtc1_baseline.csv,dead,s19 uncited,exclude
+Results/test_suite/s19__gw170817__imrphenomxas_nrtidalv3__baseline_lvkbounds_fixedsky__seed0000/samples.csv,dead,sample data for uncited s19 run,exclude
+Results/test_suite/sH__gw170817__prior_only_q__seed0000/config.json,dead,misc file,exclude
+Results/test_suite/sH__gw170817__prior_only_q__seed0000/finish.json,dead,misc file,exclude
+Results/test_suite/sH__gw170817__prior_only_q__seed0000/prior_comparison.csv,dead,misc file,exclude
+Results/test_suite/sH__gw170817__prior_only_q__seed0000/prior_samples.csv,dead,misc file,exclude
+Results/test_suite/sH__gw170817__prior_only_q__seed0000/sampler.log,dead,cache/artifact,exclude
+Results/test_suite/scaling_20k_anomaly.csv,dead,nlive=20k diagnostic (not in paper),exclude
+Results/test_suite/seed_ensemble_bayes_factor.csv,needed-verification,Bayes factor from seed ensemble,archive-locally
+Results/test_suite/seed_ensemble_summary.csv,needed-verification,seed ensemble statistics,archive-locally
+Results/test_suite/selection_term_Ns.csv,dead,exploratory selection term analysis,exclude
+Results/test_suite/unhet_scaling_summary.csv,needed-verification,unheterodyned scaling study,archive-locally
+mnras_paper/figures/bimodality_imr_vs_imrx.pdf,needed-paper,cited paper figure,include
+mnras_paper/figures/bimodality_imr_vs_imrx.png,needed-paper,cited paper figure,include
+mnras_paper/figures/output/fig01_gw170817_corner.pdf,dead,auto-numbered exploratory figure,exclude
+mnras_paper/figures/output/fig01_gw170817_corner.png,dead,auto-numbered exploratory figure,exclude
+mnras_paper/figures/output/fig02_h0_waveform_comparison.pdf,dead,auto-numbered exploratory figure,exclude
+mnras_paper/figures/output/fig02_h0_waveform_comparison.png,dead,auto-numbered exploratory figure,exclude
+mnras_paper/figures/output/fig03_nlive_convergence.pdf,dead,auto-numbered exploratory figure,exclude
+mnras_paper/figures/output/fig03_nlive_convergence.png,dead,auto-numbered exploratory figure,exclude
+mnras_paper/figures/output/fig04_robustness.pdf,dead,auto-numbered exploratory figure,exclude
+mnras_paper/figures/output/fig04_robustness.png,dead,auto-numbered exploratory figure,exclude
+mnras_paper/figures/output/fig05_bimodality.pdf,dead,auto-numbered exploratory figure,exclude
+mnras_paper/figures/output/fig05_bimodality.png,dead,auto-numbered exploratory figure,exclude
+mnras_paper/figures/output/fig06_gw_only_vs_siren.pdf,dead,auto-numbered exploratory figure,exclude
+mnras_paper/figures/output/fig06_gw_only_vs_siren.png,dead,auto-numbered exploratory figure,exclude
+mnras_paper/figures/output/fig07_gw150914_corner.pdf,dead,auto-numbered exploratory figure,exclude
+mnras_paper/figures/output/fig07_gw150914_corner.png,dead,auto-numbered exploratory figure,exclude
+mnras_paper/figures/output/fig08_psd_refparams.pdf,dead,auto-numbered exploratory figure,exclude
+mnras_paper/figures/output/fig08_psd_refparams.png,dead,auto-numbered exploratory figure,exclude
+mnras_paper/figures/output/fig09_speedup.pdf,dead,auto-numbered exploratory figure,exclude
+mnras_paper/figures/output/fig09_speedup.png,dead,auto-numbered exploratory figure,exclude
+mnras_paper/figures/output/fig10_h0_summary.pdf,dead,auto-numbered exploratory figure,exclude
+mnras_paper/figures/output/fig10_h0_summary.png,dead,auto-numbered exploratory figure,exclude
+mnras_paper/figures/plot_all.py,needed-verification,figure generation orchestrator,include
+mnras_paper/figures/seed_ensemble_lnZ.pdf,dead,exploratory figure,exclude
+mnras_paper/figures/seed_ensemble_lnZ.png,dead,exploratory figure,exclude
+mnras_paper/figures/selection_term_Ns.pdf,dead,exploratory figure,exclude
+mnras_paper/figures/selection_term_Ns.png,dead,exploratory figure,exclude
+mnras_paper/test_suite/CODE_CHANGES_NEEDED.md,needed-verification,test suite documentation,include
+mnras_paper/test_suite/DATA_EQUIVALENCE.md,needed-verification,analysis summary/diagnostics,include
+mnras_paper/test_suite/MANIFEST.md,needed-verification,test suite documentation,include
+mnras_paper/test_suite/README.md,needed-verification,test suite documentation,include
+mnras_paper/test_suite/RESULTS_SUMMARY.md,needed-verification,analysis summary/diagnostics,include
+mnras_paper/test_suite/WAVEFORM_RECOMMENDATION.md,needed-verification,analysis summary/diagnostics,include
+mnras_paper/test_suite/analysis/_helpers.py,needed-paper,test suite analysis for paper,include
+mnras_paper/test_suite/analysis/analyze_bimodality.py,needed-paper,test suite analysis for paper,include
+mnras_paper/test_suite/analysis/analyze_bimodality_imrx.py,needed-paper,test suite analysis for paper,include
+mnras_paper/test_suite/analysis/analyze_het_bins_sweep.py,needed-paper,test suite analysis for paper,include
+mnras_paper/test_suite/analysis/analyze_nmcmc_sweep.py,dead,exploratory/deleted analysis,exclude
+mnras_paper/test_suite/analysis/analyze_num_delete_sweep.py,needed-paper,test suite analysis for paper,include
+mnras_paper/test_suite/analysis/analyze_precessing_gw150914.py,dead,exploratory/deleted analysis,exclude
+mnras_paper/test_suite/analysis/analyze_precessing_gw170817.py,dead,exploratory/deleted analysis,exclude
+mnras_paper/test_suite/analysis/analyze_psd_sensitivity.py,needed-paper,test suite analysis for paper,include
+mnras_paper/test_suite/analysis/analyze_q_prior.py,dead,exploratory/deleted analysis,exclude
+mnras_paper/test_suite/analysis/analyze_ref_params.py,needed-paper,test suite analysis for paper,include
+mnras_paper/test_suite/analysis/analyze_scaling_20k_anomaly.py,dead,exploratory/deleted analysis,exclude
+mnras_paper/test_suite/analysis/analyze_seed_ensemble.py,needed-paper,test suite analysis for paper,include
+mnras_paper/test_suite/analysis/analyze_selection_term.py,needed-paper,test suite analysis for paper,include
+mnras_paper/test_suite/analysis/analyze_sky_prior_runtime.py,dead,exploratory/deleted analysis,exclude
+mnras_paper/test_suite/analysis/analyze_tf2_scaling.py,dead,exploratory/deleted analysis,exclude
+mnras_paper/test_suite/analysis/analyze_unhet_scaling.py,dead,exploratory/deleted analysis,exclude
+mnras_paper/test_suite/analysis/compare_bimodality_waveforms.py,needed-paper,test suite analysis for paper,include
+mnras_paper/test_suite/analysis/compile_test_suite_report.py,needed-paper,test suite analysis for paper,include
+mnras_paper/test_suite/analysis/verify_manifest.py,dead,misc file,exclude
+mnras_paper/test_suite/launch_tier2.sh,needed-verification,test session runner,archive-locally
+mnras_paper/test_suite/logs/session_05_rerun.1777231033.log,dead,execution log,exclude
+mnras_paper/test_suite/logs/session_05_unhet_imr_nrt_500_plus.1777219082.log,dead,execution log,exclude
+mnras_paper/test_suite/logs/session_05_unhet_imr_nrt_500_plus.1777219175.log,dead,execution log,exclude
+mnras_paper/test_suite/logs/session_06_precessing_gw150914.1777192291.log,dead,execution log,exclude
+mnras_paper/test_suite/logs/session_06_precessing_gw150914.1777192459.log,dead,execution log,exclude
+mnras_paper/test_suite/logs/session_06_precessing_gw150914.20260426_083131.log,dead,execution log,exclude
+mnras_paper/test_suite/logs/session_06_precessing_gw150914.20260426_083419.log,dead,execution log,exclude
+mnras_paper/test_suite/logs/session_07_precessing_gw170817.1777202619.log,dead,execution log,exclude
+mnras_paper/test_suite/logs/session_07_precessing_gw170817.1777202798.log,dead,execution log,exclude
+mnras_paper/test_suite/logs/session_08_num_delete_sweep.1777205161.log,dead,execution log,exclude
+mnras_paper/test_suite/logs/session_09_het_bins_sweep.1777208956.log,dead,execution log,exclude
+mnras_paper/test_suite/logs/session_10_bimodality.1777211909.log,dead,execution log,exclude
+mnras_paper/test_suite/logs/session_11_scaling_20k_diagnostic.1777215037.log,dead,execution log,exclude
+mnras_paper/test_suite/logs/session_12_gw_only.1777233701.log,dead,execution log,exclude
+mnras_paper/test_suite/logs/session_12_gw_only.1777235714.log,dead,execution log,exclude
+mnras_paper/test_suite/logs/session_13_nlive_scaling_imr.1777237150.log,dead,execution log,exclude
+mnras_paper/test_suite/logs/session_14_xas_prior_sensitivity.1777313299.log,dead,execution log,exclude
+mnras_paper/test_suite/logs/session_15_sky_prior_runtime.1777318855.log,dead,execution log,exclude
+mnras_paper/test_suite/logs/session_17_gw150914_xphm_larger.1777746007.log,dead,execution log,exclude
+mnras_paper/test_suite/logs/session_17_gw150914_xphm_larger.1777808284.log,dead,execution log,exclude
+mnras_paper/test_suite/logs/session_17_gw150914_xphm_larger.1777808348.log,dead,execution log,exclude
+mnras_paper/test_suite/logs/session_17_gw150914_xphm_larger.1777813085.log,dead,execution log,exclude
+mnras_paper/test_suite/logs/session_17_gw150914_xphm_larger.1777821923.log,dead,execution log,exclude
+mnras_paper/test_suite/logs/session_H_prior_only.1777039649.log,dead,execution log,exclude
+mnras_paper/test_suite/logs/session_H_prior_only.1777056198.log,dead,execution log,exclude
+mnras_paper/test_suite/run_catalog.csv,needed-paper,catalogs all paper test suite runs,include
+mnras_paper/test_suite/scripts/_update_catalog_status.py,dead,diagnostic/utility script,exclude
+mnras_paper/test_suite/scripts/prior_only_q_diagnostic.py,dead,diagnostic/utility script,exclude
+mnras_paper/test_suite/scripts/run_s16_qtests.sh,needed-verification,test session runner,archive-locally
+mnras_paper/test_suite/session_plans/_common.sh,needed-verification,documents exploratory test phases,archive-locally
+mnras_paper/test_suite/session_plans/session_01_tf2_scaling.sh,needed-verification,documents exploratory test phases,archive-locally
+mnras_paper/test_suite/session_plans/session_03_unhet_tf2_scaling.sh,needed-verification,documents exploratory test phases,archive-locally
+mnras_paper/test_suite/session_plans/session_04_unhet_imr_nrt_2500.sh,needed-verification,documents exploratory test phases,archive-locally
+mnras_paper/test_suite/session_plans/session_05_unhet_imr_nrt_500_plus.sh,needed-verification,documents exploratory test phases,archive-locally
+mnras_paper/test_suite/session_plans/session_06_precessing_gw150914.sh,needed-verification,documents exploratory test phases,archive-locally
+mnras_paper/test_suite/session_plans/session_07_precessing_gw170817.sh,needed-verification,documents exploratory test phases,archive-locally
+mnras_paper/test_suite/session_plans/session_07b_tf2_lvkbounds.sh,needed-verification,documents exploratory test phases,archive-locally
+mnras_paper/test_suite/session_plans/session_08_num_delete_sweep.sh,needed-verification,documents exploratory test phases,archive-locally
+mnras_paper/test_suite/session_plans/session_09_het_bins_sweep.sh,needed-verification,documents exploratory test phases,archive-locally
+mnras_paper/test_suite/session_plans/session_10_bimodality.sh,needed-verification,documents exploratory test phases,archive-locally
+mnras_paper/test_suite/session_plans/session_11_scaling_20k_diagnostic.sh,needed-verification,documents exploratory test phases,archive-locally
+mnras_paper/test_suite/session_plans/session_12_gw_only.sh,needed-verification,documents exploratory test phases,archive-locally
+mnras_paper/test_suite/session_plans/session_13_nlive_scaling_imr.sh,needed-verification,documents exploratory test phases,archive-locally
+mnras_paper/test_suite/session_plans/session_14_xas_prior_sensitivity.sh,needed-verification,documents exploratory test phases,archive-locally
+mnras_paper/test_suite/session_plans/session_15_sky_prior_runtime.sh,needed-verification,documents exploratory test phases,archive-locally
+mnras_paper/test_suite/session_plans/session_17_gw150914_xphm_larger.sh,needed-verification,documents exploratory test phases,archive-locally
+mnras_paper/test_suite/session_plans/session_18_additional_seeds_and_vp.sh,needed-verification,documents exploratory test phases,archive-locally
+mnras_paper/test_suite/session_plans/session_20_corner_wide_q.sh,needed-verification,documents exploratory test phases,archive-locally
+mnras_paper/test_suite/session_plans/session_H_prior_only.sh,needed-verification,documents exploratory test phases,archive-locally
+paper-reproduce/README.md,needed-verification,reproduction guide,include
+paper-reproduce/data/DOWNLOAD.md,needed-verification,data/reproduction documentation,include
+paper-reproduce/data/MANIFEST.md,needed-verification,data/reproduction documentation,include
+paper-reproduce/environment.yml,needed-paper,conda environment specification,include
+paper-reproduce/paper/figures/H0_prior_sensitivity.pdf,needed-paper,paper figure source,include
+paper-reproduce/paper/figures/H0_waveform_comparison.pdf,needed-paper,paper figure source,include
+paper-reproduce/paper/figures/bimodality.pdf,needed-paper,paper figure source,include
+paper-reproduce/paper/figures/bimodality_imr_vs_imrx.pdf,needed-paper,paper figure source,include
+paper-reproduce/paper/figures/bimodality_imr_vs_imrx.png,dead,misc file,exclude
+paper-reproduce/paper/figures/corner_GW150914_waveform_comparison.pdf,needed-paper,paper figure source,include
+paper-reproduce/paper/figures/corner_GW170817_waveform_comparison.pdf,needed-paper,paper figure source,include
+paper-reproduce/paper/figures/scaling_study_full.pdf,needed-paper,paper figure source,include
+paper-reproduce/paper/main.aux,dead,latex artifact,exclude
+paper-reproduce/paper/main.bbl,dead,latex artifact,exclude
+paper-reproduce/paper/main.blg,dead,latex artifact,exclude
+paper-reproduce/paper/main.fdb_latexmk,dead,latex artifact,exclude
+paper-reproduce/paper/main.fls,dead,latex artifact,exclude
+paper-reproduce/paper/main.log,dead,latex artifact,exclude
+paper-reproduce/paper/main.out,dead,latex artifact,exclude
+paper-reproduce/paper/main.pdf,needed-paper,compiled paper,include
+paper-reproduce/paper/main.tex,needed-verification,paper source/references,include
+paper-reproduce/paper/references.bib,needed-verification,paper source/references,include
+paper-reproduce/paper/tables/table1_gw150914.tex,needed-paper,paper table source,include
+paper-reproduce/paper/tables/table5_prior_sensitivity.tex,needed-paper,paper table source,include
+paper-reproduce/paper/tables/table6_bimodality.tex,needed-paper,paper table source,include
+paper-reproduce/reproduce_paper.sh,needed-paper,master reproduction script,include
+paper-reproduce/scripts/_plot_utils.py,needed-paper,paper reproduction script,include
+paper-reproduce/scripts/build_paper_tables.py,needed-paper,paper reproduction script,include
+paper-reproduce/scripts/plot_GW150914_waveform_comparison.py,dead,misc file,exclude
+paper-reproduce/scripts/plot_GW170817_waveform_corner.py,dead,misc file,exclude
+paper-reproduce/scripts/plot_H0_GW170817_waveform_comparison.py,dead,misc file,exclude
+paper-reproduce/scripts/plot_H0_prior_sensitivity.py,dead,misc file,exclude
+paper-reproduce/scripts/plot_bimodality.py,dead,misc file,exclude
+paper-reproduce/scripts/plot_scaling_full.py,dead,misc file,exclude
+paper-reproduce/scripts/verify_data.py,needed-verification,data integrity check,include

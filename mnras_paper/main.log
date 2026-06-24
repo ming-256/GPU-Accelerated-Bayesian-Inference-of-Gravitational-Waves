@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.9.17)  7 MAY 2026 21:04
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.9.17)  24 MAY 2026 18:41
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -511,68 +511,369 @@ Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1374.
 Package xcolor Info: Model `Gray' substituted by `gray' on input line 1375.
 Package xcolor Info: Model `wave' substituted by `hsb' on input line 1376.
 )
-LaTeX Font Info:    Trying to load font information for T1+ntxtlf on input line
- 77.
+(/usr/local/texlive/2023/texmf-dist/tex/latex/orcidlink/orcidlink.sty
+Package: orcidlink 2021/06/11 v1.0.4 Linked ORCiD logo macro package
 
-(/usr/local/texlive/2023/texmf-dist/tex/latex/newtx/t1ntxtlf.fd
+(/usr/local/texlive/2023/texmf-dist/tex/latex/pgf/frontendlayer/tikz.sty
+(/usr/local/texlive/2023/texmf-dist/tex/latex/pgf/basiclayer/pgf.sty
+(/usr/local/texlive/2023/texmf-dist/tex/latex/pgf/utilities/pgfrcs.sty
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/utilities/pgfutil-common.te
+x
+\pgfutil@everybye=\toks29
+\pgfutil@tempdima=\dimen177
+\pgfutil@tempdimb=\dimen178
+)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/utilities/pgfutil-latex.def
+\pgfutil@abb=\box53
+) (/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/utilities/pgfrcs.code.tex
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/pgf.revision.tex)
+Package: pgfrcs 2023-01-15 v3.1.10 (3.1.10)
+))
+Package: pgf 2023-01-15 v3.1.10 (3.1.10)
+
+(/usr/local/texlive/2023/texmf-dist/tex/latex/pgf/basiclayer/pgfcore.sty
+(/usr/local/texlive/2023/texmf-dist/tex/latex/pgf/systemlayer/pgfsys.sty
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/systemlayer/pgfsys.code.tex
+Package: pgfsys 2023-01-15 v3.1.10 (3.1.10)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code.tex
+\pgfkeys@pathtoks=\toks30
+\pgfkeys@temptoks=\toks31
+
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/utilities/pgfkeyslibraryfil
+tered.code.tex
+\pgfkeys@tmptoks=\toks32
+))
+\pgf@x=\dimen179
+\pgf@y=\dimen180
+\pgf@xa=\dimen181
+\pgf@ya=\dimen182
+\pgf@xb=\dimen183
+\pgf@yb=\dimen184
+\pgf@xc=\dimen185
+\pgf@yc=\dimen186
+\pgf@xd=\dimen187
+\pgf@yd=\dimen188
+\w@pgf@writea=\write3
+\r@pgf@reada=\read3
+\c@pgf@counta=\count298
+\c@pgf@countb=\count299
+\c@pgf@countc=\count300
+\c@pgf@countd=\count301
+\t@pgf@toka=\toks33
+\t@pgf@tokb=\toks34
+\t@pgf@tokc=\toks35
+\pgf@sys@id@count=\count302
+
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/systemlayer/pgf.cfg
+File: pgf.cfg 2023-01-15 v3.1.10 (3.1.10)
+)
+Driver file for pgf: pgfsys-pdftex.def
+
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-pdftex.d
+ef
+File: pgfsys-pdftex.def 2023-01-15 v3.1.10 (3.1.10)
+
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-common-p
+df.def
+File: pgfsys-common-pdf.def 2023-01-15 v3.1.10 (3.1.10)
+)))
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/systemlayer/pgfsyssoftpath.
+code.tex
+File: pgfsyssoftpath.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgfsyssoftpath@smallbuffer@items=\count303
+\pgfsyssoftpath@bigbuffer@items=\count304
+)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/systemlayer/pgfsysprotocol.
+code.tex
+File: pgfsysprotocol.code.tex 2023-01-15 v3.1.10 (3.1.10)
+))
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/basiclayer/pgfcore.code.tex
+Package: pgfcore 2023-01-15 v3.1.10 (3.1.10)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/math/pgfmathutil.code.tex)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/math/pgfmathparser.code.tex
+\pgfmath@dimen=\dimen189
+\pgfmath@count=\count305
+\pgfmath@box=\box54
+\pgfmath@toks=\toks36
+\pgfmath@stack@operand=\toks37
+\pgfmath@stack@operation=\toks38
+)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.code.
+tex)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.basic
+.code.tex)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.trigo
+nometric.code.tex)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.rando
+m.code.tex)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.compa
+rison.code.tex)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.base.
+code.tex)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.round
+.code.tex)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.misc.
+code.tex)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.integ
+erarithmetics.code.tex)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/math/pgfmathcalc.code.tex)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/math/pgfmathfloat.code.tex
+\c@pgfmathroundto@lastzeros=\count306
+)) (/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/math/pgfint.code.tex)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepoints.co
+de.tex
+File: pgfcorepoints.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgf@picminx=\dimen190
+\pgf@picmaxx=\dimen191
+\pgf@picminy=\dimen192
+\pgf@picmaxy=\dimen193
+\pgf@pathminx=\dimen194
+\pgf@pathmaxx=\dimen195
+\pgf@pathminy=\dimen196
+\pgf@pathmaxy=\dimen197
+\pgf@xx=\dimen198
+\pgf@xy=\dimen199
+\pgf@yx=\dimen256
+\pgf@yy=\dimen257
+\pgf@zx=\dimen258
+\pgf@zy=\dimen259
+)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathconst
+ruct.code.tex
+File: pgfcorepathconstruct.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgf@path@lastx=\dimen260
+\pgf@path@lasty=\dimen261
+)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathusage
+.code.tex
+File: pgfcorepathusage.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgf@shorten@end@additional=\dimen262
+\pgf@shorten@start@additional=\dimen263
+)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/basiclayer/pgfcorescopes.co
+de.tex
+File: pgfcorescopes.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgfpic=\box55
+\pgf@hbox=\box56
+\pgf@layerbox@main=\box57
+\pgf@picture@serial@count=\count307
+)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/basiclayer/pgfcoregraphicst
+ate.code.tex
+File: pgfcoregraphicstate.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgflinewidth=\dimen264
+)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/basiclayer/pgfcoretransform
+ations.code.tex
+File: pgfcoretransformations.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgf@pt@x=\dimen265
+\pgf@pt@y=\dimen266
+\pgf@pt@temp=\dimen267
+)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/basiclayer/pgfcorequick.cod
+e.tex
+File: pgfcorequick.code.tex 2023-01-15 v3.1.10 (3.1.10)
+)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreobjects.c
+ode.tex
+File: pgfcoreobjects.code.tex 2023-01-15 v3.1.10 (3.1.10)
+)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathproce
+ssing.code.tex
+File: pgfcorepathprocessing.code.tex 2023-01-15 v3.1.10 (3.1.10)
+)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/basiclayer/pgfcorearrows.co
+de.tex
+File: pgfcorearrows.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgfarrowsep=\dimen268
+)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreshade.cod
+e.tex
+File: pgfcoreshade.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgf@max=\dimen269
+\pgf@sys@shading@range@num=\count308
+\pgf@shadingcount=\count309
+)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreimage.cod
+e.tex
+File: pgfcoreimage.code.tex 2023-01-15 v3.1.10 (3.1.10)
+)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreexternal.
+code.tex
+File: pgfcoreexternal.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgfexternal@startupbox=\box58
+)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/basiclayer/pgfcorelayers.co
+de.tex
+File: pgfcorelayers.code.tex 2023-01-15 v3.1.10 (3.1.10)
+)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/basiclayer/pgfcoretranspare
+ncy.code.tex
+File: pgfcoretransparency.code.tex 2023-01-15 v3.1.10 (3.1.10)
+)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepatterns.
+code.tex
+File: pgfcorepatterns.code.tex 2023-01-15 v3.1.10 (3.1.10)
+)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/basiclayer/pgfcorerdf.code.
+tex
+File: pgfcorerdf.code.tex 2023-01-15 v3.1.10 (3.1.10)
+)))
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/modules/pgfmoduleshapes.cod
+e.tex
+File: pgfmoduleshapes.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgfnodeparttextbox=\box59
+)
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/modules/pgfmoduleplot.code.
+tex
+File: pgfmoduleplot.code.tex 2023-01-15 v3.1.10 (3.1.10)
+)
+(/usr/local/texlive/2023/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-version
+-0-65.sty
+Package: pgfcomp-version-0-65 2023-01-15 v3.1.10 (3.1.10)
+\pgf@nodesepstart=\dimen270
+\pgf@nodesepend=\dimen271
+)
+(/usr/local/texlive/2023/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-version
+-1-18.sty
+Package: pgfcomp-version-1-18 2023-01-15 v3.1.10 (3.1.10)
+))
+(/usr/local/texlive/2023/texmf-dist/tex/latex/pgf/utilities/pgffor.sty
+(/usr/local/texlive/2023/texmf-dist/tex/latex/pgf/utilities/pgfkeys.sty
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code.tex)
+) (/usr/local/texlive/2023/texmf-dist/tex/latex/pgf/math/pgfmath.sty
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex))
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/utilities/pgffor.code.tex
+Package: pgffor 2023-01-15 v3.1.10 (3.1.10)
+\pgffor@iter=\dimen272
+\pgffor@skip=\dimen273
+\pgffor@stack=\toks39
+\pgffor@toks=\toks40
+))
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/frontendlayer/tikz/tikz.cod
+e.tex
+Package: tikz 2023-01-15 v3.1.10 (3.1.10)
+
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/libraries/pgflibraryplothan
+dlers.code.tex
+File: pgflibraryplothandlers.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgf@plot@mark@count=\count310
+\pgfplotmarksize=\dimen274
+)
+\tikz@lastx=\dimen275
+\tikz@lasty=\dimen276
+\tikz@lastxsaved=\dimen277
+\tikz@lastysaved=\dimen278
+\tikz@lastmovetox=\dimen279
+\tikz@lastmovetoy=\dimen280
+\tikzleveldistance=\dimen281
+\tikzsiblingdistance=\dimen282
+\tikz@figbox=\box60
+\tikz@figbox@bg=\box61
+\tikz@tempbox=\box62
+\tikz@tempbox@bg=\box63
+\tikztreelevel=\count311
+\tikznumberofchildren=\count312
+\tikznumberofcurrentchild=\count313
+\tikz@fig@count=\count314
+
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/modules/pgfmodulematrix.cod
+e.tex
+File: pgfmodulematrix.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgfmatrixcurrentrow=\count315
+\pgfmatrixcurrentcolumn=\count316
+\pgf@matrix@numberofcolumns=\count317
+)
+\tikz@expandcount=\count318
+
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/frontendlayer/tikz/librarie
+s/tikzlibrarytopaths.code.tex
+File: tikzlibrarytopaths.code.tex 2023-01-15 v3.1.10 (3.1.10)
+)))
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/frontendlayer/tikz/librarie
+s/tikzlibrarysvg.path.code.tex
+File: tikzlibrarysvg.path.code.tex 2023-01-15 v3.1.10 (3.1.10)
+
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/libraries/pgflibrarysvg.pat
+h.code.tex
+File: pgflibrarysvg.path.code.tex 2023-01-15 v3.1.10 (3.1.10)
+
+(/usr/local/texlive/2023/texmf-dist/tex/generic/pgf/modules/pgfmoduleparser.cod
+e.tex
+File: pgfmoduleparser.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgfparserdef@arg@count=\count319
+)
+\pgf@lib@svg@last@x=\dimen283
+\pgf@lib@svg@last@y=\dimen284
+\pgf@lib@svg@last@c@x=\dimen285
+\pgf@lib@svg@last@c@y=\dimen286
+\pgf@lib@svg@count=\count320
+\pgf@lib@svg@max@num=\count321
+))
+\@curXheight=\skip59
+)
+LaTeX Font Info:    Trying to load font information for T1+ntxtlf on input line
+ 78.
+ (/usr/local/texlive/2023/texmf-dist/tex/latex/newtx/t1ntxtlf.fd
 File: t1ntxtlf.fd 2021/05/24 v1.1 font definition file for T1/ntx/tlf
 )
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 9.0pt on input line 77.
+(Font)              scaled to size 9.0pt on input line 78.
 
 (/usr/local/texlive/2023/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2023-01-16 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count298
-\l__pdf_internal_box=\box53
+\l__color_backend_stack_int=\count322
+\l__pdf_internal_box=\box64
 )
 (./main.aux)
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/ntxmi/m/it on input line 77.
+LaTeX Font Info:    Checking defaults for OML/ntxmi/m/it on input line 78.
 LaTeX Font Info:    Trying to load font information for OML+ntxmi on input line
- 77.
+ 78.
  (/usr/local/texlive/2023/texmf-dist/tex/latex/newtx/omlntxmi.fd
 File: omlntxmi.fd 2015/08/25 Fontinst v1.933 font definitions for OML/ntxmi.
 )
-LaTeX Font Info:    ... okay on input line 77.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 77.
-LaTeX Font Info:    ... okay on input line 77.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 77.
-LaTeX Font Info:    ... okay on input line 77.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 77.
-LaTeX Font Info:    ... okay on input line 77.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 77.
-LaTeX Font Info:    ... okay on input line 77.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 77.
-LaTeX Font Info:    ... okay on input line 77.
-LaTeX Font Info:    Checking defaults for U/ntxexa/m/n on input line 77.
+LaTeX Font Info:    ... okay on input line 78.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 78.
+LaTeX Font Info:    ... okay on input line 78.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 78.
+LaTeX Font Info:    ... okay on input line 78.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 78.
+LaTeX Font Info:    ... okay on input line 78.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 78.
+LaTeX Font Info:    ... okay on input line 78.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 78.
+LaTeX Font Info:    ... okay on input line 78.
+LaTeX Font Info:    Checking defaults for U/ntxexa/m/n on input line 78.
 LaTeX Font Info:    Trying to load font information for U+ntxexa on input line 
-77.
+78.
 
 (/usr/local/texlive/2023/texmf-dist/tex/latex/newtx/untxexa.fd
 File: untxexa.fd 2012/04/16 Fontinst v1.933 font definitions for U/ntxexa.
 )
-LaTeX Font Info:    ... okay on input line 77.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 77.
-LaTeX Font Info:    ... okay on input line 77.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 77.
-LaTeX Font Info:    ... okay on input line 77.
-LaTeX Font Info:    Checking defaults for LMS/ntxsy/m/n on input line 77.
+LaTeX Font Info:    ... okay on input line 78.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 78.
+LaTeX Font Info:    ... okay on input line 78.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 78.
+LaTeX Font Info:    ... okay on input line 78.
+LaTeX Font Info:    Checking defaults for LMS/ntxsy/m/n on input line 78.
 LaTeX Font Info:    Trying to load font information for LMS+ntxsy on input line
- 77.
+ 78.
 
 (/usr/local/texlive/2023/texmf-dist/tex/latex/newtx/lmsntxsy.fd
 File: lmsntxsy.fd 2016/07/02 Fontinst v1.933 font definitions for LMS/ntxsy.
 )
-LaTeX Font Info:    ... okay on input line 77.
-LaTeX Font Info:    Checking defaults for LMX/ntxexx/m/n on input line 77.
+LaTeX Font Info:    ... okay on input line 78.
+LaTeX Font Info:    Checking defaults for LMX/ntxexx/m/n on input line 78.
 LaTeX Font Info:    Trying to load font information for LMX+ntxexx on input lin
-e 77.
+e 78.
 
 (/usr/local/texlive/2023/texmf-dist/tex/latex/newtx/lmxntxexx.fd
 File: lmxntxexx.fd 2016/07/03 Fontinst v1.933 font definitions for LMX/ntxexx.
 )
-LaTeX Font Info:    ... okay on input line 77.
+LaTeX Font Info:    ... okay on input line 78.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -608,29 +909,29 @@ LaTeX Font Info:    ... okay on input line 77.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-Package hyperref Info: Link coloring ON on input line 77.
+Package hyperref Info: Link coloring ON on input line 78.
 (./main.out) (./main.out)
-\@outlinefile=\write3
-\openout3 = `main.out'.
+\@outlinefile=\write4
+\openout4 = `main.out'.
 
-\c@mv@tabular=\count299
-\c@mv@boldtabular=\count300
-LaTeX Info: Command `\dddot' is already robust on input line 77.
-LaTeX Info: Command `\ddddot' is already robust on input line 77.
+\c@mv@tabular=\count323
+\c@mv@boldtabular=\count324
+LaTeX Info: Command `\dddot' is already robust on input line 78.
+LaTeX Info: Command `\ddddot' is already robust on input line 78.
 
 (/usr/local/texlive/2023/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count301
-\scratchdimen=\dimen177
-\scratchbox=\box54
-\nofMPsegments=\count302
-\nofMParguments=\count303
-\everyMPshowfont=\toks29
-\MPscratchCnt=\count304
-\MPscratchDim=\dimen178
-\MPnumerator=\count305
-\makeMPintoPDFobject=\count306
-\everyMPtoPDFconversion=\toks30
+\scratchcounter=\count325
+\scratchdimen=\dimen287
+\scratchbox=\box65
+\nofMPsegments=\count326
+\nofMParguments=\count327
+\everyMPshowfont=\toks41
+\MPscratchCnt=\count328
+\MPscratchDim=\dimen288
+\MPnumerator=\count329
+\makeMPintoPDFobject=\count330
+\everyMPtoPDFconversion=\toks42
 ) (/usr/local/texlive/2023/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
@@ -641,75 +942,75 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 16.0pt on input line 80.
+(Font)              scaled to size 16.0pt on input line 81.
 LaTeX Font Info:    Font shape `T1/ntxtlf/b/n' will be
-(Font)              scaled to size 16.0pt on input line 80.
+(Font)              scaled to size 16.0pt on input line 81.
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 12.0pt on input line 80.
+(Font)              scaled to size 12.0pt on input line 81.
 LaTeX Font Info:    Trying to load font information for OT1+minntx on input lin
-e 80.
+e 81.
 
 (/usr/local/texlive/2023/texmf-dist/tex/latex/newtx/ot1minntx.fd
 File: ot1minntx.fd 2022/01/20 v1.0 font definition file for OT1/minntx
 )
 LaTeX Font Info:    Trying to load font information for U+ntxmia on input line 
-80.
+81.
 
 (/usr/local/texlive/2023/texmf-dist/tex/latex/newtx/untxmia.fd
 File: untxmia.fd 2018/04/14 Fontinst v1.933 font definitions for U/ntxmia.
 )
 LaTeX Font Info:    Trying to load font information for U+ntxsym on input line 
-80.
+81.
 
 (/usr/local/texlive/2023/texmf-dist/tex/latex/newtx/untxsym.fd
 File: untxsym.fd 2015/03/20 Fontinst v1.933 font definitions for U/ntxsym.
 )
 LaTeX Font Info:    Trying to load font information for U+ntxsyc on input line 
-80.
+81.
 
 (/usr/local/texlive/2023/texmf-dist/tex/latex/newtx/untxsyc.fd
 File: untxsyc.fd 2012/04/12 Fontinst v1.933 font definitions for U/ntxsyc.
 )
 LaTeX Font Info:    Trying to load font information for T1+ntxsups on input lin
-e 80.
+e 81.
 
 (/usr/local/texlive/2023/texmf-dist/tex/latex/newtx/t1ntxsups.fd
 File: t1ntxsups.fd 2015/01/17 v1.0
 )
 LaTeX Font Info:    Font shape `T1/ntxsups/m/n' will be
-(Font)              scaled to size 12.0pt on input line 80.
+(Font)              scaled to size 12.0pt on input line 81.
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 8.0pt on input line 80.
+(Font)              scaled to size 8.0pt on input line 81.
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/it' will be
-(Font)              scaled to size 8.0pt on input line 80.
+(Font)              scaled to size 8.0pt on input line 81.
 
 
 LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <5.5> not available
-(Font)              size <5> substituted on input line 80.
+(Font)              size <5> substituted on input line 81.
 
 LaTeX Font Info:    Font shape `T1/ntxtlf/b/n' will be
-(Font)              scaled to size 9.0pt on input line 83.
+(Font)              scaled to size 9.0pt on input line 84.
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 10.0pt on input line 83.
+(Font)              scaled to size 10.0pt on input line 84.
 LaTeX Font Info:    Font shape `T1/ntxtlf/b/n' will be
-(Font)              scaled to size 10.0pt on input line 87.
+(Font)              scaled to size 10.0pt on input line 88.
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/it' will be
-(Font)              scaled to size 9.0pt on input line 99.
+(Font)              scaled to size 9.0pt on input line 100.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
 LaTeX Font Info:    Font shape `T1/ntxtlf/b/n' will be
-(Font)              scaled to size 8.0pt on input line 102.
+(Font)              scaled to size 8.0pt on input line 101.
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 6.2pt on input line 102.
+(Font)              scaled to size 6.2pt on input line 101.
 LaTeX Font Info:    Trying to load font information for TS1+ntxtlf on input lin
-e 102.
+e 101.
 
 (/usr/local/texlive/2023/texmf-dist/tex/latex/newtx/ts1ntxtlf.fd
 File: ts1ntxtlf.fd 2015/01/18 v1.0 fd file for TS1/ntxtlf
 )
 LaTeX Font Info:    Font shape `TS1/ntxtlf/m/n' will be
-(Font)              scaled to size 8.0pt on input line 102.
+(Font)              scaled to size 8.0pt on input line 101.
  [1{/usr/local/texlive/2023/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/usr/
 local/texlive/2023/texmf-dist/fonts/enc/dvips/newtx/ntx-ec-tlf.enc}{/usr/local/
 texlive/2023/texmf-dist/fonts/enc/dvips/newtx/ntx-ot1-tlf.enc}
@@ -717,7 +1018,7 @@ texlive/2023/texmf-dist/fonts/enc/dvips/newtx/ntx-ot1-tlf.enc}
 
 {/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/tex-gyre/q-ts1.enc}]
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/sc' will be
-(Font)              scaled to size 9.0pt on input line 103.
+(Font)              scaled to size 9.0pt on input line 104.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
@@ -729,7 +1030,10 @@ File: t1ntxtt.fd 2012/04/20 v3.1
 )
 LaTeX Font Info:    Font shape `T1/ntxtt/m/n' will be
 (Font)              scaled to size 9.0pt on input line 126.
-
+LaTeX Font Info:    Font shape `T1/ntxtlf/m/it' will be
+(Font)              scaled to size 12.0pt on input line 130.
+ [2{/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/newtx/ntx-ec-tlf-pc.enc}
+]
 Overfull \hbox (75.5764pt too wide) detected at line 136
 $[] \LMS/ntxsy/m/n/9 L[]π\OML/ntxmi/m/it/9 ^^R; H[]; v[]\LMS/ntxsy/m/n/9 ∫ \U/n
 txmia/m/it/9 = [] \LMS/ntxsy/m/n/9 L[]π\OML/ntxmi/m/it/9 d \LMS/ntxsy/m/n/9 j \
@@ -737,253 +1041,136 @@ OML/ntxmi/m/it/9 ^^R\LMS/ntxsy/m/n/9 ∫ œ [] N  [] œ [] N  [] \OML/ntxmi/m/it/9
 ;$  
  []
 
-LaTeX Font Info:    Font shape `T1/ntxtlf/m/it' will be
-(Font)              scaled to size 12.0pt on input line 143.
-[2{/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/newtx/ntx-ec-tlf-pc.enc}]
-(../Results/gwtc1_phasemarg/table1_gw150914.tex)
-! Misplaced \noalign.
-\bottomrule ->\noalign 
-                       {\ifnum 0=`}\fi \@aboverulesep =\aboverulesep \global...
-l.182     \bottomrule
-                     
-I expect to see \noalign only after the \cr of
-an alignment. Proceed, and I'll ignore this case.
+LaTeX Font Info:    Font shape `T1/ntxtt/m/n' will be
+(Font)              scaled to size 8.0pt on input line 150.
 
-! Missing } inserted.
-<inserted text> 
-                }
-l.183   \end
-            {tabular}
-I've inserted something that you may have forgotten.
-(See the <inserted text> above.)
-With luck, this will get me unwedged. But if you
-really didn't forget anything, try typing `2' now; then
-my insertion and my current dilemma will both disappear.
-
-! Missing } inserted.
-<inserted text> 
-                }
-l.183   \end
-            {tabular}
-I've inserted something that you may have forgotten.
-(See the <inserted text> above.)
-With luck, this will get me unwedged. But if you
-really didn't forget anything, try typing `2' now; then
-my insertion and my current dilemma will both disappear.
-
-! Missing } inserted.
-<inserted text> 
-                }
-l.183   \end
-            {tabular}
-I've inserted something that you may have forgotten.
-(See the <inserted text> above.)
-With luck, this will get me unwedged. But if you
-really didn't forget anything, try typing `2' now; then
-my insertion and my current dilemma will both disappear.
-
-! Missing \cr inserted.
-<inserted text> 
-                \cr 
-l.183   \end
-            {tabular}
-I'm guessing that you meant to end an alignment here.
-
-! Missing { inserted.
-<inserted text> 
-                {
-l.183   \end
-            {tabular}
-I've put in what seems to be necessary to fix
-the current column of the current alignment.
-Try to go on, since this might almost work.
-
-! Undefined control sequence.
-\@BTrule ...\doublerulesep \fi \fi \fi \@BTswitch 
-                                                  
-l.183   \end
-            {tabular}
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Misplaced \crcr.
-<recently read> \crcr 
-                      
-l.183   \end{tabular}
-                     
-I can't figure out why you would want to use a tab mark
-or \cr or \span just now. If something like a right brace
-up above has ended a previous alignment prematurely,
-you're probably due for more error messages, and you
-might try typing `S' now just to see what is salvageable.
-
-! Extra }, or forgotten $.
-\endtabular ->\crcr \egroup \egroup 
-                                    $\egroup 
-l.183   \end{tabular}
-                     
-I've deleted a group-closing symbol because it seems to be
-spurious, as in `$x}$'. But perhaps the } is legitimate and
-you forgot something else, as in `\hbox{$x}'. In such cases
-the way to recover is to insert both the forgotten and the
-deleted material, e.g., by typing `I$}'.
+Underfull \hbox (badness 3058) in paragraph at lines 150--150
+$[]$ [][]\T1/ntxtlf/m/n/8 We ver-i-fied this prop-erty by di-rect eval-u-a-tion
+ of $\OML/ntxmi/m/it/8 N[]\LMS/ntxsy/m/n/8 π\OML/ntxmi/m/it/8 H[]\LMS/ntxsy/m/n
+/8 ∫ \U/ntxmia/m/it/8 =
+ []
 
 
-Overfull \hbox (150.40976pt too wide) in paragraph at lines 177--184
+Underfull \hbox (badness 6526) in paragraph at lines 150--150
+[] \OML/ntxmi/m/it/8 P[]\LMS/ntxsy/m/n/8 π\OML/ntxmi/m/it/8 d[]\LMS/ntxsy/m/n/8
+ ∫ \OML/ntxmi/m/it/8 ^^Y\LMS/ntxsy/m/n/8 π\OML/ntxmi/m/it/8 d[] \LMS/ntxsy/m/n/
+8 j \OML/ntxmi/m/it/8 H[]\LMS/ntxsy/m/n/8 ∫ \OML/ntxmi/m/it/8 dd[]$ \T1/ntxtlf/
+m/n/8 over the LVK-matched $\OML/ntxmi/m/it/8 H[] \LMS/ntxsy/m/n/8 2
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 150--150
+\LMS/ntxsy/m/n/8 ª\OT1/minntx/m/n/8 45\OML/ntxmi/m/it/8 ; \OT1/minntx/m/n/8 250
+\LMS/ntxsy/m/n/8 º \OT1/minntx/m/n/8 km s[] Mpc[]$ \T1/ntxtlf/m/n/8 prior with 
+a Finn--Chernoff antenna-
+ []
+
+
+Underfull \hbox (badness 5189) in paragraph at lines 150--150
+\T1/ntxtlf/m/n/8 pattern de-tec-tion model ([][]Finn & Cher-noff[][] [][]1993[]
+[]): $\OML/ntxmi/m/it/8 N[]$ \T1/ntxtlf/m/n/8 is $\OML/ntxmi/m/it/8 H[]$\T1/ntx
+tlf/m/n/8 -
+ []
+
+
+Underfull \hbox (badness 1371) in paragraph at lines 150--150
+\T1/ntxtlf/m/n/8 independent to ma-chine pre-ci-sion for ev-ery hori-zon dis-ta
+nce tested
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 150--150
+\T1/ntxtt/m/n/8 mnras_paper/test_suite/analysis/analyze_selection_term.py
+ []
+
+[3] (../Results/gwtc1_phasemarg/table1_gw150914.tex)
+Overfull \hbox (150.40976pt too wide) in paragraph at lines 177--183
  [][] 
  []
 
 <../Results/gwtc1_phasemarg/plots//corner_GW150914_waveform_comparison.pdf, id=
-272, 759.90639pt x 723.23624pt>
+341, 759.90639pt x 723.23624pt>
 File: ../Results/gwtc1_phasemarg/plots//corner_GW150914_waveform_comparison.pdf
  Graphic file (type pdf)
 <use ../Results/gwtc1_phasemarg/plots//corner_GW150914_waveform_comparison.pdf>
 
 Package pdftex.def Info: ../Results/gwtc1_phasemarg/plots//corner_GW150914_wave
-form_comparison.pdf  used on input line 188.
+form_comparison.pdf  used on input line 187.
 (pdftex.def)             Requested size: 244.0pt x 232.22386pt.
-[3
+(../Results/gwtc1_phasemarg/table5_prior_sensitivity.tex)
+<../Results/gwtc1_phasemarg/plots//H0_prior_sensitivity.pdf, id=356, 1003.51567
+pt x 388.77466pt>
+File: ../Results/gwtc1_phasemarg/plots//H0_prior_sensitivity.pdf Graphic file (
+type pdf)
+<use ../Results/gwtc1_phasemarg/plots//H0_prior_sensitivity.pdf>
+Package pdftex.def Info: ../Results/gwtc1_phasemarg/plots//H0_prior_sensitivity
+.pdf  used on input line 220.
+(pdftex.def)             Requested size: 244.0pt x 94.52986pt.
+LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
+(Font)              scaled to size 7.3pt on input line 227.
+LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
+(Font)              scaled to size 5.5pt on input line 227.
+
+Overfull \hbox (79.06966pt too wide) detected at line 228
+$\OML/ntxmi/m/it/9 P\LMS/ntxsy/m/n/9 π\OML/ntxmi/m/it/9 H[] > \OT1/minntx/m/n/9
+ 120 km s[] Mpc[]\LMS/ntxsy/m/n/9 ∫ \U/ntxmia/m/it/9 = \OT1/minntx/m/n/9 0\OML/
+ntxmi/m/it/9 :\OT1/minntx/m/n/9 017 []  \LMS/ntxsy/m/n/9 !  \OT1/minntx/m/n/9 0
+\OML/ntxmi/m/it/9 :\OT1/minntx/m/n/9 159 []d[][]\OML/ntxmi/m/it/9 ;$ 
+ []
+
+
+Underfull \hbox (badness 1199) in paragraph at lines 236--237
+ \T1/ntxtlf/b/n/9 4.1.0.2 Reweight-ing bias ver-sus vari-ance. [] \T1/ntxtlf/m/
+n/9 The reweight-ing
+ []
+
+[4
 pdfTeX warning (ext4): destination with the same identifier (name{table.1}) has
  been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.197 
+l.237 
       
 pdfTeX warning (ext4): destination with the same identifier (name{figure.1}) ha
 s been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.197 
+l.237 
+      
+pdfTeX warning (ext4): destination with the same identifier (name{figure.2}) ha
+s been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.237 
        <../Results/gwtc1_phasemarg/plots//corner_GW150914_waveform_comparison.p
-df>]
-LaTeX Font Info:    Font shape `T1/ntxtt/m/n' will be
-(Font)              scaled to size 8.0pt on input line 209.
- (../Results/gwtc1_phasemarg/table5_prior_sensitivity.tex)
-! Misplaced \noalign.
-\bottomrule ->\noalign 
-                       {\ifnum 0=`}\fi \@aboverulesep =\aboverulesep \global...
-l.216     \bottomrule
-                     
-I expect to see \noalign only after the \cr of
-an alignment. Proceed, and I'll ignore this case.
-
-! Missing } inserted.
-<inserted text> 
-                }
-l.217   \end
-            {tabular}
-I've inserted something that you may have forgotten.
-(See the <inserted text> above.)
-With luck, this will get me unwedged. But if you
-really didn't forget anything, try typing `2' now; then
-my insertion and my current dilemma will both disappear.
-
-! Missing } inserted.
-<inserted text> 
-                }
-l.217   \end
-            {tabular}
-I've inserted something that you may have forgotten.
-(See the <inserted text> above.)
-With luck, this will get me unwedged. But if you
-really didn't forget anything, try typing `2' now; then
-my insertion and my current dilemma will both disappear.
-
-! Missing } inserted.
-<inserted text> 
-                }
-l.217   \end
-            {tabular}
-I've inserted something that you may have forgotten.
-(See the <inserted text> above.)
-With luck, this will get me unwedged. But if you
-really didn't forget anything, try typing `2' now; then
-my insertion and my current dilemma will both disappear.
-
-! Missing \cr inserted.
-<inserted text> 
-                \cr 
-l.217   \end
-            {tabular}
-I'm guessing that you meant to end an alignment here.
-
-! Missing { inserted.
-<inserted text> 
-                {
-l.217   \end
-            {tabular}
-I've put in what seems to be necessary to fix
-the current column of the current alignment.
-Try to go on, since this might almost work.
-
-! Undefined control sequence.
-\@BTrule ...\doublerulesep \fi \fi \fi \@BTswitch 
-                                                  
-l.217   \end
-            {tabular}
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Misplaced \crcr.
-<recently read> \crcr 
-                      
-l.217   \end{tabular}
-                     
-I can't figure out why you would want to use a tab mark
-or \cr or \span just now. If something like a right brace
-up above has ended a previous alignment prematurely,
-you're probably due for more error messages, and you
-might try typing `S' now just to see what is salvageable.
-
-! Extra }, or forgotten $.
-\endtabular ->\crcr \egroup \egroup 
-                                    $\egroup 
-l.217   \end{tabular}
-                     
-I've deleted a group-closing symbol because it seems to be
-spurious, as in `$x}$'. But perhaps the } is legitimate and
-you forgot something else, as in `\hbox{$x}'. In such cases
-the way to recover is to insert both the forgotten and the
-deleted material, e.g., by typing `I$}'.
-
-<../Results/gwtc1_phasemarg/plots//H0_prior_sensitivity.pdf, id=360, 714.48946p
-t x 425.68108pt>
-File: ../Results/gwtc1_phasemarg/plots//H0_prior_sensitivity.pdf Graphic file (
-type pdf)
-<use ../Results/gwtc1_phasemarg/plots//H0_prior_sensitivity.pdf>
-Package pdftex.def Info: ../Results/gwtc1_phasemarg/plots//H0_prior_sensitivity
-.pdf  used on input line 222.
-(pdftex.def)             Requested size: 244.0pt x 145.3662pt.
-
-Underfull \hbox (badness 1009) in paragraph at lines 227--228
- \T1/ntxtlf/b/n/9 4.1.0.1 Direct-vs-reweighted com-par-i-son. [] \T1/ntxtlf/m/n
-/9 The di-rect flat-in-
+df> <../Results/gwtc1_phasemarg/plots//H0_prior_sensitivity.pdf>]
+Underfull \hbox (badness 5771) in paragraph at lines 238--238
+$[]$ [][]\T1/ntxtlf/m/n/8 We cross-checked the lo-cal GPD-MLE against the canon
+-i-cal
  []
 
-LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 7.3pt on input line 229.
-LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 5.5pt on input line 229.
 
-Overfull \hbox (56.28938pt too wide) detected at line 230
-$\OML/ntxmi/m/it/9 P\LMS/ntxsy/m/n/9 π\OML/ntxmi/m/it/9 H[] > \OT1/minntx/m/n/9
- 120 km s[] Mpc[]\LMS/ntxsy/m/n/9 ∫ \U/ntxmia/m/it/9 = \OT1/minntx/m/n/9 0\OML/
-ntxmi/m/it/9 :\OT1/minntx/m/n/9 017 []  \LMS/ntxsy/m/n/9 !  \OT1/minntx/m/n/9 0
-\OML/ntxmi/m/it/9 :\OT1/minntx/m/n/9 159 []z[]\OML/ntxmi/m/it/9 ;$ 
- []
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
 
 Underfull \hbox (badness 4543) in paragraph at lines 242--243
- \T1/ntxtlf/b/n/9 4.1.0.4 Cross-waveform check. [] \T1/ntxtlf/m/n/9 Re-peat-ing
+ \T1/ntxtlf/b/n/9 4.1.0.5 Cross-waveform check. [] \T1/ntxtlf/m/n/9 Re-peat-ing
  the four-variant
  []
 
+
+Underfull \hbox (badness 1354) in paragraph at lines 242--243
+\T1/ntxtlf/m/n/9 same be-haviour with a larger am-pli-tude: base-line $\OML/ntx
+mi/m/it/9 P\LMS/ntxsy/m/n/9 π\OML/ntxmi/m/it/9 H[] >
+ []
+
+[5
+pdfTeX warning (ext4): destination with the same identifier (name{table.2}) has
+ been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.246 \subsection
+                 {The $d_{L}$--$\iota$ bimodality}]
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 (hyperref)                removing `math shift' on input line 246.
@@ -1008,261 +1195,185 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 (hyperref)                removing `math shift' on input line 246.
 
-[4
-pdfTeX warning (ext4): destination with the same identifier (name{figure.2}) ha
-s been already used, duplicate ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  \__shipout_drop_firstpage_...
-l.250 
-       <../Results/gwtc1_phasemarg/plots//H0_prior_sensitivity.pdf>]
-<../Results/gwtc1_phasemarg/plots//bimodality.pdf, id=466, 1004.00044pt x 390.0
+<figures//bimodality_imr_vs_imrx.pdf, id=559, 713.98305pt x 284.53488pt>
+File: figures//bimodality_imr_vs_imrx.pdf Graphic file (type pdf)
+<use figures//bimodality_imr_vs_imrx.pdf>
+Package pdftex.def Info: figures//bimodality_imr_vs_imrx.pdf  used on input lin
+e 255.
+(pdftex.def)             Requested size: 244.0pt x 97.23985pt.
+<../Results/gwtc1_phasemarg/plots//bimodality.pdf, id=564, 1004.00044pt x 390.0
 0258pt>
 File: ../Results/gwtc1_phasemarg/plots//bimodality.pdf Graphic file (type pdf)
 <use ../Results/gwtc1_phasemarg/plots//bimodality.pdf>
 Package pdftex.def Info: ../Results/gwtc1_phasemarg/plots//bimodality.pdf  used
- on input line 255.
+ on input line 264.
 (pdftex.def)             Requested size: 467.35907pt x 181.5457pt.
-
 (../Results/gwtc1_phasemarg/table6_bimodality.tex)
-! Misplaced \noalign.
-\bottomrule ->\noalign 
-                       {\ifnum 0=`}\fi \@aboverulesep =\aboverulesep \global...
-l.269     \bottomrule
-                     
-I expect to see \noalign only after the \cr of
-an alignment. Proceed, and I'll ignore this case.
+Overfull \hbox (18.79706pt too wide) detected at line 284
+$[] \LMS/ntxsy/m/n/9 B[] \U/ntxmia/m/it/9 = \LMS/ntxsy/m/n/9 π[] \OML/ntxmi/m/i
+t/9 Z[] \LMS/ntxsy/m/n/9 ^^@ [] \OML/ntxmi/m/it/9 Z[]\LMS/ntxsy/m/n/9 ∫ œ []π\O
+T1/minntx/m/n/9 20\LMS/ntxsy/m/n/9 ù\OT1/minntx/m/n/9 45\LMS/ntxsy/m/n/9 ∫ \U/n
+txmia/m/it/9 = \LMS/ntxsy/m/n/9 œ\OT1/minntx/m/n/9 0\OML/ntxmi/m/it/9 :\OT1/min
+ntx/m/n/9 15 \LMS/ntxsy/m/n/9 ^^@ \OT1/minntx/m/n/9 0\OML/ntxmi/m/it/9 :\OT1/mi
+nntx/m/n/9 81 \U/ntxmia/m/it/9 = \LMS/ntxsy/m/n/9 ^^@\OT1/minntx/m/n/9 0\OML/nt
+xmi/m/it/9 :\OT1/minntx/m/n/9 66 \LMS/ntxsy/m/n/9 π[]∫\OML/ntxmi/m/it/9 :$ 
+ []
 
-! Missing } inserted.
-<inserted text> 
-                }
-l.270   \end
-            {tabular}
-I've inserted something that you may have forgotten.
-(See the <inserted text> above.)
-With luck, this will get me unwedged. But if you
-really didn't forget anything, try typing `2' now; then
-my insertion and my current dilemma will both disappear.
-
-! Missing } inserted.
-<inserted text> 
-                }
-l.270   \end
-            {tabular}
-I've inserted something that you may have forgotten.
-(See the <inserted text> above.)
-With luck, this will get me unwedged. But if you
-really didn't forget anything, try typing `2' now; then
-my insertion and my current dilemma will both disappear.
-
-! Missing } inserted.
-<inserted text> 
-                }
-l.270   \end
-            {tabular}
-I've inserted something that you may have forgotten.
-(See the <inserted text> above.)
-With luck, this will get me unwedged. But if you
-really didn't forget anything, try typing `2' now; then
-my insertion and my current dilemma will both disappear.
-
-! Missing \cr inserted.
-<inserted text> 
-                \cr 
-l.270   \end
-            {tabular}
-I'm guessing that you meant to end an alignment here.
-
-! Missing { inserted.
-<inserted text> 
-                {
-l.270   \end
-            {tabular}
-I've put in what seems to be necessary to fix
-the current column of the current alignment.
-Try to go on, since this might almost work.
-
-! Undefined control sequence.
-\@BTrule ...\doublerulesep \fi \fi \fi \@BTswitch 
-                                                  
-l.270   \end
-            {tabular}
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Misplaced \crcr.
-<recently read> \crcr 
-                      
-l.270   \end{tabular}
-                     
-I can't figure out why you would want to use a tab mark
-or \cr or \span just now. If something like a right brace
-up above has ended a previous alignment prematurely,
-you're probably due for more error messages, and you
-might try typing `S' now just to see what is salvageable.
-
-! Extra }, or forgotten $.
-\endtabular ->\crcr \egroup \egroup 
-                                    $\egroup 
-l.270   \end{tabular}
-                     
-I've deleted a group-closing symbol because it seems to be
-spurious, as in `$x}$'. But perhaps the } is legitimate and
-you forgot something else, as in `\hbox{$x}'. In such cases
-the way to recover is to insert both the forgotten and the
-deleted material, e.g., by typing `I$}'.
-
-<../Results/gwtc1_phasemarg/plots//H0_waveform_comparison.pdf, id=480, 714.4894
-6pt x 425.87653pt>
+[6
+pdfTeX warning (ext4): destination with the same identifier (name{figure.3}) ha
+s been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.295 
+       <./figures//bimodality_imr_vs_imrx.pdf>]
+<../Results/gwtc1_phasemarg/plots//H0_waveform_comparison.pdf, id=664, 425.4094
+8pt x 281.33653pt>
 File: ../Results/gwtc1_phasemarg/plots//H0_waveform_comparison.pdf Graphic file
  (type pdf)
 <use ../Results/gwtc1_phasemarg/plots//H0_waveform_comparison.pdf>
 Package pdftex.def Info: ../Results/gwtc1_phasemarg/plots//H0_waveform_comparis
-on.pdf  used on input line 290.
-(pdftex.def)             Requested size: 244.0pt x 145.43294pt.
+on.pdf  used on input line 298.
+(pdftex.def)             Requested size: 244.0pt x 161.36371pt.
 <../Results/gwtc1_phasemarg/plots//corner_GW170817_waveform_comparison.pdf, id=
-487, 843.1592pt x 785.24979pt>
+671, 835.26648pt x 789.0315pt>
 File: ../Results/gwtc1_phasemarg/plots//corner_GW170817_waveform_comparison.pdf
  Graphic file (type pdf)
 <use ../Results/gwtc1_phasemarg/plots//corner_GW170817_waveform_comparison.pdf>
 
 Package pdftex.def Info: ../Results/gwtc1_phasemarg/plots//corner_GW170817_wave
-form_comparison.pdf  used on input line 297.
-(pdftex.def)             Requested size: 467.35907pt x 435.25563pt.
+form_comparison.pdf  used on input line 305.
+(pdftex.def)             Requested size: 467.35907pt x 441.49344pt.
 
-Overfull \hbox (151.77861pt too wide) in paragraph at lines 306--314
+Overfull \hbox (151.77861pt too wide) in paragraph at lines 314--322
  [][] 
  []
 
 
-Underfull \hbox (badness 2913) in paragraph at lines 328--329
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
+Underfull \hbox (badness 2913) in paragraph at lines 336--337
 \T1/ntxtlf/m/n/9 The het-ero-dyned like-li-hood is the en-abling ap-prox-i-ma-t
 ion.
  []
 
 
-Underfull \hbox (badness 1052) in paragraph at lines 328--329
-\T1/ntxtlf/m/n/9 Fig-ure [][]6[][] com-pares het-ero-dyned and un-hetero-dyned 
+Underfull \hbox (badness 1052) in paragraph at lines 336--337
+\T1/ntxtlf/m/n/9 Fig-ure [][]7[][] com-pares het-ero-dyned and un-hetero-dyned 
 IM-R-Phe-
  []
 
-<../Results/gwtc1_phasemarg/plots//scaling_study_full.pdf, id=498, 571.66374pt 
+[7
+pdfTeX warning (ext4): destination with the same identifier (name{figure.4}) ha
+s been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.339 \end{equation*}
+                     
+pdfTeX warning (ext4): destination with the same identifier (name{table.3}) has
+ been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.339 \end{equation*}
+                     
+pdfTeX warning (ext4): destination with the same identifier (name{table.4}) has
+ been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.339 \end{equation*}
+                      <../Results/gwtc1_phasemarg/plots//bimodality.pdf>]
+<../Results/gwtc1_phasemarg/plots//scaling_study_full.pdf, id=793, 571.66374pt 
 x 426.34395pt>
 File: ../Results/gwtc1_phasemarg/plots//scaling_study_full.pdf Graphic file (ty
 pe pdf)
 <use ../Results/gwtc1_phasemarg/plots//scaling_study_full.pdf>
 Package pdftex.def Info: ../Results/gwtc1_phasemarg/plots//scaling_study_full.p
-df  used on input line 336.
+df  used on input line 344.
 (pdftex.def)             Requested size: 467.35907pt x 348.5569pt.
-[5
-pdfTeX warning (ext4): destination with the same identifier (name{table.2}) has
- been already used, duplicate ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  \__shipout_drop_firstpage_...
-l.342 
-      ]
-Underfull \vbox (badness 7362) has occurred while \output is active []
 
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [6
-pdfTeX warning (ext4): destination with the same identifier (name{figure.3}) ha
-s been already used, duplicate ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  \__shipout_drop_firstpage_...
-l.351 
-      
-pdfTeX warning (ext4): destination with the same identifier (name{table.3}) has
- been already used, duplicate ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  \__shipout_drop_firstpage_...
-l.351 
-      
-pdfTeX warning (ext4): destination with the same identifier (name{figure.4}) ha
-s been already used, duplicate ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  \__shipout_drop_firstpage_...
-l.351 
-      
-pdfTeX warning (ext4): destination with the same identifier (name{table.4}) has
- been already used, duplicate ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  \__shipout_drop_firstpage_...
-l.351 
-       <../Results/gwtc1_phasemarg/plots//bimodality.pdf> <../Results/gwtc1_pha
-semarg/plots//H0_waveform_comparison.pdf>]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [7
+[8
 pdfTeX warning (ext4): destination with the same identifier (name{figure.5}) ha
 s been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.359 
-       <../Results/gwtc1_phasemarg/plots//corner_GW170817_waveform_comparison.p
-df>] [8
+l.372 
+       <../Results/gwtc1_phasemarg/plots//H0_waveform_comparison.pdf>] [9
 pdfTeX warning (ext4): destination with the same identifier (name{figure.6}) ha
 s been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.373 
-       <../Results/gwtc1_phasemarg/plots//scaling_study_full.pdf>] (./main.bbl
-Underfull \hbox (badness 4505) in paragraph at lines 51--53
+l.382 
+       <../Results/gwtc1_phasemarg/plots//corner_GW170817_waveform_comparison.p
+df>] (./main.bbl [10
+pdfTeX warning (ext4): destination with the same identifier (name{figure.7}) ha
+s been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.40   et~al.}{2019b}]{Abbott2019GWTC1}
+                                        <../Results/gwtc1_phasemarg/plots//scal
+ing_study_full.pdf>]
+Underfull \hbox (badness 4505) in paragraph at lines 61--63
 []\T1/ntxtlf/m/n/8 Bradbury J., et al., 2018, JAX: com-pos-able trans-for-ma-ti
 ons of
  []
 
 
-Underfull \hbox (badness 3291) in paragraph at lines 80--84
+Underfull \hbox (badness 2334) in paragraph at lines 76--78
+[]\T1/ntxtlf/m/n/8 Cornish N. J., 2010, Fast Fisher Ma-tri-ces and Lazy Like-li
+-hoods
+ []
+
+
+Underfull \hbox (badness 3291) in paragraph at lines 128--132
 \T1/ntxtlf/m/n/8 Re-lease, LIGO Doc-u-ment P1700296; [][]$\T1/ntxtt/m/n/8 https
  : / / dcc . ligo . org /
  []
 
 
-Underfull \hbox (badness 2884) in paragraph at lines 108--111
-[]\T1/ntxtlf/m/n/8 Prathaban M., et al., 2025, Gravitational-wave in-fer-ence a
-t GPU
+Underfull \vbox (badness 4328) has occurred while \output is active []
+
+
+Underfull \hbox (badness 3323) in paragraph at lines 250--253
+[]\T1/ntxtlf/m/n/8 Yallup D., Pratha-ban M., Alvey J., Han-d-ley W., 2025, Par-
+al-lel
  []
 
 
-Underfull \hbox (badness 2547) in paragraph at lines 108--111
-\T1/ntxtlf/m/n/8 speed: A bilby-like nested sam-pling ker-nel within blackjax-n
-s
- []
-
-
-Underfull \hbox (badness 2065) in paragraph at lines 154--157
+Underfull \hbox (badness 2065) in paragraph at lines 262--265
 \T1/ntxtlf/m/n/8 like-li-hood eval-u-a-tion for gravitational-wave pa-ram-e-ter
  es-ti-ma-tion
  []
 
-) [9]
-Underfull \hbox (badness 10000) in paragraph at lines 406--407
+)
+Underfull \hbox (badness 10000) in paragraph at lines 409--410
 []\T1/ntxtlf/m/it/9 Peculiar-velocity cen-tre. \T1/ntxtlf/m/n/9 Sweep-ing $\LMS
 /ntxsy/m/n/9 h\OML/ntxmi/m/it/9 v[]\LMS/ntxsy/m/n/9 i 2
  []
 
-[10
 
-] (./main.aux)
+Underfull \hbox (badness 1308) in paragraph at lines 410--411
+\OT1/minntx/m/n/9 250 km s[]$ $\OML/ntxmi/m/it/9 H[] \U/ntxmia/m/it/9 = \OT1/mi
+nntx/m/n/9 70\OML/ntxmi/m/it/9 :\OT1/minntx/m/n/9 5 km s[] Mpc[]$\T1/ntxtlf/m/n
+/9 , $\OML/ntxmi/m/it/9 P \U/ntxmia/m/it/9 = \OT1/minntx/m/n/9 0\OML/ntxmi/m/it
+/9 :\OT1/minntx/m/n/9 067$\T1/ntxtlf/m/n/9 . The
+ []
+
+[11] (./main.aux)
 
 LaTeX Font Warning: Size substitutions with differences
 (Font)              up to 0.5pt have occurred.
 
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 10D3B0B496FCBF26F8515595ED0A1BAE;4891.
+(rerunfilecheck)             Checksum: EC1F12BD6B9B831F39E41E4ECF725542;4654.
  ) 
 Here is how much of TeX's memory you used:
- 15113 strings out of 476025
- 225273 string characters out of 5790017
- 1887388 words of memory out of 5000000
- 35182 multiletter control sequences out of 15000+600000
- 617794 words of font info for 183 fonts, out of 8000000 for 9000
+ 25590 strings out of 476025
+ 460513 string characters out of 5790017
+ 1889388 words of memory out of 5000000
+ 45419 multiletter control sequences out of 15000+600000
+ 618160 words of font info for 184 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 90i,15n,90p,2105b,428s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 99i,15n,94p,2489b,895s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
 pdfTeX warning (dest): name{Hfootnote.1} has been referenced but does not exist
 , replaced by a fixed one
@@ -1278,10 +1389,10 @@ ype1/public/txfonts/txsya.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/p
 ublic/newtx/txsys.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/ne
 wtx/ztmb.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/newtx/ztmr.
 pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/newtx/ztmri.pfb>
-Output written on main.pdf (10 pages, 589177 bytes).
+Output written on main.pdf (11 pages, 573113 bytes).
 PDF statistics:
- 1002 PDF objects out of 1200 (max. 8388607)
- 585 compressed objects within 6 object streams
- 88 named destinations out of 1000 (max. 500000)
- 247 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1200 PDF objects out of 1200 (max. 8388607)
+ 734 compressed objects within 8 object streams
+ 109 named destinations out of 1000 (max. 500000)
+ 256 words of extra memory for PDF output out of 10000 (max. 10000000)
 

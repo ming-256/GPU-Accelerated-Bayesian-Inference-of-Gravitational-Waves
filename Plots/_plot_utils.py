@@ -360,9 +360,8 @@ def plot_h0_hist(runs, out_name, xlim=(40, 180), bins=140,
                 ax.axvline(v, color=color, ls=ls, lw=1.0, alpha=0.6)
 
     if lvk_band:
-        ax.axvspan(62, 82, color='0.55', alpha=0.18, zorder=0,
-                   label='Abbott+2017 GW170817 ($H_0=70_{-8}^{+12}$, 68% HPD)')
-        ax.axvline(70.0, color='0.4', ls='-.', lw=1.0, zorder=0)
+        ax.axvline(70.0, color='0.45', ls='-', lw=1.5, zorder=1,
+                   label=r'Abbott+2017 ($70^{+12}_{-8}$)')
 
     if add_planck_shoes:
         ax.axvspan(65.7, 68.2, color=COLORS['planck_outer'], alpha=0.3, zorder=0)
@@ -378,6 +377,84 @@ def plot_h0_hist(runs, out_name, xlim=(40, 180), bins=140,
     for spine in ax.spines.values():
         spine.set_edgecolor('black'); spine.set_linewidth(1.5)
     ax.legend(frameon=False, fontsize=11)
+    fig.tight_layout()
+    path = os.path.join(OUT_DIR, out_name)
+    plt.savefig(f'{path}.pdf', bbox_inches='tight')
+    plt.savefig(f'{path}.png', dpi=150, bbox_inches='tight')
+    print(f"  -> Saved {path}.pdf / .png")
+    plt.close(fig)
+
+
+# --------------------------------------------------------------------------- #
+# H_0 plot — Silverman-bandwidth KDE (smoothed 1-D marginals)
+# --------------------------------------------------------------------------- #
+def plot_h0_kde(runs, out_name, xlim=(40, 180), n_eval=1000,
+                add_planck_shoes=True, lvk_band=False, hpd_lines=False,
+                figsize=(10, 6)):
+    """H_0 posterior plot using Silverman-bandwidth Gaussian KDE.
+
+    Parameters
+    ----------
+    runs : list of (samples_or_dict_or_tuple, label, color [, linestyle])
+    out_name : str
+    xlim : (lo, hi)
+    n_eval : int — number of evaluation points for KDE
+    add_planck_shoes : bool
+    lvk_band : bool
+    hpd_lines : bool
+    """
+    from scipy.stats import gaussian_kde as _gkde
+    _trapz = getattr(np, 'trapezoid', None) or np.trapz
+
+    fig, ax = plt.subplots(figsize=figsize)
+    x_eval = np.linspace(xlim[0], xlim[1], n_eval)
+
+    for entry in runs:
+        samples, label, color = entry[:3]
+        ls = entry[3] if len(entry) > 3 else '-'
+        if isinstance(samples, dict):
+            h0 = np.asarray(samples['H_0'], dtype=float)
+            w = np.asarray(samples['weights'], dtype=float)
+        elif isinstance(samples, tuple):
+            h0, w = (np.asarray(a, dtype=float) for a in samples)
+        else:
+            h0 = samples['H_0'].to_numpy().astype(float)
+            w = np.asarray(samples.get_weights(), dtype=float)
+        finite = np.isfinite(h0) & np.isfinite(w) & (w > 0)
+        h0, w = h0[finite], w[finite]
+        w = w / w.sum()
+
+        kde = _gkde(h0, weights=w, bw_method='silverman')
+        pdf = kde(x_eval)
+        pdf /= _trapz(pdf, x_eval)
+        ax.plot(x_eval, pdf, color=color, lw=2.0, ls=ls, label=label)
+
+        lo68, hi68 = compute_hpd_samples(h0, w, 0.68269)
+        lo95, hi95 = compute_hpd_samples(h0, w, 0.95450)
+        map_val = float(x_eval[np.argmax(pdf)])
+        print(f"  {label}: MAP={map_val:.1f}; 68% HPD=[{lo68:.1f},{hi68:.1f}]; 95% HPD=[{lo95:.1f},{hi95:.1f}]")
+        if hpd_lines:
+            for v, dls in [(lo68, '--'), (hi68, '--'), (lo95, ':'), (hi95, ':')]:
+                ax.axvline(v, color=color, ls=dls, lw=0.8, alpha=0.55)
+
+    if lvk_band:
+        ax.axvline(70.0, color='0.45', ls='-', lw=1.5, zorder=1,
+                   label=r'Abbott+2017 ($70^{+12}_{-8}$)')
+
+    if add_planck_shoes:
+        ax.axvspan(65.7, 68.2, color=COLORS['planck_outer'], alpha=0.3, zorder=0)
+        ax.axvspan(66.93 - 0.62, 66.93 + 0.62, color=COLORS['planck_inner'],
+                   alpha=0.3, zorder=0, label='Planck')
+        ax.axvspan(69.76, 76.72, color=COLORS['shoes_outer'], alpha=0.3, zorder=0)
+        ax.axvspan(73.24 - 1.74, 73.24 + 1.74, color=COLORS['shoes_inner'],
+                   alpha=0.3, zorder=0, label='SH0ES')
+
+    ax.set_xlim(xlim); ax.set_ylim(bottom=0)
+    ax.set_xlabel(r'$H_0$ (km s$^{-1}$ Mpc$^{-1}$)')
+    ax.set_ylabel(r'$P(H_0)$ (km$^{-1}$ s Mpc)')
+    for spine in ax.spines.values():
+        spine.set_edgecolor('black'); spine.set_linewidth(1.5)
+    ax.legend(frameon=False, fontsize=11, loc='upper right')
     fig.tight_layout()
     path = os.path.join(OUT_DIR, out_name)
     plt.savefig(f'{path}.pdf', bbox_inches='tight')

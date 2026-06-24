@@ -41,25 +41,52 @@ PSD estimation parameters when computed self: 32 s FFT length, 50% overlap, medi
 
 **Note on d_L prior:** Beta(3,1) on [10, 75] Mpc has density ∝ (d_L − 10)² rather than the LVK ∝ d_L². The shapes differ at the low-d_L end (Beta(3,1) → 0 at d_L = 10, LVK volumetric → finite). This is a *separate* prior issue from the q-discrepancy and may marginally suppress our high-H₀ tail relative to LVK, but it is not the cause of the q-discrepancy.
 
-## Prior bounds — the only material differences
+## Prior bounds — GW170817 matches LVK exactly
 
-These are the prior choices that differ from LVK. **The first one is the prime suspect for the q-posterior discrepancy.**
+**CORRECTION (2026-05-18).** An earlier version of this file claimed our GW170817
+component-mass prior [0.5, 7.7] M_⊙ differed from an "LVK low-spin" prior of
+[0.87, 1.74] M_⊙, and named that difference as the prime suspect for the
+q-posterior discrepancy. That was wrong on the facts. The actual GW170817 LVK
+parameter-estimation prior is given in Abbott et al. 2019 (Properties of the
+binary neutron star merger GW170817, PRX 9, 011001), Sec. III D:
 
-| Item | Our config | LVK | Difference |
-|---|---|---|---|
-| **GW170817 m₁, m₂ hard bounds** | **[0.5, 7.7] M_⊙** | **[0.87, 1.74] M_⊙ (low-spin)** | **3.2× wider lower bound, 4.4× wider upper** |
-| GW170817 M_c (det) | [1.184, 2.168] M_⊙ | ~[1.18, 1.21] M_⊙ (data-driven) | wider upper bound |
-| GW150914 m₁, m₂ hard bounds | [1, 100] M_⊙ | ~[5, 100] M_⊙ | 5× wider lower bound |
-| GW150914 M_c (det) | [10, 80] M_⊙ | ~[28, 32] M_⊙ (data-driven) | wider |
+> "we assume a prior PDF p(ϑ) uniform in the detector-frame masses, with the
+> constraint that 0.5 M_⊙ ≤ m1_det, m2_det ≤ 7.7 M_⊙, where m1 ≥ m2, and with
+> an additional constraint on the chirp mass, 1.184 M_⊙ ≤ Mc_det ≤ 2.168 M_⊙."
 
-### Why this matters for the q posterior
+So our GW170817 prior reproduces the LVK PE prior **exactly**. The [0.87, 1.74]
+range matches no published LVK prior; it appears to be a constructed [m, 2m]
+range (1.74 = 2 × 0.87) and should not be used or cited as "LVK".
 
-For uniform-in-(m₁, m₂) prior with a fixed M_c, the induced q distribution depends sensitively on the (m₁, m₂) bounds. With wide bounds, the M_c ≈ 1.198 iso-curve sweeps through a larger region of (m₁, m₂) space, including configurations with m₂ as low as 0.5 M_⊙ paired with m₁ ≈ 2.7 M_⊙ (q ≈ 0.18). LVK's tight bounds [0.87, 1.74] forbid most of this, concentrating the prior near q = 1.
+| Item | Our config | LVK GW170817 PE (Abbott+2019 PRX) | Match |
+|---|---|---|:---:|
+| GW170817 m₁, m₂ hard bounds | [0.5, 7.7] M_⊙ | [0.5, 7.7] M_⊙ | ✓ exact |
+| GW170817 M_c (det) constraint | [1.184, 2.168] M_⊙ | [1.184, 2.168] M_⊙ | ✓ exact |
+| GW150914 m₁, m₂ hard bounds | [1, 100] M_⊙ | ~[5, 100] M_⊙ (unverified) | ≈ — needs check against the GW150914 PE paper |
+| GW150914 M_c (det) | [10, 80] M_⊙ | data-driven (unverified) | needs check |
 
-This is the correct explanation for the corner-plot observation that our q posterior peaks at q ≈ 0.85 while LVK peaks at q → 1, *despite* using the same Jacobian and the same data.
+### Consequence for the q posterior
+
+The earlier "wide mass bounds concentrate/dilute the q prior" explanation is
+**void**: with the GW170817 mass and chirp-mass priors identical to LVK's, the
+induced q prior is identical too. If a q-posterior discrepancy with the public
+GWTC-1 posterior remains, it is **not** explained by the mass bounds and must be
+investigated separately (candidates: waveform family, spin prior, the d_L prior
+shape noted above, or the heterodyne reference). Do not attribute it to mass
+bounds without new evidence.
 
 ## Diagnostic strategy
 
-The first run that should be done is **IMRPhenomD_NRTidalv2 with LVK-matched mass bounds** (`m_comp_lo=0.87, m_comp_hi=1.74`, χ_z range unchanged). If this run's q posterior matches LVK's q posterior, the gap is fully explained by the mass bounds and waveform variations are second-order. Only then do we add the IMRPhenomXAS_NRTidalv3 and IMRPhenomPv2 runs at LVK-matched bounds to compare-and-contrast.
+The mass-bounds hypothesis is closed. Runs that vary `--m-comp-lo/--m-comp-hi`
+away from [0.5, 7.7] (e.g. the s07/s15/s19 `*_lvkbounds*` runs at [0.87, 1.74])
+are *non-LVK* narrow-prior experiments, not LVK reproductions, and should be
+labelled as such. The LVK-matched GW170817 runs are those with no `--m-comp`
+flags (script defaults M_COMP_LO=0.5, M_COMP_HI=7.7). The two used for the
+cross-waveform headline (Section 4.3, Table 4) already exist:
 
-Implementation: see `CODE_CHANGES_NEEDED.md` §7 (patch P-MASSBOUNDS).
+- IMRPhenomXAS_NRTidalv3: `Results/test_suite/s14__gw170817__imrphenomxas_nrtidalv3__baseline__seed0000/samples.csv`
+- TaylorF2: `Results/gwtc1_phasemarg/PhaseMarg_Heterodyned_TaylorF2_local_psd-gwtc1_ref-gwtc1_baseline.csv`
+
+Both use the GWTC-1 PSD and GWTC-1 heterodyne reference at n_live=5000. The
+TaylorF2 component-mass range in that file spans [0.53, 2.47]/[1.37, 7.69]
+M_⊙, confirming the [0.5, 7.7] prior. No new run is required.

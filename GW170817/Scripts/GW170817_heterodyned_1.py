@@ -121,6 +121,14 @@ parser.add_argument('--lvk-spin-ball', action='store_true',
                          'Only meaningful for aligned-spin tidal waveforms; no-op for IMRPhenomPv2 '
                          '(precessing branch already uses an explicit (a_i, cos(tilt_i), phi_i) '
                          'parameterisation).')
+parser.add_argument('--n-mcmc', type=int, default=None, dest='n_mcmc',
+                    help='Override the BlackJAX-NS num_inner_steps slice-step count. '
+                         'Default: 8 * NUM_DIMS (=112 for phase-marginalised 14-d GW170817). '
+                         'Used for the M7 convergence sweep at {5, 10, 20} * NUM_DIMS.')
+parser.add_argument('--seed', type=int, default=0,
+                    help='JAX PRNGKey seed for reproducibility (default: 0). '
+                         'Added for the M2/M7 reproducibility sweeps; baseline runs predating this '
+                         'flag implicitly used seed=0 via the unparameterised PRNGKey(0).')
 args = parser.parse_args()
 waveform_tag = args.waveform
 data_source = args.data_source
@@ -1049,7 +1057,9 @@ def loglikelihood_fn(x):
 
 num_live = args.n_live
 num_delete = args.num_delete if args.num_delete is not None else int(num_live * 0.5)
-num_mcmc_steps = int(NUM_DIMS * 8)
+num_mcmc_steps = int(args.n_mcmc) if args.n_mcmc is not None else int(NUM_DIMS * 8)
+print(f"num_mcmc_steps (slice steps per update): {num_mcmc_steps}  "
+      f"({'CLI override' if args.n_mcmc is not None else f'default 8*NUM_DIMS={8*NUM_DIMS}'})")
 
 @jax.jit
 def stepper_fn(x, d, t):
@@ -1127,7 +1137,7 @@ def sample_from_prior(key, n):
     return jnp.array(np.concatenate(collected)[:n])
 
 t_init0 = time.time()
-rng_key = jax.random.PRNGKey(0)
+rng_key = jax.random.PRNGKey(int(args.seed))
 rng_key, init_key = jax.random.split(rng_key)
 initial_particles = sample_from_prior(init_key, num_live)
 

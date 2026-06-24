@@ -45,6 +45,19 @@ MANIFEST
 *.swo
 *~
 .DS_Store
+# macOS AppleDouble resource-fork files (created on exFAT/macOS volumes)
+._*
+
+# arXiv submission: generated tarball + LaTeX build artifacts (regenerate with
+# mnras_paper/make_arxiv_bundle.sh; the source bundle in mnras_paper/arxiv/ is tracked)
+mnras_paper/arxiv-submission.tar.gz
+mnras_paper/arxiv/main.pdf
+mnras_paper/arxiv/*.aux
+mnras_paper/arxiv/*.log
+mnras_paper/arxiv/*.out
+mnras_paper/arxiv/*.blg
+mnras_paper/arxiv/*.fls
+mnras_paper/arxiv/*.fdb_latexmk
 
 # CUDA cache
 .nv/
@@ -60,3 +73,9 @@ docs/_build/
 # Packages
 package-lock.json
 package.json
+
+# Superseded by the curated github.com/ming-256/GW170817-bright-siren-H0 release
+paper-reproduce/
+
+# Claude Code transient state
+.claude/

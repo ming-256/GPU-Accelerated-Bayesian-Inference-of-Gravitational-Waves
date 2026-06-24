@@ -2,7 +2,7 @@
 GW170817 d_L–iota bimodality figure (existing Plots/ style).
 
 Two panels:
-  (a) The unrestricted flat-in-redshift run shown in (d_L, iota) plane,
+  (a) The unrestricted uniform-in-d_L run shown in (d_L, iota) plane,
       with the prior-restricted Mode-A and Mode-B contours overlaid.
   (b) 1D H_0 marginal under each variant (showing why direct flat-z
       sampling places ~28 per cent of the posterior mass at H_0 > 120,
@@ -43,63 +43,60 @@ fig, axes = plt.subplots(1, 2, figsize=(14, 5.5))
 # Two distinct colour families for Mode A and Mode B (each is a separate
 # prior-restricted run with a different d_L range; the shared `Combined`
 # unrestricted run is in a third neutral colour).
-MODE_A_COL = '#E07B00'    # warm orange
-MODE_B_COL = '#2C7FB8'    # cool blue
-COMBINED_COL = '#444444'  # dark grey
+MODE_A_COL = '#2C7FB8'    # blue  (Mode A peaks left in H0; avoids SHoES orange)
+MODE_B_COL = '#d62728'    # red   (Mode B peaks right in H0)
+COMBINED_COL = '#111111'  # black (unrestricted)
 
 # ----- Panel (a): d_L vs iota -----
 ax = axes[0]
 xi = np.linspace(8, 80, 200)
 yi = np.linspace(0, np.pi, 200)
 XX, YY = np.meshgrid(xi, yi)
-kde_full = gaussian_kde(np.vstack([dlF, iF]), weights=wF/wF.sum())
-ZZ = kde_full(np.vstack([XX.ravel(), YY.ravel()])).reshape(XX.shape)
-ax.contourf(XX, YY, ZZ, levels=15, cmap='Greys', alpha=0.5)
-# Mode A contour (d_L in [30, 75], separate restricted run)
 ZA = gaussian_kde(np.vstack([dlA, iA]), weights=wA/wA.sum())(
     np.vstack([XX.ravel(), YY.ravel()])).reshape(XX.shape)
-ax.contour(XX, YY, ZA, levels=6, colors=MODE_A_COL, linewidths=1.4)
-# Mode B contour (d_L in [10, 30], separate restricted run)
 ZB = gaussian_kde(np.vstack([dlB, iB]), weights=wB/wB.sum())(
     np.vstack([XX.ravel(), YY.ravel()])).reshape(XX.shape)
-ax.contour(XX, YY, ZB, levels=6, colors=MODE_B_COL, linewidths=1.4)
+
+ZA_n = ZA / ZA.max()
+ZB_n = ZB / ZB.max()
+
+# 5 iso-density levels — Mode B (red) then Mode A (blue), no outline rings
+_levels = np.linspace(0.10, 0.90, 5)
+ax.contourf(XX, YY, ZB_n, levels=_levels, cmap='Reds',  alpha=0.70, extend='max')
+ax.contourf(XX, YY, ZA_n, levels=_levels, cmap='Blues', alpha=0.70, extend='max')
 # Mode boundary at d_L = 30 Mpc (the dividing line of the two restricted
 # priors): make explicit that A and B come from runs with different priors.
 ax.axvline(30, color='black', ls=':', lw=1.0, alpha=0.7)
 ax.text(30.5, 3.05, r'$d_L=30\,\rm Mpc$ (prior boundary)',
         rotation=90, ha='left', va='top', fontsize=9, color='0.3')
-ax.set_xlim(10, 60); ax.set_ylim(1.5, np.pi)
+ax.set_xlim(10, 50); ax.set_ylim(1.8, np.pi)
 ax.set_xlabel(r'$d_L$ (Mpc)', fontsize=13)
 ax.set_ylabel(r'$\iota$ (rad)', fontsize=13)
-ax.set_title(r'(a) Joint $(d_L,\iota)$ posterior, flat-in-$z$')
-# Annotate modes
-ax.text(20, 1.80, r'Mode B run' '\n' r'$d_L\in[10,30]$',
-        color=MODE_B_COL, fontsize=11, weight='bold', ha='center',
-        bbox=dict(facecolor='white', alpha=0.7, edgecolor='none', pad=1))
-ax.text(50, 2.85, r'Mode A run' '\n' r'$d_L\in[30,75]$',
-        color=MODE_A_COL, fontsize=11, weight='bold', ha='center',
-        bbox=dict(facecolor='white', alpha=0.7, edgecolor='none', pad=1))
+ax.set_title(r'(a) Joint $(d_L,\iota)$ posterior, uniform-in-$d_L$')
+# Mode B: right of the blue distribution at the bottom edge
+ax.text(28, 1.83, r'Mode B run   $d_L\in[10,30]$',
+        color=MODE_B_COL, fontsize=10, weight='bold', ha='right', va='bottom',
+        bbox=dict(facecolor='white', alpha=0.85, edgecolor='none', pad=2))
+# Mode A: just beneath the bottom edge of the orange distribution
+ax.text(40, 2.18, r'Mode A run   $d_L\in[30,75]$',
+        color=MODE_A_COL, fontsize=10, weight='bold', ha='center', va='top',
+        bbox=dict(facecolor='white', alpha=0.85, edgecolor='none', pad=2))
 
 # ----- Panel (b): H_0 1D marginals -----
 ax = axes[1]
-xg = np.linspace(40, 230, 4000)
-# 1-D H_0 marginals: weighted step-histograms (no KDE smoothing on tails).
-H0_BINS = np.linspace(40, 230, 191)   # 1 km/s/Mpc bins, matches paper tables
+_h0_eval = np.linspace(40, 230, 1000)
 _trapz = getattr(np, 'trapezoid', getattr(np, 'trapz', None))
-for x, w, label, col, ls in [
-    (h0A, wA,   r'Mode A (seed=0)',       MODE_A_COL,    '-'),
-    (h0B, wB,   r'Mode B (seed=0)',       MODE_B_COL,    '-'),
-    (h0F, wF,   r'Unrestricted (seed=0)', COMBINED_COL,  '-'),
-    (h0A1, wA1, r'Mode A (seed=1)',       MODE_A_COL,    '--'),
-    (h0B1, wB1, r'Mode B (seed=1)',       MODE_B_COL,    '--'),
-    (h0F1, wF1, r'Unrestricted (seed=1)', COMBINED_COL,  '--'),
+for x, w, label, col in [
+    (h0A, wA, r'Mode A ($d_L\in[30,75]\,\mathrm{Mpc}$)', MODE_A_COL),
+    (h0B, wB, r'Mode B ($d_L\in[10,30]\,\mathrm{Mpc}$)', MODE_B_COL),
+    (h0F, wF, r'Unrestricted',                   COMBINED_COL),
 ]:
     if x is None: continue
     w = w / w.sum()
-    counts, _ = np.histogram(x, bins=H0_BINS, weights=w, density=True)
-    x_step = np.r_[H0_BINS[0], np.repeat(H0_BINS[1:-1], 2), H0_BINS[-1]]
-    y_step = np.r_[np.repeat(counts, 2)]
-    ax.plot(x_step, y_step, color=col, lw=2.0, ls=ls, label=label)
+    kde = gaussian_kde(x, weights=w, bw_method='silverman')
+    pdf = kde(_h0_eval)
+    pdf /= _trapz(pdf, _h0_eval)
+    ax.plot(_h0_eval, pdf, color=col, lw=2.0, ls='-', label=label)
 # Cosmological reference bands — Planck CMB and SH0ES distance-ladder.
 # (LVK GW170817 band intentionally dropped: this work is itself a
 # GW170817 reanalysis, so the LVK band is uninformative here.)
