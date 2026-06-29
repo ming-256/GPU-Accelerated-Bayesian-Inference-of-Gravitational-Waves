@@ -325,7 +325,8 @@ John Wiley \& Sons, New York
   {Handley}}{{Yang} et~al.}{2026}]{Yang2026DataRelease}
 {Yang} M.~H.,  {Prathaban} M.,  {Yallup} D.,   {Handley} W.,  2026, {GW170817
   bright-siren $H_0$: data and analysis release},
-  \url{https://github.com/ming-256/GW170817-bright-siren-H0}
+  \url{https://github.com/ming-256/GW170817-bright-siren-H0},
+  \mn@doi{10.5281/zenodo.21038511}
 
 \bibitem[\protect\citeauthoryear{{Zackay}, {Dai}  \& {Venumadhav}}{{Zackay}
   et~al.}{2018}]{Zackay2018RelativeBinning}
