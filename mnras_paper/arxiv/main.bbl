@@ -81,6 +81,12 @@
   {BlackJAX: Composable Bayesian inference in JAX} (\mn@eprint {arXiv}
   {2402.10797})
 
+\bibitem[\protect\citeauthoryear{{Chan}, {Narola}, {Ng}, {Wouters}, {Wong},
+  {Gittins}, {Janquart}  \& {Van Den Broeck}}{{Chan}
+  et~al.}{2026}]{Chan2026ripple}
+{Chan} R.,  {Narola} H.,  {Ng} T. C.~K.,  {Wouters} T.,  {Wong} I. C.~F.,
+  {Gittins} F.,  {Janquart} J.,   {Van Den Broeck} C.,  2026, in prep.
+
 \bibitem[\protect\citeauthoryear{{Chen}, {Fishbach}  \& {Holz}}{{Chen}
   et~al.}{2018}]{Chen2018Forecast}
 {Chen} H.-Y.,  {Fishbach} M.,   {Holz} D.~E.,  2018, \mn@doi [Nature]
