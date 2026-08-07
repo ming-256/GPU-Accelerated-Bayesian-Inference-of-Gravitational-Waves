@@ -1,225 +1,140 @@
 # GPU-Accelerated Bayesian Inference of Gravitational Waves
 
-Gravitational wave parameter estimation using GPU-accelerated Bayesian nested sampling with JAX.
+GPU-accelerated Bayesian parameter estimation for gravitational-wave signals
+using JAX, with nested sampling from BlackJAX-NS. The scientific focus is
+Hubble-constant inference from the binary-neutron-star merger GW170817, and in
+particular what happens when the luminosity-distance prior is changed by
+direct re-sampling rather than by post-hoc reweighting.
 
-**Colab Notebook:** https://colab.research.google.com/drive/1oXgA-keo49iYv-94EOEI8VNeEVm_Ipfe?usp=sharing
+This is the **working repository**: exploratory scripts, every run we did,
+the manuscript, and the project knowledge base. If you want the curated,
+citable release that accompanies the paper, use that instead:
 
-## Overview
+> **https://github.com/ming-256/GW170817-bright-siren-H0**
+> Zenodo (concept DOI, resolves to newest version): [10.5281/zenodo.21038511](https://doi.org/10.5281/zenodo.21038511)
 
-This project implements GPU-accelerated Bayesian inference for gravitational wave signals using:
-- **JAX** for automatic differentiation and GPU acceleration
-- **Blackjax** (nested sampling branch) for Bayesian inference
-- **jimgw** for gravitational wave likelihood and detector simulation
-- **ripple** for fast waveform generation
-- **flowMC** for normalizing flow-based MCMC sampling
+That release is self-contained — chains, sampling pipeline, analysis code and
+manuscript — and rebuilds every figure and table with `bash regenerate.sh`.
 
-## Quick Start (Google Cloud Workstation)
+## The paper
 
-For Google Cloud workstations (where only files persist), the repository includes an automated setup script:
+> Yang M. H., Prathaban M., Yallup D., Handley W. (2026).
+> *Rapid Hubble constant inference from GW170817 using GPU-accelerated
+> nested sampling: prior sensitivity and the limits of post-hoc reweighting.*
+> MNRAS (submitted). [arXiv:2606.30504](https://arxiv.org/abs/2606.30504)
 
-```bash
-# Run the setup script (automatically executed on workstation startup)
-~/.workstation/customize_environment
-```
+Source is in `mnras_paper/`; `mnras_paper/arxiv/` is the self-contained
+submission bundle.
 
-The script will:
-1. Install Python 3.12, CUDA 12, and system dependencies
-2. Install `uv` for fast package management
-3. Create a Python virtual environment
-4. Verify local copies of GW-JAX-Team repositories exist (jimgw, ripple, flowMC)
-5. Install all required packages with CUDA support from local repositories
-6. Auto-activate the environment on login
+## Layout
 
-### Automatic Startup
+| Path | What is in it |
+|------|---------------|
+| `GW170817/Scripts/` | the GW170817 samplers: `GW170817_heterodyned_{1,2,3}.py` (baseline / flat-in-z / sigma_vp=250), `GW170817_unheterodyned_1.py`, plus `run_*.sh` drivers and `BatchRun.py` |
+| `GW150914/Scripts/` | `GW150914_heterodyned.py`, the XPHM validation run |
+| `Plots/` | figure, table and summary generators (`plot_*.py`, `build_*.py`, `compute_*.py`) and `run_all_plots.sh` |
+| `Results/` | run outputs: `test_suite/<run_id>/` per-run chains and logs, `gwtc1_phasemarg/` host-localised chains and figures, `scaling_study/`, `logs/` |
+| `EventData/GWOSC/` | LVK strain for GW170817 and GW150914 (Git LFS) |
+| `mnras_paper/` | manuscript, bibliography, figures, test-suite session plans and audits |
+| `paper_knowledge_base/` | project strategy, literature review, hardware notes, result-to-script index |
+| `parallel_bilby/` | CPU baseline runs with parallel-bilby, for the speed comparison |
+| `memory/`, `GEMINI.md` | working notes and agent context |
 
-On Google Cloud workstations, the `~/.workstation/customize_environment` script runs automatically on startup, ensuring your environment is ready to use immediately.
+Large binaries (strain HDF5, chain CSVs) are tracked with **Git LFS**. Run
+`git lfs install && git lfs pull` after cloning, or you will get ~130-byte
+pointer files instead of data.
 
-## Manual Setup
+## Environment
 
-### Prerequisites
-
-- **Python 3.12** (required by jimgw, ripplegw, flowMC)
-- CUDA 12.x
-- Git
-- 8GB+ GPU memory (recommended)
-
-### Installation
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/yourusername/GPU-Accelerated-Bayesian-Inference-of-Gravitational-Waves.git
-   cd GPU-Accelerated-Bayesian-Inference-of-Gravitational-Waves
-   ```
-
-2. **Create virtual environment:**
-   ```bash
-   python3.12 -m venv venv
-   source venv/bin/activate
-   ```
-
-3. **Install uv (optional but recommended for faster installation):**
-   ```bash
-   pip install uv
-   ```
-
-4. **Install JAX with CUDA support (required first):**
-   ```bash
-   uv pip install "jax[cuda12]>=0.8.2" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
-   ```
-
-5. **Clone GW-JAX-Team repositories (if not already cloned):**
-   ```bash
-   # The repository includes local copies in libraries/ directory
-   # If you cloned the full repo, these are already present
-   # If not, clone them manually:
-   mkdir -p libraries
-   cd libraries
-   git clone https://github.com/GW-JAX-Team/jim.git
-   git clone https://github.com/GW-JAX-Team/ripple.git
-   git clone https://github.com/GW-JAX-Team/flowMC.git
-   cd ..
-   ```
-
-6. **Install GW-JAX-Team packages from local clones with CUDA support:**
-   ```bash
-   # Install from local clones with CUDA support
-   cd libraries/ripple && uv pip install -e ".[cuda]" && cd ../..
-   cd libraries/flowMC && uv pip install -e ".[cuda]" && cd ../..
-   cd libraries/jim && uv pip install -e ".[cuda]" && cd ../..
-   ```
-
-7. **Install additional dependencies:**
-   ```bash
-   uv pip install git+https://github.com/handley-lab/blackjax@nested_sampling
-   uv pip install git+https://git.ligo.org/lscsoft/ligo-segments.git
-   uv pip install anesthetic astropy gwpy tqdm numpy scipy matplotlib h5py pandas
-   ```
-
-8. **Verify installation:**
-   ```bash
-   python -c "import jax; print('JAX devices:', jax.devices())"
-   python -c "import jimgw, ripplegw, flowMC; print('All packages imported successfully')"
-   ```
-
-## Project Structure
-
-```
-GPU-Accelerated-Bayesian-Inference-of-Gravitational-Waves/
-├── vendor/                          # Local copies of GW-JAX-Team repos
-│   ├── jim/                         # jimgw - GW inference framework
-│   ├── ripple/                      # ripple - Waveform generator
-│   └── flowMC/                      # flowMC - MCMC sampler
-├── EventData/                       # LIGO event data files
-├── Results/                         # Output from inference runs
-├── refactored_script_jax_refactor.py  # Main inference script
-├── requirements.txt                 # Python dependencies
-└── README.md                        # This file
-```
-
-## Usage
-
-### Running Inference on GW170817
-
-The main script analyzes the GW170817 binary neutron star merger:
+Python 3.12, CUDA 12, and a GPU with 8 GB+ (the paper's runs used a single
+NVIDIA A100 40 GB).
 
 ```bash
-python refactored_script_jax_refactor.py
+python3.12 -m venv venv
+source venv/bin/activate
+pip install uv
+
+# JAX with CUDA first
+uv pip install "jax[cuda12]>=0.8.2" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+
+# The GW-JAX-Team stack. Clone into libraries/ (gitignored) and install editable.
+mkdir -p libraries && cd libraries
+git clone https://github.com/GW-JAX-Team/ripple.git
+git clone https://github.com/GW-JAX-Team/flowMC.git
+git clone https://github.com/GW-JAX-Team/jim.git
+cd ..
+uv pip install -e "libraries/ripple[cuda]" -e "libraries/flowMC[cuda]" -e "libraries/jim[cuda]"
+
+# Nested sampling kernel + analysis tools
+uv pip install git+https://github.com/handley-lab/blackjax@nested_sampling
+uv pip install anesthetic astropy gwpy tqdm numpy scipy matplotlib h5py pandas
 ```
 
-This will:
-1. Load LIGO detector data (H1, L1, V1) for GW170817
-2. Set up the waveform model (IMRPhenomD + NRTidalv2)
-3. Define parameter priors
-4. Run nested sampling
-5. Save results to `Results/Test_jax_refactor.csv`
+Versions used for the paper: ripple v0.0.9, jimgw v0.3.0, flowMC v0.4.5,
+BlackJAX on the `nested_sampling` branch.
 
-### Configuration
+Verify:
 
-Key parameters in [refactored_script_jax_refactor.py](refactored_script_jax_refactor.py):
+```bash
+python -c "import jax; print(jax.devices())"
+python -c "import jimgw, ripplegw, flowMC; print('ok')"
+```
 
-- `num_live = 1000` - Number of live points for nested sampling
-- `num_delete = 500` - Number of points to delete per iteration
-- `num_mcmc_steps` - MCMC steps per nested sampling iteration
-- `BATCH_SIZE = 8` - Batch size for GPU processing
+## Running an analysis
 
-### Inference Parameters
+Run from the repository root — the scripts resolve data paths relative to it.
 
-The script infers 13 parameters:
-- Chirp mass (M_c), mass ratio (q)
-- Component spins (s1_z, s2_z)
-- Inclination angle (iota)
-- Luminosity distance (d_L)
-- Coalescence time (t_c), phase (phase_c)
-- Polarization angle (psi)
-- Sky position (ra, dec)
-- Tidal deformabilities (lambda_1, lambda_2)
+```bash
+# One GW170817 run: baseline d_L prior, IMRPhenomXAS_NRTidalv3
+python GW170817/Scripts/GW170817_heterodyned_1.py \
+    --waveform IMRPhenomXAS_NRTidalv3 \
+    --data-source local --psd-source gwtc1 --ref-params gwtc1 \
+    --phase-marginalization --n-live 5000 \
+    --output-dir Results/gwtc1_phasemarg
+```
+
+Which script you run selects the distance prior:
+
+| Script | Prior / variant |
+|--------|-----------------|
+| `GW170817_heterodyned_1.py` | baseline, Beta(3,1) — volumetric, LVK convention |
+| `GW170817_heterodyned_2.py` | flat-in-z, sampled directly |
+| `GW170817_heterodyned_3.py` | baseline with sigma_vp = 250 km/s |
+| `GW170817_unheterodyned_1.py` | baseline, unheterodyned likelihood |
+
+`--help` lists the rest (`--num-delete`, `--n-bins`, `--seed`,
+`--m-comp-lo/--m-comp-hi`, `--fixed-sky`, PSD and reference-parameter
+sources).
+
+The paper's runs were driven by `mnras_paper/test_suite/session_plans/session_*.sh`,
+which also write each run's `config.json` provenance record and update
+`mnras_paper/test_suite/run_catalog.csv`. Sampler settings for the science
+runs: `n_live=5000`, `n_delete=2500`, `n_mcmc=8*n_dim`, 501 heterodyne bins,
+20–2048 Hz, phase-marginalised (14 parameters).
+
+Figures and tables:
+
+```bash
+bash Plots/run_all_plots.sh
+```
 
 ## Performance
 
-GPU acceleration provides significant speedup:
-- **CPU:** ~hours per run
-- **GPU (A100/V100):** ~minutes per run
+A heterodyned GW170817 run at `n_live=5000` takes about 13 minutes on one
+A100; the unheterodyned equivalent takes tens of hours. Measured speed-ups at
+matched `n_live` run from ~31x at 500 live points to ~68x at 2500.
 
-## Dependencies
+## Data sources
 
-### Core Packages
-- **JAX**: Autodiff and GPU acceleration
-- **Blackjax**: Bayesian inference algorithms (nested sampling)
-- **jimgw**: GW likelihood and detector handling
-- **ripple**: Fast waveform generation
-- **flowMC**: Normalizing flow MCMC
+- GW170817 strain, PSDs and GWTC-1 posteriors — [LIGO P1800061](https://dcc.ligo.org/LIGO-P1800061/public), [P1700296](https://dcc.ligo.org/LIGO-P1700296/public), [P1900011](https://dcc.ligo.org/LIGO-P1900011/public)
+- GW150914 strain — [GWOSC O1 archive](https://gwosc.org/archive/)
+- GW150914 reference PE — [Zenodo 10.5281/zenodo.6513631](https://doi.org/10.5281/zenodo.6513631) (LVK GWTC-2.1)
 
-### Analysis Tools
-- **anesthetic**: Nested sampling visualization
-- **astropy**: Astronomical utilities
-- **gwpy**: LIGO data access
+## Licence
 
-See [requirements.txt](requirements.txt) for complete list.
-
-## Local Repository Copies
-
-The `libraries/jim/`, `libraries/ripple/`, and `libraries/flowMC/` directories contain cloned copies of:
-- [jimgw](https://github.com/GW-JAX-Team/jim) - v0.3.0
-- [ripple](https://github.com/GW-JAX-Team/ripple) - v0.0.9
-- [flowMC](https://github.com/GW-JAX-Team/flowMC) - v0.4.5
-
-**These are installed in editable mode with CUDA support**, allowing you to modify the source code and have changes take effect immediately without reinstallation:
-- `pip install -e ./libraries/ripple[cuda]`
-- `pip install -e ./libraries/flowMC[cuda]`
-- `pip install -e ./libraries/jim[cuda]`
-
-## Troubleshooting
-
-### CUDA Out of Memory
-Reduce `num_live` or `BATCH_SIZE` in the script.
-
-### Import Errors
-Ensure the virtual environment is activated:
-```bash
-source venv/bin/activate
-```
-
-### JAX Not Using GPU
-Verify CUDA installation:
-```bash
-nvcc --version
-python -c "import jax; print(jax.devices())"
-```
-
-## References
-
-- GW-JAX-Team repositories: https://github.com/GW-JAX-Team
-- GW170817 detection paper: [Abbott et al. 2017](https://arxiv.org/abs/1710.05832)
-- JAX documentation: https://jax.readthedocs.io
-
-## License
-
-[Add your license here]
-
-## Contributing
-
-[Add contribution guidelines here]
+Code MIT, data CC BY 4.0, matching the public release. See the `LICENSE` file
+in https://github.com/ming-256/GW170817-bright-siren-H0.
 
 ## Contact
 
-[Add contact information here]
+Ming Han Yang — mhy32@cantab.ac.uk
